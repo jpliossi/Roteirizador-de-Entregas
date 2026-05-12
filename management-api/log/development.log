@@ -1133,3 +1133,16 @@ Processing by EnderecosController#index as HTML
 Completed 200 OK in 38ms (Views: 4.9ms | ActiveRecord: 4.0ms (1 query, 0 cached) | GC: 0.0ms)
 
 
+[ActionDispatch::HostAuthorization::DefaultResponseApp] Blocked hosts: management-api:3000
+Started PUT "/enderecos/atualizar_status" for 172.19.0.5 at 2026-05-12 19:25:10 +0000
+  [1m[36mActiveRecord::SchemaMigration Load (4.0ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='ManagementApi'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (1.9ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='ManagementApi'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (2.5ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='ManagementApi'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (3.3ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='ManagementApi'*/[0m
+Processing by EnderecosController#atualizar_status as HTML
+  Parameters: {"endereco_ids" => ["550e8400-e29b-41d4-a716-446655440000", "670e8400-e29b-41d4-a716-446655441111"], "endereco" => {}}
+  [1m[36mEndereco Update All (5.2ms)[0m  [1m[33mUPDATE "enderecos" SET "status" = 'em rota' WHERE "enderecos"."id" IN ('550e8400-e29b-41d4-a716-446655440000', '670e8400-e29b-41d4-a716-446655441111') /*action='atualizar_status',application='ManagementApi',controller='enderecos'*/[0m
+  ↳ app/controllers/enderecos_controller.rb:24:in 'EnderecosController#atualizar_status'
+Completed 200 OK in 481ms (Views: 2.3ms | ActiveRecord: 110.8ms (1 query, 0 cached) | GC: 13.3ms)
+
+

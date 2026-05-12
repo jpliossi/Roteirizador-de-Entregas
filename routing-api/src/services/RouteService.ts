@@ -1,6 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 import { PrismaPg } from '@prisma/adapter-pg';
 import pg from 'pg';
+import axios from 'axios';
 
 export interface Endereco {
   id: string;
@@ -10,11 +11,37 @@ export interface Endereco {
 
 export class RouteService {
   private prisma: PrismaClient;
+  private managementApiUrl = process.env.MANAGEMENT_API_URL || 'http://management-api:3000';
 
   constructor() {
     const pool = new pg.Pool({ connectionString: process.env.DATABASE_URL });
     const adapter = new PrismaPg(pool);
     this.prisma = new PrismaClient({ adapter });
+  }
+
+  /**
+   * Salva a rota no banco local e atualiza o status dos endereços na management-api.
+   */
+  async efetivarRota(veiculo_id: string, endereco_ids: string[]) {
+    // 1. Salvar no banco de dados local
+    const rota = await this.prisma.rota.create({
+      data: {
+        veiculo_id,
+        endereco_ids,
+      },
+    });
+
+    // 2. Chamar a management-api para atualizar o status dos endereços
+    await axios.put(`${this.managementApiUrl}/enderecos/atualizar_status`, {
+      endereco_ids
+    });
+
+    return {
+      message: 'Rota efetivada e status dos endereços atualizados.',
+      rota_id: rota.id,
+      veiculo_id: rota.veiculo_id,
+      endereco_ids: rota.endereco_ids
+    };
   }
 
   /**
