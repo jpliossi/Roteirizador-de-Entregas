@@ -11,6 +11,11 @@ yarn-error.log*
 
 # Ambiente
 .env
+.env.*
+
+# Prisma
+/prisma/migrations/
+/prisma/dev.db*
 
 # IDE / Editores
 .vscode/
