@@ -5,7 +5,7 @@ WORKDIR /app
 
 # Instala dependências antes de copiar o resto do código (cache)
 COPY package*.json ./
-RUN npm install
+RUN npm install && npm install -g tsx
 
 COPY . .
 

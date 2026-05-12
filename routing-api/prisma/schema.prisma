@@ -14,7 +14,7 @@ datasource db {
 model Rota {
   id           String   @id @default(uuid())
   veiculo_id   String
-  endereco_ids String[]
+  ordem_ids: orderedEnderecos.map(e => e.id)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
