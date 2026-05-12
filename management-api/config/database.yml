@@ -7,15 +7,20 @@ default: &default
   password: <%= ENV.fetch("POSTGRES_PASSWORD", "postgres") %>
 
 development:
-  <<: *default
-  database: management_api_development
+  primary:
+    <<: *default
+    database: management_api_development
+  cable:
+    <<: *default
+    database: management_api_development_cable
+  cache:
+    <<: *default
+    database: management_api_development_cache
+  queue:
+    <<: *default
+    database: management_api_development_queue
 
 test:
-  <<: *default
-  database: management_api_test
-
-production:
-  <<: *default
-  database: management_api_production
-  username: management_api
-  password: <%= ENV["MANAGEMENT_API_DATABASE_PASSWORD"] %>
+  primary:
+    <<: *default
+    database: management_api_test

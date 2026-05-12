@@ -1,55 +1,47 @@
-version: '3.8'
 
 services:
   db:
     image: postgres:15-alpine
-    container_name: delivery_db
+    container_name: roteirizador_db
     environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=management_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
     ports:
       - "5432:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
-    networks:
-      - roteirizador_network
+      - pg_data:/var/lib/postgresql/data
 
   management-api:
-    build: ./menagement-api
-    container_name: management_api
+    build: ./management-api
+    container_name: roteirizador_management_api
+    command: bash -c "bundle install && rm -f tmp/pids/server.pid && bundle exec rails s -p 3000 -b '0.0.0.0'"
+    volumes:
+      - ./management-api:/app
     ports:
       - "3000:3000"
-    volumes:
-      - ./menagement-api:/app
     depends_on:
       - db
-    networks:
-      - roteirizador_network
+    environment:
+      POSTGRES_HOST: db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      RAILS_ENV: development
 
   routing-api:
     build: ./routing-api
-    container_name: routing_api
-    ports:
-      - "3001:3001"
+    container_name: roteirizador_routing_api
     volumes:
       - ./routing-api:/app
-    networks:
-      - roteirizador_network
+    ports:
+      - "3001:3001"
 
   frontend:
     build: ./frontend
-    container_name: frontend_vue
-    ports:
-      - "5173:5173"
+    container_name: roteirizador_frontend
     volumes:
       - ./frontend:/app
-    networks:
-      - roteirizador_network
-
-networks:
-  roteirizador_network:
-    driver: bridge
+    ports:
+      - "5173:5173"
 
 volumes:
-  postgres_data:
+  pg_data:
