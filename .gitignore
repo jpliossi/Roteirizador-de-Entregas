@@ -46,8 +46,22 @@ Thumbs.db
 .docker-data/
 *.log
 docker-compose.override.yml
+# Raiz
+node_modules/
+package-lock.json
 
 # Routing API (Node/TypeScript + Prisma)
+/routing-api/node_modules/
+/routing-api/dist/
+/routing-api/.env
+/routing-api/prisma/migrations/
+/routing-api/test-results/
+/routing-api/coverage/
+
+# Frontend
+/frontend/node_modules/
+/frontend/dist/
+/frontend/.vscode/
 /routing-api/node_modules/
 /routing-api/dist/
 /routing-api/.env
