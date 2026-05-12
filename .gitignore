@@ -20,3 +20,25 @@ yarn-error.log
 # Arquivos de Sistema Operacional
 .DS_Store
 Thumbs.db
+
+# Rails específicos
+/management-api/tmp/pids/*.pid
+/management-api/log/*.log
+/management-api/tmp/cache/
+/management-api/public/assets
+.ruby-lsp/
+.byebug_history
+/management-api/db/*.sqlite3
+/management-api/db/*.sqlite3-journal
+/management-api/storage/
+/management-api/public/packs
+/management-api/public/vite
+/management-api/node_modules/
+/management-api/coverage/
+/management-api/public/system
+/management-api/vendor/bundle
+
+# Docker específicos
+.docker-data/
+*.log
+docker-compose.override.yml
