@@ -38,6 +38,10 @@ Thumbs.db
 /management-api/public/system
 /management-api/vendor/bundle
 
+# Frontend
+/frontend/node_modules/
+/frontend/dist/
+
 # Docker específicos
 .docker-data/
 *.log
@@ -48,4 +52,3 @@ docker-compose.override.yml
 /routing-api/dist/
 /routing-api/.env
 /routing-api/prisma/migrations/
-/routing-api/package-lock.json
