@@ -1,0 +1,55 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: delivery_db
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=management_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - roteirizador_network
+
+  management-api:
+    build: ./menagement-api
+    container_name: management_api
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./menagement-api:/app
+    depends_on:
+      - db
+    networks:
+      - roteirizador_network
+
+  routing-api:
+    build: ./routing-api
+    container_name: routing_api
+    ports:
+      - "3001:3001"
+    volumes:
+      - ./routing-api:/app
+    networks:
+      - roteirizador_network
+
+  frontend:
+    build: ./frontend
+    container_name: frontend_vue
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+    networks:
+      - roteirizador_network
+
+networks:
+  roteirizador_network:
+    driver: bridge
+
+volumes:
+  postgres_data:
