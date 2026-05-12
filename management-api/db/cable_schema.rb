@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_12_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_12_142358) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -28,6 +28,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_12_120000) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "motoristas", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "cpf"
+    t.datetime "created_at", null: false
+    t.string "nome"
+    t.datetime "updated_at", null: false
+    t.index ["cpf"], name: "index_motoristas_on_cpf", unique: true
+  end
+
   create_table "solid_cable_messages", force: :cascade do |t|
     t.binary "channel", null: false
     t.bigint "channel_hash", null: false
@@ -36,5 +44,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_12_120000) do
     t.index ["channel"], name: "index_solid_cable_messages_on_channel"
     t.index ["channel_hash"], name: "index_solid_cable_messages_on_channel_hash"
     t.index ["created_at"], name: "index_solid_cable_messages_on_created_at"
+  end
+
+  create_table "veiculos", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.integer "capacidade"
+    t.datetime "created_at", null: false
+    t.string "modelo"
+    t.string "placa"
+    t.string "status"
+    t.datetime "updated_at", null: false
   end
 end
