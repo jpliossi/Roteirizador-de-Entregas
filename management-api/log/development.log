@@ -1064,3 +1064,85 @@ ActionController::RoutingError (No route matches [GET] "/veiculos"):
   [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN /*application='ManagementApi'*/[0m
 [ActionDispatch::HostAuthorization::DefaultResponseApp] Blocked hosts: www.example.com
   [1m[36mTRANSACTION (0.3ms)[0m  [1m[31mROLLBACK /*application='ManagementApi'*/[0m
+Started GET "/enderecos" for 172.19.0.1 at 2026-05-12 18:29:51 +0000
+  [1m[36mActiveRecord::SchemaMigration Load (9.6ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='ManagementApi'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (5.1ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='ManagementApi'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (3.8ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='ManagementApi'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (6.0ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='ManagementApi'*/[0m
+Processing by EnderecosController#index as HTML
+  [1m[36mEndereco Load (41.1ms)[0m  [1m[34mSELECT "enderecos".* FROM "enderecos" /*action='index',application='ManagementApi',controller='enderecos'*/[0m
+  ↳ app/controllers/enderecos_controller.rb:5:in 'EnderecosController#index'
+Completed 200 OK in 1994ms (Views: -5.3ms | ActiveRecord: 53.3ms (1 query, 0 cached) | GC: 2.6ms)
+
+
+Started GET "/enderecos" for 172.19.0.1 at 2026-05-12 18:30:13 +0000
+Processing by EnderecosController#index as HTML
+  [1m[36mEndereco Load (0.8ms)[0m  [1m[34mSELECT "enderecos".* FROM "enderecos" /*action='index',application='ManagementApi',controller='enderecos'*/[0m
+  ↳ app/controllers/enderecos_controller.rb:5:in 'EnderecosController#index'
+Completed 200 OK in 4ms (Views: 3.2ms | ActiveRecord: 0.8ms (1 query, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/enderecos" for 172.19.0.1 at 2026-05-12 18:31:12 +0000
+Processing by EnderecosController#index as HTML
+  [1m[36mEndereco Load (6.1ms)[0m  [1m[34mSELECT "enderecos".* FROM "enderecos" /*action='index',application='ManagementApi',controller='enderecos'*/[0m
+  ↳ app/controllers/enderecos_controller.rb:5:in 'EnderecosController#index'
+Completed 200 OK in 12ms (Views: 5.9ms | ActiveRecord: 6.1ms (1 query, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/enderecos" for 172.19.0.1 at 2026-05-12 18:43:35 +0000
+Started GET "/" for 172.19.0.1 at 2026-05-12 18:43:35 +0000
+  [1m[36mActiveRecord::SchemaMigration Load (9.4ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='ManagementApi'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (7.1ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='ManagementApi'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (5.1ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='ManagementApi'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (5.8ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='ManagementApi'*/[0m
+  
+ActionController::RoutingError (No route matches [GET] "/enderecos"):
+  
+Processing by Rails::WelcomeController#index as HTML
+Started GET "/motoristas" for 172.19.0.1 at 2026-05-12 18:43:53 +0000
+  Rendering /usr/local/bundle/ruby/4.0.0/gems/railties-8.1.3/libtemplates/rails/welcome/index.html.erb
+  Rendered /usr/local/bundle/ruby/4.0.0/gems/railties-8.1.3/libtemplates/rails/welcome/index.html.erb (Duration: 1.9ms | GC: 0.0ms)
+Completed 200 OK in 31295ms (Views: 12.2ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 140.4ms)
+
+
+Processing by MotoristasController#index as HTML
+  [1m[36mMotorista Load (58.5ms)[0m  [1m[34mSELECT "motoristas".* FROM "motoristas" /*action='index',application='ManagementApi',controller='motoristas'*/[0m
+  ↳ app/controllers/motoristas_controller.rb:8:in 'MotoristasController#index'
+Completed 200 OK in 301ms (Views: -12.7ms | ActiveRecord: 77.4ms (1 query, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/" for 172.19.0.1 at 2026-05-12 18:44:51 +0000
+Processing by Rails::WelcomeController#index as HTML
+  Rendering /usr/local/bundle/ruby/4.0.0/gems/railties-8.1.3/libtemplates/rails/welcome/index.html.erb
+  Rendered /usr/local/bundle/ruby/4.0.0/gems/railties-8.1.3/libtemplates/rails/welcome/index.html.erb (Duration: 0.3ms | GC: 0.0ms)
+Completed 200 OK in 4ms (Views: 3.6ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/icon.png" for 172.19.0.1 at 2026-05-12 18:44:51 +0000
+  
+ActionController::RoutingError (No route matches [GET] "/icon.png"):
+  
+Started GET "/icon.png" for 172.19.0.1 at 2026-05-12 18:44:51 +0000
+  
+ActionController::RoutingError (No route matches [GET] "/icon.png"):
+  
+Started GET "/enderecos" for 172.19.0.1 at 2026-05-12 18:44:57 +0000
+Processing by EnderecosController#index as HTML
+  [1m[36mEndereco Load (4.0ms)[0m  [1m[34mSELECT "enderecos".* FROM "enderecos" /*action='index',application='ManagementApi',controller='enderecos'*/[0m
+  ↳ app/controllers/enderecos_controller.rb:5:in 'EnderecosController#index'
+Completed 200 OK in 38ms (Views: 4.9ms | ActiveRecord: 4.0ms (1 query, 0 cached) | GC: 0.0ms)
+
+
+[ActionDispatch::HostAuthorization::DefaultResponseApp] Blocked hosts: management-api:3000
+Started PUT "/enderecos/atualizar_status" for 172.19.0.5 at 2026-05-12 19:25:10 +0000
+  [1m[36mActiveRecord::SchemaMigration Load (4.0ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='ManagementApi'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (1.9ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='ManagementApi'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (2.5ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='ManagementApi'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (3.3ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='ManagementApi'*/[0m
+Processing by EnderecosController#atualizar_status as HTML
+  Parameters: {"endereco_ids" => ["550e8400-e29b-41d4-a716-446655440000", "670e8400-e29b-41d4-a716-446655441111"], "endereco" => {}}
+  [1m[36mEndereco Update All (5.2ms)[0m  [1m[33mUPDATE "enderecos" SET "status" = 'em rota' WHERE "enderecos"."id" IN ('550e8400-e29b-41d4-a716-446655440000', '670e8400-e29b-41d4-a716-446655441111') /*action='atualizar_status',application='ManagementApi',controller='enderecos'*/[0m
+  ↳ app/controllers/enderecos_controller.rb:24:in 'EnderecosController#atualizar_status'
+Completed 200 OK in 481ms (Views: 2.3ms | ActiveRecord: 110.8ms (1 query, 0 cached) | GC: 13.3ms)
+
+

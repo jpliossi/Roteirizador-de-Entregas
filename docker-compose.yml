@@ -36,10 +36,17 @@ services:
   routing-api:
     build: ./routing-api
     container_name: roteirizador_routing_api
+    # Removido o command fixo para usar o do Dockerfile que agora está mais limpo
     volumes:
       - ./routing-api:/app
+      - /app/node_modules # Evita sobrescrever node_modules do container com o local
     ports:
       - "3001:3001"
+      - "5555:5555"
+    depends_on:
+      - db
+    environment:
+      DATABASE_URL: "postgresql://postgres:postgres@db:5432/routing_db?schema=public"
 
   frontend:
     build: ./frontend

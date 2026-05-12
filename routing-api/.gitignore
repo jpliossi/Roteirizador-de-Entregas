@@ -11,6 +11,11 @@ yarn-error.log*
 
 # Ambiente
 .env
+.env.*
+
+# Prisma
+/prisma/migrations/
+/prisma/dev.db*
 
 # IDE / Editores
 .vscode/
@@ -23,3 +28,5 @@ yarn-error.log*
 
 # Mac OS
 .DS_Store
+
+/src/generated/prisma

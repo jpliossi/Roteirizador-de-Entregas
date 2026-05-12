@@ -15,6 +15,16 @@ class EnderecosController < ApplicationController
     end
   end
 
+  # PUT /enderecos/atualizar_status
+  def atualizar_status
+    if params[:endereco_ids].blank?
+      return render json: { error: "endereco_ids não fornecidos" }, status: :bad_request
+    end
+
+    Endereco.where(id: params[:endereco_ids]).update_all(status: "em rota")
+    render json: { message: "Status atualizado com sucesso" }, status: :ok
+  end
+
   private
 
   def endereco_params
