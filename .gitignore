@@ -1,0 +1,22 @@
+# Dependências Node.js / Logs
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Variáveis de Ambiente e Segredos
+.env
+.env.local
+.env.*.local
+
+# IDEs e Editores de Código
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Arquivos de Sistema Operacional
+.DS_Store
+Thumbs.db
