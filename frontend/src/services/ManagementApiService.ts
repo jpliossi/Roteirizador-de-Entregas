@@ -9,10 +9,9 @@ const api = axios.create({
 
 export interface Endereco {
   id?: number;
-  logradouro: string;
+  rua: string;
   numero: string;
   complemento?: string;
-  bairro: string;
   cidade: string;
   estado: string;
   cep: string;
@@ -53,11 +52,7 @@ export const ManagementApiService = {
   },
 
   async createEndereco(endereco: Endereco): Promise<Endereco> {
-    const payload = {
-      ...endereco,
-      rua: endereco.logradouro // Garante compatibilidade com campo 'rua' do Rails
-    };
-    const response = await api.post('/enderecos', { endereco: payload });
+    const response = await api.post('/enderecos', { endereco });
     return response.data;
   },
 

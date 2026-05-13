@@ -7,9 +7,8 @@ const deliveryStore = useDeliveryStore();
 const emit = defineEmits(['close']);
 
 const form = ref<Omit<Endereco, 'id' | 'status'>>({
-  logradouro: '',
+  rua: '',
   numero: '',
-  bairro: '',
   cidade: '',
   estado: '',
   cep: '',
@@ -41,8 +40,8 @@ const handleSubmit = async () => {
       <h2 class="text-xl font-bold text-gray-900 mb-6">Novo Endereço de Entrega</h2>
       <form @submit.prevent="handleSubmit" class="space-y-4">
         <div>
-          <label class="block text-sm font-medium text-gray-700">Logradouro</label>
-          <input v-model="form.logradouro" type="text" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="Rua das Flores">
+          <label class="block text-sm font-medium text-gray-700">Rua</label>
+          <input v-model="form.rua" type="text" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="Rua das Flores">
         </div>
         <div class="grid grid-cols-2 gap-4">
           <div>

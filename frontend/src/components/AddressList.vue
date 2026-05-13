@@ -70,12 +70,12 @@ const getStatusColor = (status?: string) => {
           <div class="flex-1 min-w-0">
             <div class="flex items-center gap-2">
                <p class="text-sm font-black text-gray-900 truncate">
-                {{ addr.logradouro }}, {{ addr.numero }}
+                {{ addr.rua }}, {{ addr.numero }}
               </p>
               <span v-if="addr.complemento" class="text-[10px] bg-gray-100 px-1.5 py-0.5 rounded font-bold text-gray-400">{{ addr.complemento }}</span>
             </div>
             <p class="text-[11px] font-bold text-gray-400 uppercase tracking-tighter mt-0.5">
-              {{ addr.bairro }} • {{ addr.cidade }} - {{ addr.estado }}
+              {{ addr.cidade }} - {{ addr.estado }}
             </p>
           </div>
           <div class="ml-4 flex flex-col items-end gap-1">

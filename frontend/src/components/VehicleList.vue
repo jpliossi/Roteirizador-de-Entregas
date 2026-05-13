@@ -62,8 +62,7 @@ onMounted(() => {
                 {{ (index as number) + 1 }}
               </div>
               <div class="min-w-0">
-                <p class="text-xs font-bold text-gray-800 truncate">{{ addr.logradouro }}, {{ addr.numero }}</p>
-                <p class="text-[10px] text-gray-500 truncate">{{ addr.bairro }}</p>
+                <p class="text-xs font-bold text-gray-800 truncate">{{ addr.rua }}, {{ addr.numero }}</p>
               </div>
             </li>
           </ul>
