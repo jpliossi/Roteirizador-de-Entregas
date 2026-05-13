@@ -36,7 +36,10 @@ onMounted(() => {
             </div>
             <div>
               <h4 class="font-black text-gray-900 leading-none">{{ veiculo.modelo }}</h4>
-              <span class="text-[10px] font-bold uppercase text-gray-500 tracking-widest">{{ veiculo.placa }}</span>
+              <p class="text-[10px] font-bold uppercase text-gray-500 tracking-widest mt-1">{{ veiculo.placa }}</p>
+              <p v-if="veiculo.motorista" class="text-[10px] font-bold text-blue-600 uppercase mt-0.5">
+                👨‍✈️ {{ veiculo.motorista.nome }}
+              </p>
             </div>
           </div>
           <div class="text-right">
@@ -56,7 +59,7 @@ onMounted(() => {
               class="flex items-center p-3 bg-blue-50/50 rounded-lg border border-blue-100"
             >
               <div class="w-6 h-6 rounded-full bg-blue-600 text-white text-[10px] font-black flex items-center justify-center mr-3 flex-shrink-0">
-                {{ index + 1 }}
+                {{ (index as number) + 1 }}
               </div>
               <div class="min-w-0">
                 <p class="text-xs font-bold text-gray-800 truncate">{{ addr.logradouro }}, {{ addr.numero }}</p>

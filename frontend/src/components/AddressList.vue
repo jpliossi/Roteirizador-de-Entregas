@@ -46,36 +46,46 @@ const getStatusColor = (status?: string) => {
       <li 
         v-for="addr in deliveryStore.enderecosPendentes" 
         :key="addr.id" 
-        class="px-6 py-4 transition-colors cursor-pointer"
+        class="group px-6 py-5 transition-all cursor-pointer border-l-4"
         :class="[
-          deliveryStore.selectedEnderecoIds.includes(addr.id!) ? 'bg-blue-50' : 'hover:bg-gray-50'
+          deliveryStore.selectedEnderecoIds.includes(addr.id!) 
+            ? 'bg-blue-100/50 border-blue-600' 
+            : 'hover:bg-gray-50 border-transparent'
         ]"
         @click="deliveryStore.toggleEnderecoSelection(addr.id!)"
       >
-        <div class="flex items-center space-x-4">
+        <div class="flex items-center space-x-6">
           <div class="flex-shrink-0">
-            <input 
-              type="checkbox" 
-              :checked="deliveryStore.selectedEnderecoIds.includes(addr.id!)"
-              class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-              @click.stop
+            <div 
+              class="w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-all"
+              :class="[
+                deliveryStore.selectedEnderecoIds.includes(addr.id!)
+                  ? 'bg-blue-600 border-blue-600'
+                  : 'bg-white border-gray-200 group-hover:border-blue-400'
+              ]"
             >
+              <svg v-if="deliveryStore.selectedEnderecoIds.includes(addr.id!)" class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke-width="3"/></svg>
+            </div>
           </div>
           <div class="flex-1 min-w-0">
-            <p class="text-sm font-bold text-gray-900 truncate">
-              {{ addr.logradouro }}, {{ addr.numero }}
-            </p>
-            <p class="text-xs text-gray-500 truncate">
-              {{ addr.bairro }} - {{ addr.cidade }}/{{ addr.estado }}
+            <div class="flex items-center gap-2">
+               <p class="text-sm font-black text-gray-900 truncate">
+                {{ addr.logradouro }}, {{ addr.numero }}
+              </p>
+              <span v-if="addr.complemento" class="text-[10px] bg-gray-100 px-1.5 py-0.5 rounded font-bold text-gray-400">{{ addr.complemento }}</span>
+            </div>
+            <p class="text-[11px] font-bold text-gray-400 uppercase tracking-tighter mt-0.5">
+              {{ addr.bairro }} • {{ addr.cidade }} - {{ addr.estado }}
             </p>
           </div>
-          <div class="ml-4">
+          <div class="ml-4 flex flex-col items-end gap-1">
             <span 
-              class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase border"
+              class="inline-flex items-center px-3 py-1 rounded-full text-[9px] font-black uppercase border shadow-sm"
               :class="getStatusColor(addr.status)"
             >
               {{ addr.status || 'Pendente' }}
             </span>
+            <span class="text-[9px] font-black text-gray-300 uppercase letter tracking-widest">REF: #{{ addr.id }}</span>
           </div>
         </div>
       </li>

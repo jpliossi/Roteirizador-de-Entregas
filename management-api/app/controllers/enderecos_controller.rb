@@ -28,6 +28,6 @@ class EnderecosController < ApplicationController
   private
 
   def endereco_params
-    params.require(:endereco).permit(:rua, :numero, :cidade, :estado, :cep, :latitude, :longitude, :status)
+    params.require(:endereco).permit(:rua, :logradouro, :numero, :bairro, :cidade, :estado, :cep, :latitude, :longitude, :status)
   end
 end

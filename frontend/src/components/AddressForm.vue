@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import { ManagementApiService, type Endereco } from '../services/ManagementApiService';
+import { type Endereco } from '../services/ManagementApiService';
 import { useDeliveryStore } from '../stores/useDeliveryStore';
 
 const deliveryStore = useDeliveryStore();

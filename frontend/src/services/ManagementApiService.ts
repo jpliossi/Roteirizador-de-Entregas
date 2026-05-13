@@ -11,6 +11,7 @@ export interface Endereco {
   id?: number;
   logradouro: string;
   numero: string;
+  complemento?: string;
   bairro: string;
   cidade: string;
   estado: string;
@@ -26,7 +27,13 @@ export interface Veiculo {
   placa: string;
   modelo: string;
   capacidade: number;
-  motorista_id: number;
+  motorista_id?: number;
+}
+
+export interface Motorista {
+  id?: number;
+  nome: string;
+  cpf: string;
 }
 
 export const ManagementApiService = {
@@ -37,6 +44,11 @@ export const ManagementApiService = {
 
   async getVeiculos(): Promise<Veiculo[]> {
     const response = await api.get('/veiculos');
+    return response.data;
+  },
+
+  async getMotoristas(): Promise<Motorista[]> {
+    const response = await api.get('/motoristas');
     return response.data;
   },
 
@@ -51,6 +63,11 @@ export const ManagementApiService = {
 
   async createVeiculo(veiculo: Veiculo): Promise<Veiculo> {
     const response = await api.post('/veiculos', { veiculo });
+    return response.data;
+  },
+
+  async createMotorista(motorista: Motorista): Promise<Motorista> {
+    const response = await api.post('/motoristas', { motorista });
     return response.data;
   },
 

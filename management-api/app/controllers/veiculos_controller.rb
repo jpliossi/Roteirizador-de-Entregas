@@ -46,6 +46,6 @@ class VeiculosController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def veiculo_params
-      params.expect(veiculo: [ :placa, :capacidade, :modelo, :status ])
+      params.expect(veiculo: [ :placa, :capacidade, :modelo, :status, :motorista_id ])
     end
 end

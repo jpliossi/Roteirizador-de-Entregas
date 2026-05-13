@@ -4,6 +4,7 @@ import AddressList from '../components/AddressList.vue';
 import VehicleList from '../components/VehicleList.vue';
 import AddressForm from '../components/AddressForm.vue';
 import VehicleForm from '../components/VehicleForm.vue';
+import DriverForm from '../components/DriverForm.vue';
 import { useDeliveryStore } from '../stores/useDeliveryStore';
 import { RoutingApiService, type RotaCalculada } from '../services/RoutingApiService';
 import { onMounted } from 'vue';
@@ -11,6 +12,7 @@ import { onMounted } from 'vue';
 const deliveryStore = useDeliveryStore();
 const showAddressForm = ref(false);
 const showVehicleForm = ref(false);
+const showDriverForm = ref(false);
 const calculating = ref(false);
 const rotaSugerida = ref<RotaCalculada | null>(null);
 
@@ -72,7 +74,10 @@ onMounted(() => {
             Otimize sua logística de entrega em poucos cliques.
           </p>
         </div>
-        <div class="flex space-x-3">
+        <div class="flex flex-wrap gap-3">
+          <button @click="showDriverForm = true" class="inline-flex items-center px-4 py-2 bg-white border-2 border-gray-100 rounded-lg shadow-sm text-sm font-bold text-gray-700 hover:border-blue-100 hover:bg-blue-50 transition-all">
+            + Novo Motorista
+          </button>
           <button @click="showAddressForm = true" class="inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-lg shadow-sm text-sm font-bold text-gray-700 hover:bg-gray-50 transition-all">
             + Novo Endereço
           </button>
@@ -160,5 +165,6 @@ onMounted(() => {
     <!-- Modais -->
     <AddressForm v-if="showAddressForm" @close="showAddressForm = false" />
     <VehicleForm v-if="showVehicleForm" @close="showVehicleForm = false" />
+    <DriverForm v-if="showDriverForm" @close="showDriverForm = false" />
   </div>
 </template>

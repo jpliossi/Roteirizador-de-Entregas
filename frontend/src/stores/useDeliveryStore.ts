@@ -1,11 +1,12 @@
 import { defineStore } from 'pinia';
-import { ManagementApiService, type Endereco, type Veiculo } from '../services/ManagementApiService';
+import { ManagementApiService, type Endereco, type Veiculo, type Motorista } from '../services/ManagementApiService';
 import { RoutingApiService, type RotaCalculada } from '../services/RoutingApiService';
 
 export const useDeliveryStore = defineStore('delivery', {
   state: () => ({
     enderecos: [] as Endereco[],
     veiculos: [] as Veiculo[],
+    motoristas: [] as Motorista[],
     selectedEnderecoIds: [] as number[],
     selectedVeiculoId: null as number | null,
     previewRota: null as RotaCalculada | null,
@@ -16,24 +17,19 @@ export const useDeliveryStore = defineStore('delivery', {
   actions: {
     toggleEnderecoSelection(id: number) {
       const index = this.selectedEnderecoIds.indexOf(id);
-      if (index > -1) {
-        this.selectedEnderecoIds.splice(index, 1);
-      } else {
+      if (index === -1) {
         this.selectedEnderecoIds.push(id);
+      } else {
+        this.selectedEnderecoIds.splice(index, 1);
       }
     },
-
-    setVeiculoSelection(id: number | null) {
-      this.selectedVeiculoId = id;
-    },
-
     async fetchEnderecos() {
-      this.loading = true;
+      this.loading = true; 
       try {
         this.enderecos = await ManagementApiService.getEnderecos();
         this.error = null;
       } catch (err: any) {
-        this.error = 'Erro ao carregar endereços: ' + (err.message || 'Erro desconhecido');
+        this.error = 'Erro ao carregar endereços: ' + (err.message || '');
       } finally {
         this.loading = false;
       }
@@ -45,14 +41,38 @@ export const useDeliveryStore = defineStore('delivery', {
         this.veiculos = await ManagementApiService.getVeiculos();
         this.error = null;
       } catch (err: any) {
-        this.error = 'Erro ao carregar veículos: ' + (err.message || 'Erro desconhecido');
+        this.error = 'Erro ao carregar veículos: ' + (err.message || '');
+      } finally {
+        this.loading = false;
+      }
+    },
+
+    async fetchMotoristas() {
+      this.loading = true;
+      try {
+        this.motoristas = await ManagementApiService.getMotoristas();
+        this.error = null;
+      } catch (err: any) {
+        this.error = 'Erro ao carregar motoristas: ' + (err.message || '');
       } finally {
         this.loading = false;
       }
     },
 
     async loadInitialData() {
-      await Promise.all([this.fetchEnderecos(), this.fetchVeiculos()]);
+      await Promise.all([this.fetchEnderecos(), this.fetchVeiculos(), this.fetchMotoristas()]);
+    },
+
+    async addMotorista(motorista: Motorista) {
+      this.loading = true;
+      try {
+        await ManagementApiService.createMotorista(motorista);
+        await this.fetchMotoristas();
+      } catch (err: any) {
+        this.error = 'Erro ao criar motorista: ' + (err.message || '');
+      } finally {
+        this.loading = false;
+      }
     },
 
     async addEndereco(endereco: Endereco) {
@@ -60,8 +80,8 @@ export const useDeliveryStore = defineStore('delivery', {
       try {
         await ManagementApiService.createEndereco(endereco);
         await this.fetchEnderecos(); // Recarrega a lista oficial do servidor
-      } catch (err: any) {
-        this.error = 'Erro ao criar endereço: ' + (err.message || '');
+        } catch (err: any) {
+        this.error = 'Erro ao criar endereco: ' + (err.message || '');
       } finally {
         this.loading = false;
       }
@@ -140,11 +160,15 @@ export const useDeliveryStore = defineStore('delivery', {
     enderecosPendentes: (state) => {
       return state.enderecos.filter(e => e.status === 'pendente' || !e.status);
     },
-    veiculosComRotas: (state) => {
+    veiculosComRotas: (state: { veiculos: any[]; motoristas: any[]; enderecos: any[]; }) => {
       return state.veiculos.map(v => ({
         ...v,
-        enderecos: state.enderecos.filter(e => e.status === 'em rota' && (e as any).veiculo_id === v.id)
+        motorista: state.motoristas.find(m => m.id === v.motorista_id),
+        enderecos: state.enderecos
+          .filter(e => (e.status === 'em rota' || e.status === 'em_rota') && (e as any).veiculo_id === v.id)
       }));
     }
   }
 });
+
+

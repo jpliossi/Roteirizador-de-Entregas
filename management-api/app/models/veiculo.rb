@@ -1,4 +1,5 @@
 class Veiculo < ApplicationRecord
+  belongs_to :motorista, optional: true
   validates :placa, :capacidade, :modelo, presence: true
   validates :placa, uniqueness: true
   
