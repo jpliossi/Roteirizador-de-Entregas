@@ -1146,3 +1146,43 @@ Processing by EnderecosController#atualizar_status as HTML
 Completed 200 OK in 481ms (Views: 2.3ms | ActiveRecord: 110.8ms (1 query, 0 cached) | GC: 13.3ms)
 
 
+Started GET "/enderecos" for 172.19.0.1 at 2026-05-13 02:13:24 +0000
+  [1m[36mActiveRecord::SchemaMigration Load (5.5ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='ManagementApi'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (6.3ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='ManagementApi'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (6.7ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='ManagementApi'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (6.9ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='ManagementApi'*/[0m
+Processing by EnderecosController#index as */*
+  [1m[36mEndereco Load (35.4ms)[0m  [1m[34mSELECT "enderecos".* FROM "enderecos" /*action='index',application='ManagementApi',controller='enderecos'*/[0m
+  ↳ app/controllers/enderecos_controller.rb:5:in 'EnderecosController#index'
+Completed 200 OK in 1208ms (Views: 358.6ms | ActiveRecord: 46.3ms (1 query, 0 cached) | GC: 1.7ms)
+
+
+Started GET "/enderecos" for 172.19.0.1 at 2026-05-13 02:26:16 +0000
+Started GET "/veiculos" for 172.19.0.1 at 2026-05-13 02:26:16 +0000
+  [1m[36mActiveRecord::SchemaMigration Load (3.6ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='ManagementApi'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (3.3ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='ManagementApi'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (4.2ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='ManagementApi'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (5.3ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='ManagementApi'*/[0m
+  
+ActionController::RoutingError (No route matches [GET] "/enderecos"):
+  
+Processing by VeiculosController#index as HTML
+  [1m[36mVeiculo Load (10206.7ms)[0m  [1m[34mSELECT "veiculos".* FROM "veiculos" /*action='index',application='ManagementApi',controller='veiculos'*/[0m
+  ↳ app/controllers/veiculos_controller.rb:8:in 'VeiculosController#index'
+Completed 200 OK in 10357ms (Views: -3822.3ms | ActiveRecord: 14033.5ms (1 query, 0 cached) | GC: 23.5ms)
+
+
+Started GET "/enderecos" for 172.19.0.1 at 2026-05-13 02:26:26 +0000
+Started GET "/veiculos" for 172.19.0.1 at 2026-05-13 02:26:26 +0000
+Processing by VeiculosController#index as HTML
+  [1m[36mVeiculo Load (0.6ms)[0m  [1m[34mSELECT "veiculos".* FROM "veiculos" /*action='index',application='ManagementApi',controller='veiculos'*/[0m
+  ↳ app/controllers/veiculos_controller.rb:8:in 'VeiculosController#index'
+Completed 200 OK in 6ms (Views: 4.7ms | ActiveRecord: 0.6ms (1 query, 0 cached) | GC: 0.0ms)
+
+
+Processing by EnderecosController#index as HTML
+  [1m[36mEndereco Load (3.2ms)[0m  [1m[34mSELECT "enderecos".* FROM "enderecos" /*action='index',application='ManagementApi',controller='enderecos'*/[0m
+  ↳ app/controllers/enderecos_controller.rb:5:in 'EnderecosController#index'
+Completed 200 OK in 31ms (Views: 4.4ms | ActiveRecord: 3.2ms (1 query, 0 cached) | GC: 0.0ms)
+
+
