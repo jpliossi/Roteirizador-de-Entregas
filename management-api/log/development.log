@@ -2012,3 +2012,591 @@ app/controllers/veiculos_controller.rb:18:in 'VeiculosController#create'
 Information for cause: NoMethodError (undefined method 'motorista_id=' for an instance of Veiculo):
   
 app/controllers/veiculos_controller.rb:18:in 'VeiculosController#create'
+Started GET "/enderecos" for 172.19.0.1 at 2026-05-13 13:29:00 +0000
+Started GET "/veiculos" for 172.19.0.1 at 2026-05-13 13:29:00 +0000
+Started GET "/motoristas" for 172.19.0.1 at 2026-05-13 13:29:00 +0000
+Processing by VeiculosController#index as HTML
+Processing by MotoristasController#index as HTML
+Processing by EnderecosController#index as HTML
+  [1m[36mMotorista Load (41.9ms)[0m  [1m[34mSELECT "motoristas".* FROM "motoristas" /*action='index',application='ManagementApi',controller='motoristas'*/[0m
+  [1m[36mVeiculo Load (64.3ms)[0m  [1m[34mSELECT "veiculos".* FROM "veiculos" /*action='index',application='ManagementApi',controller='veiculos'*/[0m
+  ↳ app/controllers/motoristas_controller.rb:8:in 'MotoristasController#index'
+  ↳ app/controllers/veiculos_controller.rb:8:in 'VeiculosController#index'
+  [1m[36mEndereco Load (26.0ms)[0m  [1m[34mSELECT "enderecos".* FROM "enderecos" /*action='index',application='ManagementApi',controller='enderecos'*/[0m
+Completed 200 OK in 50ms (Views: -11.7ms | ActiveRecord: 61.0ms (1 query, 0 cached) | GC: 0.0ms)
+
+
+Completed 200 OK in 77ms (Views: -10.8ms | ActiveRecord: 87.0ms (1 query, 0 cached) | GC: 0.0ms)
+
+
+  ↳ app/controllers/enderecos_controller.rb:5:in 'EnderecosController#index'
+Completed 200 OK in 37ms (Views: 1.1ms | ActiveRecord: 34.9ms (1 query, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/veiculos" for 172.19.0.1 at 2026-05-13 13:29:00 +0000
+Started GET "/enderecos" for 172.19.0.1 at 2026-05-13 13:29:00 +0000
+Processing by VeiculosController#index as HTML
+  [1m[36mVeiculo Load (0.8ms)[0m  [1m[34mSELECT "veiculos".* FROM "veiculos" /*action='index',application='ManagementApi',controller='veiculos'*/[0m
+  ↳ app/controllers/veiculos_controller.rb:8:in 'VeiculosController#index'
+Completed 200 OK in 5ms (Views: 3.6ms | ActiveRecord: 0.8ms (1 query, 0 cached) | GC: 0.0ms)
+
+
+Processing by EnderecosController#index as HTML
+  [1m[36mEndereco Load (0.5ms)[0m  [1m[34mSELECT "enderecos".* FROM "enderecos" /*action='index',application='ManagementApi',controller='enderecos'*/[0m
+  ↳ app/controllers/enderecos_controller.rb:5:in 'EnderecosController#index'
+Completed 200 OK in 3ms (Views: 2.4ms | ActiveRecord: 0.4ms (1 query, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/enderecos" for 172.19.0.1 at 2026-05-13 13:30:46 +0000
+Processing by EnderecosController#index as */*
+  [1m[36mEndereco Load (1.3ms)[0m  [1m[34mSELECT "enderecos".* FROM "enderecos" /*action='index',application='ManagementApi',controller='enderecos'*/[0m
+  ↳ app/controllers/enderecos_controller.rb:5:in 'EnderecosController#index'
+Completed 200 OK in 7ms (Views: 4.5ms | ActiveRecord: 1.3ms (1 query, 0 cached) | GC: 0.0ms)
+
+
+Started POST "/enderecos" for 172.19.0.1 at 2026-05-13 13:31:12 +0000
+Processing by EnderecosController#create as */*
+  Parameters: {"rua" => "Av. Afonso Pena", "numero" => "123", "bairro" => "Centro", "cidade" => "Campo Grande", "estado" => "MS", "latitude" => -20.4621, "longitude" => -54.6112, "status" => "pendente", "endereco" => {"rua" => "Av. Afonso Pena", "numero" => "123", "cidade" => "Campo Grande", "estado" => "MS", "latitude" => -20.4621, "longitude" => -54.6112, "status" => "pendente"}}
+  [1m[36mTRANSACTION (0.6ms)[0m  [1m[35mBEGIN /*action='create',application='ManagementApi',controller='enderecos'*/[0m
+  ↳ app/controllers/enderecos_controller.rb:11:in 'EnderecosController#create'
+  [1m[36mEndereco Create (10.6ms)[0m  [1m[32mINSERT INTO "enderecos" ("rua", "numero", "cidade", "estado", "cep", "latitude", "longitude", "status", "created_at", "updated_at") VALUES ('Av. Afonso Pena', '123', 'Campo Grande', 'MS', NULL, -20.4621, -54.6112, 'pendente', '2026-05-13 13:31:12.610695', '2026-05-13 13:31:12.610695') RETURNING "id" /*action='create',application='ManagementApi',controller='enderecos'*/[0m
+  ↳ app/controllers/enderecos_controller.rb:11:in 'EnderecosController#create'
+  [1m[36mTRANSACTION (3.7ms)[0m  [1m[35mCOMMIT /*action='create',application='ManagementApi',controller='enderecos'*/[0m
+  ↳ app/controllers/enderecos_controller.rb:11:in 'EnderecosController#create'
+Completed 201 Created in 50ms (Views: 1.5ms | ActiveRecord: 14.8ms (1 query, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/enderecos" for 172.19.0.1 at 2026-05-13 13:31:19 +0000
+Processing by EnderecosController#index as */*
+  Parameters: {"rua" => "Av. Afonso Pena", "numero" => "123", "bairro" => "Centro", "cidade" => "Campo Grande", "estado" => "MS", "latitude" => -20.4621, "longitude" => -54.6112, "status" => "pendente", "endereco" => {"rua" => "Av. Afonso Pena", "numero" => "123", "cidade" => "Campo Grande", "estado" => "MS", "latitude" => -20.4621, "longitude" => -54.6112, "status" => "pendente"}}
+  [1m[36mEndereco Load (0.8ms)[0m  [1m[34mSELECT "enderecos".* FROM "enderecos" /*action='index',application='ManagementApi',controller='enderecos'*/[0m
+  ↳ app/controllers/enderecos_controller.rb:5:in 'EnderecosController#index'
+Completed 200 OK in 6ms (Views: 4.8ms | ActiveRecord: 0.8ms (1 query, 0 cached) | GC: 0.0ms)
+
+
+Started PATCH "/enderecos/:id" for 172.19.0.1 at 2026-05-13 13:31:55 +0000
+  
+AbstractController::ActionNotFound (The action 'update' could not be found for EnderecosController):
+  
+actionpack (8.1.3) lib/abstract_controller/base.rb:149:in 'AbstractController::Base#process'
+actionpack (8.1.3) lib/action_controller/metal.rb:252:in 'ActionController::Metal#dispatch'
+actionpack (8.1.3) lib/action_controller/metal.rb:335:in 'ActionController::Metal.dispatch'
+actionpack (8.1.3) lib/action_dispatch/routing/route_set.rb:65:in 'ActionDispatch::Routing::RouteSet::Dispatcher#dispatch'
+actionpack (8.1.3) lib/action_dispatch/routing/route_set.rb:50:in 'ActionDispatch::Routing::RouteSet::Dispatcher#serve'
+actionpack (8.1.3) lib/action_dispatch/journey/router.rb:35:in 'block in ActionDispatch::Journey::Router#serve'
+actionpack (8.1.3) lib/action_dispatch/journey/router.rb:86:in 'block in ActionDispatch::Journey::Router#recognize'
+actionpack (8.1.3) lib/action_dispatch/journey/router.rb:66:in 'Array#each'
+actionpack (8.1.3) lib/action_dispatch/journey/router.rb:66:in 'ActionDispatch::Journey::Router#recognize'
+actionpack (8.1.3) lib/action_dispatch/journey/router.rb:31:in 'ActionDispatch::Journey::Router#serve'
+actionpack (8.1.3) lib/action_dispatch/routing/route_set.rb:906:in 'ActionDispatch::Routing::RouteSet#call'
+railties (8.1.3) lib/rails/engine/lazy_route_set.rb:60:in 'Rails::Engine::LazyRouteSet#call'
+rack (3.2.6) lib/rack/etag.rb:29:in 'Rack::ETag#call'
+rack (3.2.6) lib/rack/conditional_get.rb:44:in 'Rack::ConditionalGet#call'
+rack (3.2.6) lib/rack/head.rb:15:in 'Rack::Head#call'
+activerecord (8.1.3) lib/active_record/migration.rb:671:in 'ActiveRecord::Migration::CheckPending#call'
+actionpack (8.1.3) lib/action_dispatch/middleware/callbacks.rb:31:in 'block in ActionDispatch::Callbacks#call'
+activesupport (8.1.3) lib/active_support/callbacks.rb:101:in 'ActiveSupport::Callbacks#run_callbacks'
+actionpack (8.1.3) lib/action_dispatch/middleware/callbacks.rb:30:in 'ActionDispatch::Callbacks#call'
+actionpack (8.1.3) lib/action_dispatch/middleware/executor.rb:20:in 'ActionDispatch::Executor#call'
+actionpack (8.1.3) lib/action_dispatch/middleware/actionable_exceptions.rb:18:in 'ActionDispatch::ActionableExceptions#call'
+actionpack (8.1.3) lib/action_dispatch/middleware/debug_exceptions.rb:31:in 'ActionDispatch::DebugExceptions#call'
+actionpack (8.1.3) lib/action_dispatch/middleware/show_exceptions.rb:32:in 'ActionDispatch::ShowExceptions#call'
+railties (8.1.3) lib/rails/rack/logger.rb:41:in 'Rails::Rack::Logger#call_app'
+railties (8.1.3) lib/rails/rack/logger.rb:29:in 'Rails::Rack::Logger#call'
+actionpack (8.1.3) lib/action_dispatch/middleware/remote_ip.rb:98:in 'ActionDispatch::RemoteIp#call'
+actionpack (8.1.3) lib/action_dispatch/middleware/request_id.rb:34:in 'ActionDispatch::RequestId#call'
+rack (3.2.6) lib/rack/runtime.rb:24:in 'Rack::Runtime#call'
+activesupport (8.1.3) lib/active_support/cache/strategy/local_cache_middleware.rb:30:in 'ActiveSupport::Cache::Strategy::LocalCache::Middleware#call'
+actionpack (8.1.3) lib/action_dispatch/middleware/server_timing.rb:61:in 'block in ActionDispatch::ServerTiming#call'
+actionpack (8.1.3) lib/action_dispatch/middleware/server_timing.rb:26:in 'ActionDispatch::ServerTiming::Subscriber#collect_events'
+actionpack (8.1.3) lib/action_dispatch/middleware/server_timing.rb:60:in 'ActionDispatch::ServerTiming#call'
+actionpack (8.1.3) lib/action_dispatch/middleware/executor.rb:20:in 'ActionDispatch::Executor#call'
+actionpack (8.1.3) lib/action_dispatch/middleware/static.rb:27:in 'ActionDispatch::Static#call'
+rack (3.2.6) lib/rack/sendfile.rb:131:in 'Rack::Sendfile#call'
+rack-cors (3.0.0) lib/rack/cors.rb:102:in 'Rack::Cors#call'
+railties (8.1.3) lib/rails/engine.rb:534:in 'Rails::Engine#call'
+puma (8.0.1) lib/puma/configuration.rb:305:in 'Puma::Configuration::ConfigMiddleware#call'
+puma (8.0.1) lib/puma/response.rb:79:in 'block in Puma::Response#handle_request'
+puma (8.0.1) lib/puma/thread_pool.rb:434:in 'Puma::ThreadPool#with_force_shutdown'
+puma (8.0.1) lib/puma/response.rb:78:in 'Puma::Response#handle_request'
+puma (8.0.1) lib/puma/server.rb:508:in 'Puma::Server#process_client'
+puma (8.0.1) lib/puma/server.rb:263:in 'block in Puma::Server#run'
+puma (8.0.1) lib/puma/thread_pool.rb:246:in 'block in Puma::ThreadPool#spawn_thread'
+Started GET "/" for 172.19.0.1 at 2026-05-13 14:31:04 +0000
+Processing by Rails::WelcomeController#index as HTML
+  Rendering /usr/local/bundle/ruby/4.0.0/gems/railties-8.1.3/libtemplates/rails/welcome/index.html.erb
+  Rendered /usr/local/bundle/ruby/4.0.0/gems/railties-8.1.3/libtemplates/rails/welcome/index.html.erb (Duration: 13.3ms | GC: 0.0ms)
+Completed 200 OK in 212ms (Views: 53.7ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/icon.png" for 172.19.0.1 at 2026-05-13 14:31:05 +0000
+  
+ActionController::RoutingError (No route matches [GET] "/icon.png"):
+  
+Started GET "/icon.png" for 172.19.0.1 at 2026-05-13 14:31:05 +0000
+  
+ActionController::RoutingError (No route matches [GET] "/icon.png"):
+  
+Started GET "/enderecos" for 172.19.0.1 at 2026-05-13 14:31:11 +0000
+Processing by EnderecosController#index as HTML
+  [1m[36mEndereco Load (85.4ms)[0m  [1m[34mSELECT "enderecos".* FROM "enderecos" /*action='index',application='ManagementApi',controller='enderecos'*/[0m
+  ↳ app/controllers/enderecos_controller.rb:5:in 'EnderecosController#index'
+Completed 200 OK in 119ms (Views: 1.6ms | ActiveRecord: 113.9ms (1 query, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/favicon.ico" for 172.19.0.1 at 2026-05-13 14:31:11 +0000
+  
+ActionController::RoutingError (No route matches [GET] "/favicon.ico"):
+  
+Started GET "/veiculos" for 172.19.0.1 at 2026-05-13 14:31:18 +0000
+Processing by VeiculosController#index as HTML
+  [1m[36mVeiculo Load (4.0ms)[0m  [1m[34mSELECT "veiculos".* FROM "veiculos" /*action='index',application='ManagementApi',controller='veiculos'*/[0m
+  ↳ app/controllers/veiculos_controller.rb:8:in 'VeiculosController#index'
+Completed 200 OK in 13ms (Views: 8.2ms | ActiveRecord: 4.0ms (1 query, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/enderecos" for 172.19.0.1 at 2026-05-13 14:33:12 +0000
+Processing by EnderecosController#index as */*
+  [1m[36mEndereco Load (0.7ms)[0m  [1m[34mSELECT "enderecos".* FROM "enderecos" /*action='index',application='ManagementApi',controller='enderecos'*/[0m
+  ↳ app/controllers/enderecos_controller.rb:5:in 'EnderecosController#index'
+Completed 200 OK in 5ms (Views: 3.9ms | ActiveRecord: 0.7ms (1 query, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/veiculos" for 172.19.0.1 at 2026-05-13 14:46:52 +0000
+Started GET "/enderecos" for 172.19.0.1 at 2026-05-13 14:46:52 +0000
+Started GET "/motoristas" for 172.19.0.1 at 2026-05-13 14:46:52 +0000
+Processing by EnderecosController#index as HTML
+  [1m[36mEndereco Load (0.7ms)[0m  [1m[34mSELECT "enderecos".* FROM "enderecos" /*action='index',application='ManagementApi',controller='enderecos'*/[0m
+  ↳ app/controllers/enderecos_controller.rb:5:in 'EnderecosController#index'
+Completed 200 OK in 11ms (Views: 9.7ms | ActiveRecord: 0.7ms (1 query, 0 cached) | GC: 0.0ms)
+
+
+Processing by VeiculosController#index as HTML
+  [1m[36mVeiculo Load (0.6ms)[0m  [1m[34mSELECT "veiculos".* FROM "veiculos" /*action='index',application='ManagementApi',controller='veiculos'*/[0m
+  ↳ app/controllers/veiculos_controller.rb:8:in 'VeiculosController#index'
+Started GET "/enderecos" for 172.19.0.1 at 2026-05-13 14:46:52 +0000
+Completed 200 OK in 15ms (Views: 14.4ms | ActiveRecord: 0.6ms (1 query, 0 cached) | GC: 0.0ms)
+
+
+Processing by MotoristasController#index as HTML
+  [1m[36mMotorista Load (1.8ms)[0m  [1m[34mSELECT "motoristas".* FROM "motoristas" /*action='index',application='ManagementApi',controller='motoristas'*/[0m
+Started GET "/veiculos" for 172.19.0.1 at 2026-05-13 14:46:52 +0000
+  ↳ app/controllers/motoristas_controller.rb:8:in 'MotoristasController#index'
+Completed 200 OK in 13ms (Views: 10.9ms | ActiveRecord: 1.8ms (1 query, 0 cached) | GC: 0.0ms)
+
+
+Processing by EnderecosController#index as HTML
+  [1m[36mEndereco Load (0.5ms)[0m  [1m[34mSELECT "enderecos".* FROM "enderecos" /*action='index',application='ManagementApi',controller='enderecos'*/[0m
+  ↳ app/controllers/enderecos_controller.rb:5:in 'EnderecosController#index'
+Completed 200 OK in 6ms (Views: 5.7ms | ActiveRecord: 0.5ms (1 query, 0 cached) | GC: 0.0ms)
+
+
+Processing by VeiculosController#index as HTML
+  [1m[36mVeiculo Load (0.4ms)[0m  [1m[34mSELECT "veiculos".* FROM "veiculos" /*action='index',application='ManagementApi',controller='veiculos'*/[0m
+  ↳ app/controllers/veiculos_controller.rb:8:in 'VeiculosController#index'
+Completed 200 OK in 6ms (Views: 5.5ms | ActiveRecord: 0.4ms (1 query, 0 cached) | GC: 0.0ms)
+
+
+Started POST "/motoristas" for 172.19.0.1 at 2026-05-13 14:47:56 +0000
+Processing by MotoristasController#create as HTML
+  Parameters: {"motorista" => {"nome" => "Vini", "cpf" => "56789430232"}}
+  [1m[36mTRANSACTION (0.5ms)[0m  [1m[35mBEGIN /*action='create',application='ManagementApi',controller='motoristas'*/[0m
+  ↳ app/controllers/motoristas_controller.rb:20:in 'MotoristasController#create'
+  [1m[36mMotorista Exists? (10.0ms)[0m  [1m[34mSELECT 1 AS one FROM "motoristas" WHERE "motoristas"."cpf" = '56789430232' LIMIT 1 /*action='create',application='ManagementApi',controller='motoristas'*/[0m
+  ↳ app/controllers/motoristas_controller.rb:20:in 'MotoristasController#create'
+  [1m[36mMotorista Create (2.8ms)[0m  [1m[32mINSERT INTO "motoristas" ("nome", "cpf", "created_at", "updated_at") VALUES ('Vini', '56789430232', '2026-05-13 14:47:56.320366', '2026-05-13 14:47:56.320366') RETURNING "id" /*action='create',application='ManagementApi',controller='motoristas'*/[0m
+  ↳ app/controllers/motoristas_controller.rb:20:in 'MotoristasController#create'
+  [1m[36mTRANSACTION (2.5ms)[0m  [1m[35mCOMMIT /*action='create',application='ManagementApi',controller='motoristas'*/[0m
+  ↳ app/controllers/motoristas_controller.rb:20:in 'MotoristasController#create'
+Completed 201 Created in 46ms (Views: 3.8ms | ActiveRecord: 15.8ms (2 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/motoristas" for 172.19.0.1 at 2026-05-13 14:47:56 +0000
+Processing by MotoristasController#index as HTML
+  [1m[36mMotorista Load (0.5ms)[0m  [1m[34mSELECT "motoristas".* FROM "motoristas" /*action='index',application='ManagementApi',controller='motoristas'*/[0m
+  ↳ app/controllers/motoristas_controller.rb:8:in 'MotoristasController#index'
+Completed 200 OK in 5ms (Views: 4.1ms | ActiveRecord: 0.5ms (1 query, 0 cached) | GC: 0.0ms)
+
+
+Started POST "/veiculos" for 172.19.0.1 at 2026-05-13 14:49:04 +0000
+Processing by VeiculosController#create as HTML
+  Parameters: {"veiculo" => {"placa" => "ghj7890", "modelo" => "Gol", "capacidade" => 4, "motorista_id" => 256}}
+Completed 500 Internal Server Error in 6ms (ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+  
+ActiveModel::UnknownAttributeError (unknown attribute 'motorista_id' for Veiculo.)
+Caused by: NoMethodError (undefined method 'motorista_id=' for an instance of Veiculo)
+
+Information for: ActiveModel::UnknownAttributeError (unknown attribute 'motorista_id' for Veiculo.):
+  
+app/controllers/veiculos_controller.rb:18:in 'VeiculosController#create'
+
+Information for cause: NoMethodError (undefined method 'motorista_id=' for an instance of Veiculo):
+  
+app/controllers/veiculos_controller.rb:18:in 'VeiculosController#create'
+Started GET "/enderecos" for 172.19.0.1 at 2026-05-13 14:49:12 +0000
+Processing by EnderecosController#index as HTML
+  [1m[36mEndereco Load (1.1ms)[0m  [1m[34mSELECT "enderecos".* FROM "enderecos" /*action='index',application='ManagementApi',controller='enderecos'*/[0m
+  ↳ app/controllers/enderecos_controller.rb:5:in 'EnderecosController#index'
+Completed 200 OK in 8ms (Views: 6.3ms | ActiveRecord: 1.1ms (1 query, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/veiculos" for 172.19.0.1 at 2026-05-13 14:49:15 +0000
+Started GET "/enderecos" for 172.19.0.1 at 2026-05-13 14:49:15 +0000
+Started GET "/motoristas" for 172.19.0.1 at 2026-05-13 14:49:15 +0000
+Processing by MotoristasController#index as HTML
+  [1m[36mMotorista Load (0.5ms)[0m  [1m[34mSELECT "motoristas".* FROM "motoristas" /*action='index',application='ManagementApi',controller='motoristas'*/[0m
+  ↳ app/controllers/motoristas_controller.rb:8:in 'MotoristasController#index'
+Completed 200 OK in 5ms (Views: 4.1ms | ActiveRecord: 0.5ms (1 query, 0 cached) | GC: 0.1ms)
+
+
+Processing by EnderecosController#index as HTML
+  [1m[36mEndereco Load (0.5ms)[0m  [1m[34mSELECT "enderecos".* FROM "enderecos" /*action='index',application='ManagementApi',controller='enderecos'*/[0m
+  ↳ app/controllers/enderecos_controller.rb:5:in 'EnderecosController#index'
+Completed 200 OK in 5ms (Views: 4.7ms | ActiveRecord: 0.5ms (1 query, 0 cached) | GC: 0.0ms)
+
+
+Processing by VeiculosController#index as HTML
+Started GET "/enderecos" for 172.19.0.1 at 2026-05-13 14:49:15 +0000
+  [1m[36mVeiculo Load (0.6ms)[0m  [1m[34mSELECT "veiculos".* FROM "veiculos" /*action='index',application='ManagementApi',controller='veiculos'*/[0m
+  ↳ app/controllers/veiculos_controller.rb:8:in 'VeiculosController#index'
+Completed 200 OK in 5ms (Views: 3.7ms | ActiveRecord: 0.6ms (1 query, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/veiculos" for 172.19.0.1 at 2026-05-13 14:49:15 +0000
+Processing by EnderecosController#index as HTML
+  [1m[36mEndereco Load (0.4ms)[0m  [1m[34mSELECT "enderecos".* FROM "enderecos" /*action='index',application='ManagementApi',controller='enderecos'*/[0m
+  ↳ app/controllers/enderecos_controller.rb:5:in 'EnderecosController#index'
+Completed 200 OK in 4ms (Views: 3.5ms | ActiveRecord: 0.4ms (1 query, 0 cached) | GC: 0.1ms)
+
+
+Processing by VeiculosController#index as HTML
+  [1m[36mVeiculo Load (0.5ms)[0m  [1m[34mSELECT "veiculos".* FROM "veiculos" /*action='index',application='ManagementApi',controller='veiculos'*/[0m
+  ↳ app/controllers/veiculos_controller.rb:8:in 'VeiculosController#index'
+Completed 200 OK in 6ms (Views: 5.0ms | ActiveRecord: 0.5ms (1 query, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/enderecos" for 172.19.0.1 at 2026-05-13 14:51:12 +0000
+Processing by EnderecosController#index as HTML
+  [1m[36mEndereco Load (0.8ms)[0m  [1m[34mSELECT "enderecos".* FROM "enderecos" /*action='index',application='ManagementApi',controller='enderecos'*/[0m
+  ↳ app/controllers/enderecos_controller.rb:5:in 'EnderecosController#index'
+Completed 200 OK in 6ms (Views: 5.2ms | ActiveRecord: 0.8ms (1 query, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/veiculos" for 172.19.0.1 at 2026-05-13 14:52:55 +0000
+Started GET "/enderecos" for 172.19.0.1 at 2026-05-13 14:52:55 +0000
+Started GET "/motoristas" for 172.19.0.1 at 2026-05-13 14:52:55 +0000
+Processing by VeiculosController#index as HTML
+  [1m[36mVeiculo Load (0.6ms)[0m  [1m[34mSELECT "veiculos".* FROM "veiculos" /*action='index',application='ManagementApi',controller='veiculos'*/[0m
+  ↳ app/controllers/veiculos_controller.rb:8:in 'VeiculosController#index'
+Completed 200 OK in 6ms (Views: 5.0ms | ActiveRecord: 0.6ms (1 query, 0 cached) | GC: 0.0ms)
+
+
+Processing by EnderecosController#index as HTML
+Started GET "/veiculos" for 172.19.0.1 at 2026-05-13 14:52:56 +0000
+  [1m[36mEndereco Load (1.3ms)[0m  [1m[34mSELECT "enderecos".* FROM "enderecos" /*action='index',application='ManagementApi',controller='enderecos'*/[0m
+  ↳ app/controllers/enderecos_controller.rb:5:in 'EnderecosController#index'
+Completed 200 OK in 11ms (Views: 9.5ms | ActiveRecord: 1.3ms (1 query, 0 cached) | GC: 0.0ms)
+
+
+Processing by MotoristasController#index as HTML
+Started GET "/enderecos" for 172.19.0.1 at 2026-05-13 14:52:56 +0000
+  [1m[36mMotorista Load (0.9ms)[0m  [1m[34mSELECT "motoristas".* FROM "motoristas" /*action='index',application='ManagementApi',controller='motoristas'*/[0m
+  ↳ app/controllers/motoristas_controller.rb:8:in 'MotoristasController#index'
+Completed 200 OK in 12ms (Views: 10.8ms | ActiveRecord: 0.9ms (1 query, 0 cached) | GC: 0.8ms)
+
+
+Processing by VeiculosController#index as HTML
+  [1m[36mVeiculo Load (0.5ms)[0m  [1m[34mSELECT "veiculos".* FROM "veiculos" /*action='index',application='ManagementApi',controller='veiculos'*/[0m
+  ↳ app/controllers/veiculos_controller.rb:8:in 'VeiculosController#index'
+Completed 200 OK in 5ms (Views: 4.5ms | ActiveRecord: 0.4ms (1 query, 0 cached) | GC: 0.0ms)
+
+
+Processing by EnderecosController#index as HTML
+  [1m[36mEndereco Load (0.6ms)[0m  [1m[34mSELECT "enderecos".* FROM "enderecos" /*action='index',application='ManagementApi',controller='enderecos'*/[0m
+  ↳ app/controllers/enderecos_controller.rb:5:in 'EnderecosController#index'
+Completed 200 OK in 5ms (Views: 4.5ms | ActiveRecord: 0.6ms (1 query, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/veiculos" for 172.19.0.1 at 2026-05-13 14:52:57 +0000
+Started GET "/enderecos" for 172.19.0.1 at 2026-05-13 14:52:57 +0000
+Started GET "/motoristas" for 172.19.0.1 at 2026-05-13 14:52:57 +0000
+Processing by MotoristasController#index as HTML
+  [1m[36mMotorista Load (0.6ms)[0m  [1m[34mSELECT "motoristas".* FROM "motoristas" /*action='index',application='ManagementApi',controller='motoristas'*/[0m
+  ↳ app/controllers/motoristas_controller.rb:8:in 'MotoristasController#index'
+Completed 200 OK in 4ms (Views: 3.6ms | ActiveRecord: 0.6ms (1 query, 0 cached) | GC: 0.0ms)
+
+
+Processing by VeiculosController#index as HTML
+  [1m[36mVeiculo Load (1.1ms)[0m  [1m[34mSELECT "veiculos".* FROM "veiculos" /*action='index',application='ManagementApi',controller='veiculos'*/[0m
+  ↳ app/controllers/veiculos_controller.rb:8:in 'VeiculosController#index'
+Completed 200 OK in 12ms (Views: 10.6ms | ActiveRecord: 1.0ms (1 query, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/veiculos" for 172.19.0.1 at 2026-05-13 14:52:57 +0000
+Processing by EnderecosController#index as HTML
+  [1m[36mEndereco Load (0.5ms)[0m  [1m[34mSELECT "enderecos".* FROM "enderecos" /*action='index',application='ManagementApi',controller='enderecos'*/[0m
+  ↳ app/controllers/enderecos_controller.rb:5:in 'EnderecosController#index'
+Completed 200 OK in 6ms (Views: 5.2ms | ActiveRecord: 0.5ms (1 query, 0 cached) | GC: 0.5ms)
+
+
+Started GET "/enderecos" for 172.19.0.1 at 2026-05-13 14:52:57 +0000
+Processing by VeiculosController#index as HTML
+  [1m[36mVeiculo Load (1.2ms)[0m  [1m[34mSELECT "veiculos".* FROM "veiculos" /*action='index',application='ManagementApi',controller='veiculos'*/[0m
+  ↳ app/controllers/veiculos_controller.rb:8:in 'VeiculosController#index'
+Completed 200 OK in 12ms (Views: 10.0ms | ActiveRecord: 1.2ms (1 query, 0 cached) | GC: 0.0ms)
+
+
+Processing by EnderecosController#index as HTML
+  [1m[36mEndereco Load (0.6ms)[0m  [1m[34mSELECT "enderecos".* FROM "enderecos" /*action='index',application='ManagementApi',controller='enderecos'*/[0m
+  ↳ app/controllers/enderecos_controller.rb:5:in 'EnderecosController#index'
+Completed 200 OK in 7ms (Views: 6.2ms | ActiveRecord: 0.6ms (1 query, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/enderecos" for 172.19.0.1 at 2026-05-13 14:53:02 +0000
+Processing by EnderecosController#index as HTML
+  [1m[36mEndereco Load (0.6ms)[0m  [1m[34mSELECT "enderecos".* FROM "enderecos" /*action='index',application='ManagementApi',controller='enderecos'*/[0m
+  ↳ app/controllers/enderecos_controller.rb:5:in 'EnderecosController#index'
+Completed 200 OK in 5ms (Views: 4.1ms | ActiveRecord: 0.6ms (1 query, 0 cached) | GC: 0.2ms)
+
+
+Started GET "/favicon.ico" for 172.19.0.1 at 2026-05-13 14:53:02 +0000
+  
+ActionController::RoutingError (No route matches [GET] "/favicon.ico"):
+  
+Started GET "/veiculos" for 172.19.0.1 at 2026-05-13 14:53:36 +0000
+Processing by VeiculosController#index as HTML
+  [1m[36mVeiculo Load (1.2ms)[0m  [1m[34mSELECT "veiculos".* FROM "veiculos" /*action='index',application='ManagementApi',controller='veiculos'*/[0m
+  ↳ app/controllers/veiculos_controller.rb:8:in 'VeiculosController#index'
+Completed 200 OK in 9ms (Views: 7.1ms | ActiveRecord: 1.2ms (1 query, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/enderecos" for 172.19.0.1 at 2026-05-13 16:28:53 +0000
+Started GET "/veiculos" for 172.19.0.1 at 2026-05-13 16:28:53 +0000
+Started GET "/motoristas" for 172.19.0.1 at 2026-05-13 16:28:53 +0000
+Processing by MotoristasController#index as HTML
+  [1m[36mMotorista Load (1.4ms)[0m  [1m[34mSELECT "motoristas".* FROM "motoristas" /*action='index',application='ManagementApi',controller='motoristas'*/[0m
+Processing by EnderecosController#index as HTML
+  ↳ app/controllers/motoristas_controller.rb:8:in 'MotoristasController#index'
+Completed 200 OK in 423ms (Views: 231.8ms | ActiveRecord: 23.9ms (1 query, 0 cached) | GC: 0.0ms)
+
+
+  [1m[36mEndereco Load (76.7ms)[0m  [1m[34mSELECT "enderecos".* FROM "enderecos" /*action='index',application='ManagementApi',controller='enderecos'*/[0m
+Processing by VeiculosController#index as HTML
+  ↳ app/controllers/enderecos_controller.rb:5:in 'EnderecosController#index'
+  [1m[36mVeiculo Load (0.7ms)[0m  [1m[34mSELECT "veiculos".* FROM "veiculos" /*action='index',application='ManagementApi',controller='veiculos'*/[0m
+  ↳ app/controllers/veiculos_controller.rb:8:in 'VeiculosController#index'
+Completed 200 OK in 471ms (Views: 257.0ms | ActiveRecord: 109.7ms (1 query, 0 cached) | GC: 10.0ms)
+
+
+Completed 200 OK in 126ms (Views: 21.2ms | ActiveRecord: 8.7ms (1 query, 0 cached) | GC: 1.8ms)
+
+
+Started GET "/enderecos" for 172.19.0.1 at 2026-05-13 16:28:57 +0000
+Started GET "/veiculos" for 172.19.0.1 at 2026-05-13 16:28:57 +0000
+Processing by VeiculosController#index as HTML
+  [1m[36mVeiculo Load (0.6ms)[0m  [1m[34mSELECT "veiculos".* FROM "veiculos" /*action='index',application='ManagementApi',controller='veiculos'*/[0m
+  ↳ app/controllers/veiculos_controller.rb:8:in 'VeiculosController#index'
+Completed 200 OK in 5ms (Views: 4.1ms | ActiveRecord: 0.6ms (1 query, 0 cached) | GC: 0.0ms)
+
+
+Processing by EnderecosController#index as HTML
+  [1m[36mEndereco Load (0.6ms)[0m  [1m[34mSELECT "enderecos".* FROM "enderecos" /*action='index',application='ManagementApi',controller='enderecos'*/[0m
+  ↳ app/controllers/enderecos_controller.rb:5:in 'EnderecosController#index'
+Completed 200 OK in 6ms (Views: 5.5ms | ActiveRecord: 0.6ms (1 query, 0 cached) | GC: 0.0ms)
+
+
+Started POST "/enderecos" for 172.19.0.1 at 2026-05-13 16:29:27 +0000
+Processing by EnderecosController#create as HTML
+  Parameters: {"endereco" => {"rua" => "Rua das Flores", "numero" => "123", "cidade" => "Campo Grande ", "estado" => "MS", "cep" => "79060040", "latitude" => 0, "longitude" => 0, "status" => "pendente"}}
+  [1m[36mTRANSACTION (0.4ms)[0m  [1m[35mBEGIN /*action='create',application='ManagementApi',controller='enderecos'*/[0m
+  ↳ app/controllers/enderecos_controller.rb:12:in 'EnderecosController#create'
+  [1m[36mEndereco Create (6.0ms)[0m  [1m[32mINSERT INTO "enderecos" ("rua", "numero", "cidade", "estado", "cep", "latitude", "longitude", "status", "created_at", "updated_at") VALUES ('Rua das Flores', '123', 'Campo Grande ', 'MS', '79060040', 0.0, 0.0, 'pendente', '2026-05-13 16:29:31.379426', '2026-05-13 16:29:31.379426') RETURNING "id" /*action='create',application='ManagementApi',controller='enderecos'*/[0m
+  ↳ app/controllers/enderecos_controller.rb:12:in 'EnderecosController#create'
+  [1m[36mTRANSACTION (4.4ms)[0m  [1m[35mCOMMIT /*action='create',application='ManagementApi',controller='enderecos'*/[0m
+  ↳ app/controllers/enderecos_controller.rb:12:in 'EnderecosController#create'
+Completed 201 Created in 3408ms (Views: 0.6ms | ActiveRecord: 10.7ms (1 query, 0 cached) | GC: 13.6ms)
+
+
+Started GET "/enderecos" for 172.19.0.1 at 2026-05-13 16:29:31 +0000
+Processing by EnderecosController#index as HTML
+  [1m[36mEndereco Load (0.8ms)[0m  [1m[34mSELECT "enderecos".* FROM "enderecos" /*action='index',application='ManagementApi',controller='enderecos'*/[0m
+  ↳ app/controllers/enderecos_controller.rb:5:in 'EnderecosController#index'
+Completed 200 OK in 5ms (Views: 3.9ms | ActiveRecord: 0.8ms (1 query, 0 cached) | GC: 0.0ms)
+
+
+Started POST "/veiculos" for 172.19.0.1 at 2026-05-13 16:32:39 +0000
+Processing by VeiculosController#create as HTML
+  Parameters: {"veiculo" => {"placa" => "HRH7337", "modelo" => "Vectra", "capacidade" => 10, "motorista_id" => nil}}
+  [1m[36mTRANSACTION (0.5ms)[0m  [1m[35mBEGIN /*action='create',application='ManagementApi',controller='veiculos'*/[0m
+  ↳ app/controllers/veiculos_controller.rb:20:in 'VeiculosController#create'
+  [1m[36mVeiculo Exists? (6.8ms)[0m  [1m[34mSELECT 1 AS one FROM "veiculos" WHERE "veiculos"."placa" = 'HRH7337' LIMIT 1 /*action='create',application='ManagementApi',controller='veiculos'*/[0m
+  ↳ app/controllers/veiculos_controller.rb:20:in 'VeiculosController#create'
+  [1m[36mVeiculo Create (1.6ms)[0m  [1m[32mINSERT INTO "veiculos" ("placa", "capacidade", "modelo", "status", "created_at", "updated_at", "motorista_id") VALUES ('HRH7337', 10, 'Vectra', NULL, '2026-05-13 16:32:39.797814', '2026-05-13 16:32:39.797814', NULL) RETURNING "id" /*action='create',application='ManagementApi',controller='veiculos'*/[0m
+  ↳ app/controllers/veiculos_controller.rb:20:in 'VeiculosController#create'
+  [1m[36mTRANSACTION (2.6ms)[0m  [1m[35mCOMMIT /*action='create',application='ManagementApi',controller='veiculos'*/[0m
+  ↳ app/controllers/veiculos_controller.rb:20:in 'VeiculosController#create'
+Completed 201 Created in 52ms (Views: 1.0ms | ActiveRecord: 11.4ms (2 queries, 0 cached) | GC: 0.5ms)
+
+
+Started GET "/veiculos" for 172.19.0.1 at 2026-05-13 16:32:39 +0000
+Processing by VeiculosController#index as HTML
+  [1m[36mVeiculo Load (1.0ms)[0m  [1m[34mSELECT "veiculos".* FROM "veiculos" /*action='index',application='ManagementApi',controller='veiculos'*/[0m
+  ↳ app/controllers/veiculos_controller.rb:8:in 'VeiculosController#index'
+Completed 200 OK in 6ms (Views: 5.0ms | ActiveRecord: 0.9ms (1 query, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/veiculos" for 172.19.0.1 at 2026-05-13 16:37:57 +0000
+Started GET "/enderecos" for 172.19.0.1 at 2026-05-13 16:37:57 +0000
+Started GET "/motoristas" for 172.19.0.1 at 2026-05-13 16:37:57 +0000
+Processing by MotoristasController#index as HTML
+Processing by VeiculosController#index as HTML
+Processing by EnderecosController#index as HTML
+  [1m[36mMotorista Load (49.3ms)[0m  [1m[34mSELECT "motoristas".* FROM "motoristas" /*action='index',application='ManagementApi',controller='motoristas'*/[0m
+  ↳ app/controllers/motoristas_controller.rb:8:in 'MotoristasController#index'
+Completed 200 OK in 57ms (Views: -9.6ms | ActiveRecord: 66.0ms (1 query, 0 cached) | GC: 6.3ms)
+
+
+  [1m[36mVeiculo Load (49.0ms)[0m  [1m[34mSELECT "veiculos".* FROM "veiculos" /*action='index',application='ManagementApi',controller='veiculos'*/[0m
+  ↳ app/controllers/veiculos_controller.rb:8:in 'VeiculosController#index'
+Completed 200 OK in 58ms (Views: -7.3ms | ActiveRecord: 65.0ms (1 query, 0 cached) | GC: 6.3ms)
+
+
+  [1m[36mEndereco Load (45.2ms)[0m  [1m[34mSELECT "enderecos".* FROM "enderecos" /*action='index',application='ManagementApi',controller='enderecos'*/[0m
+  ↳ app/controllers/enderecos_controller.rb:5:in 'EnderecosController#index'
+Completed 200 OK in 51ms (Views: -10.2ms | ActiveRecord: 61.0ms (1 query, 0 cached) | GC: 0.9ms)
+
+
+Started POST "/enderecos" for 172.19.0.1 at 2026-05-13 16:42:35 +0000
+Processing by EnderecosController#create as HTML
+  Parameters: {"endereco" => {"rua" => "Rua uricuri", "numero" => "248", "cidade" => "Campo Grande ", "estado" => "Mato Grosso do Sul", "cep" => "79060-040", "latitude" => 0, "longitude" => 0, "status" => "pendente"}}
+  [1m[36mTRANSACTION (0.6ms)[0m  [1m[35mBEGIN /*action='create',application='ManagementApi',controller='enderecos'*/[0m
+  ↳ app/controllers/enderecos_controller.rb:12:in 'EnderecosController#create'
+  [1m[36mEndereco Create (7.3ms)[0m  [1m[32mINSERT INTO "enderecos" ("rua", "numero", "cidade", "estado", "cep", "latitude", "longitude", "status", "created_at", "updated_at") VALUES ('Rua uricuri', '248', 'Campo Grande ', 'Mato Grosso do Sul', '79060-040', 0.0, 0.0, 'pendente', '2026-05-13 16:42:36.136838', '2026-05-13 16:42:36.136838') RETURNING "id" /*action='create',application='ManagementApi',controller='enderecos'*/[0m
+  ↳ app/controllers/enderecos_controller.rb:12:in 'EnderecosController#create'
+  [1m[36mTRANSACTION (3.6ms)[0m  [1m[35mCOMMIT /*action='create',application='ManagementApi',controller='enderecos'*/[0m
+  ↳ app/controllers/enderecos_controller.rb:12:in 'EnderecosController#create'
+Completed 201 Created in 35ms (Views: 0.5ms | ActiveRecord: 11.4ms (1 query, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/enderecos" for 172.19.0.1 at 2026-05-13 16:42:36 +0000
+Processing by EnderecosController#index as HTML
+  [1m[36mEndereco Load (0.8ms)[0m  [1m[34mSELECT "enderecos".* FROM "enderecos" /*action='index',application='ManagementApi',controller='enderecos'*/[0m
+  ↳ app/controllers/enderecos_controller.rb:5:in 'EnderecosController#index'
+Completed 200 OK in 7ms (Views: 6.1ms | ActiveRecord: 0.8ms (1 query, 0 cached) | GC: 0.0ms)
+
+
+Started POST "/enderecos" for 172.19.0.1 at 2026-05-13 16:43:06 +0000
+Processing by EnderecosController#create as HTML
+  Parameters: {"endereco" => {"rua" => "Rua Francisco Bento", "numero" => "206", "cidade" => "Campo Grande ", "estado" => "Mato Grosso do Sul", "cep" => "79003-030", "latitude" => 0, "longitude" => 0, "status" => "pendente"}}
+  [1m[36mTRANSACTION (0.6ms)[0m  [1m[35mBEGIN /*action='create',application='ManagementApi',controller='enderecos'*/[0m
+  ↳ app/controllers/enderecos_controller.rb:12:in 'EnderecosController#create'
+  [1m[36mEndereco Create (4.7ms)[0m  [1m[32mINSERT INTO "enderecos" ("rua", "numero", "cidade", "estado", "cep", "latitude", "longitude", "status", "created_at", "updated_at") VALUES ('Rua Francisco Bento', '206', 'Campo Grande ', 'Mato Grosso do Sul', '79003-030', 0.0, 0.0, 'pendente', '2026-05-13 16:43:06.915364', '2026-05-13 16:43:06.915364') RETURNING "id" /*action='create',application='ManagementApi',controller='enderecos'*/[0m
+  ↳ app/controllers/enderecos_controller.rb:12:in 'EnderecosController#create'
+  [1m[36mTRANSACTION (2.0ms)[0m  [1m[35mCOMMIT /*action='create',application='ManagementApi',controller='enderecos'*/[0m
+  ↳ app/controllers/enderecos_controller.rb:12:in 'EnderecosController#create'
+Completed 201 Created in 23ms (Views: 0.4ms | ActiveRecord: 7.3ms (1 query, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/enderecos" for 172.19.0.1 at 2026-05-13 16:43:06 +0000
+Processing by EnderecosController#index as HTML
+  [1m[36mEndereco Load (0.9ms)[0m  [1m[34mSELECT "enderecos".* FROM "enderecos" /*action='index',application='ManagementApi',controller='enderecos'*/[0m
+  ↳ app/controllers/enderecos_controller.rb:5:in 'EnderecosController#index'
+Completed 200 OK in 7ms (Views: 6.2ms | ActiveRecord: 0.9ms (1 query, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/enderecos" for 172.19.0.1 at 2026-05-13 16:49:36 +0000
+Started GET "/veiculos" for 172.19.0.1 at 2026-05-13 16:49:36 +0000
+Started GET "/motoristas" for 172.19.0.1 at 2026-05-13 16:49:36 +0000
+Processing by VeiculosController#index as HTML
+Processing by EnderecosController#index as HTML
+  [1m[36mVeiculo Load (40.4ms)[0m  [1m[34mSELECT "veiculos".* FROM "veiculos" /*action='index',application='ManagementApi',controller='veiculos'*/[0m
+  ↳ app/controllers/veiculos_controller.rb:8:in 'VeiculosController#index'
+Completed 200 OK in 47ms (Views: -8.1ms | ActiveRecord: 54.4ms (1 query, 0 cached) | GC: 0.2ms)
+
+
+  [1m[36mEndereco Load (35.7ms)[0m  [1m[34mSELECT "enderecos".* FROM "enderecos" /*action='index',application='ManagementApi',controller='enderecos'*/[0m
+  ↳ app/controllers/enderecos_controller.rb:5:in 'EnderecosController#index'
+Completed 200 OK in 43ms (Views: -6.0ms | ActiveRecord: 48.2ms (1 query, 0 cached) | GC: 0.2ms)
+
+
+Processing by MotoristasController#index as HTML
+  [1m[36mMotorista Load (1.7ms)[0m  [1m[34mSELECT "motoristas".* FROM "motoristas" /*action='index',application='ManagementApi',controller='motoristas'*/[0m
+  ↳ app/controllers/motoristas_controller.rb:8:in 'MotoristasController#index'
+Completed 200 OK in 6ms (Views: 4.5ms | ActiveRecord: 1.7ms (1 query, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/enderecos" for 172.19.0.1 at 2026-05-13 16:54:59 +0000
+Started GET "/veiculos" for 172.19.0.1 at 2026-05-13 16:54:59 +0000
+Started GET "/motoristas" for 172.19.0.1 at 2026-05-13 16:54:59 +0000
+Processing by EnderecosController#index as HTML
+Processing by VeiculosController#index as HTML
+  [1m[36mEndereco Load (48.3ms)[0m  [1m[34mSELECT "enderecos".* FROM "enderecos" /*action='index',application='ManagementApi',controller='enderecos'*/[0m
+  ↳ app/controllers/enderecos_controller.rb:5:in 'EnderecosController#index'
+Completed 200 OK in 60ms (Views: -3.7ms | ActiveRecord: 62.9ms (1 query, 0 cached) | GC: 0.0ms)
+
+
+Processing by MotoristasController#index as HTML
+  [1m[36mMotorista Load (2.0ms)[0m  [1m[34mSELECT "motoristas".* FROM "motoristas" /*action='index',application='ManagementApi',controller='motoristas'*/[0m
+  ↳ app/controllers/motoristas_controller.rb:8:in 'MotoristasController#index'
+Completed 200 OK in 10ms (Views: 7.4ms | ActiveRecord: 2.0ms (1 query, 0 cached) | GC: 0.0ms)
+
+
+  [1m[36mVeiculo Load (45.6ms)[0m  [1m[34mSELECT "veiculos".* FROM "veiculos" /*action='index',application='ManagementApi',controller='veiculos'*/[0m
+  ↳ app/controllers/veiculos_controller.rb:8:in 'VeiculosController#index'
+Completed 200 OK in 54ms (Views: -7.1ms | ActiveRecord: 60.8ms (1 query, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/enderecos" for 172.19.0.1 at 2026-05-13 17:06:35 +0000
+Started GET "/motoristas" for 172.19.0.1 at 2026-05-13 17:06:35 +0000
+Started GET "/veiculos" for 172.19.0.1 at 2026-05-13 17:06:35 +0000
+Processing by EnderecosController#index as HTML
+Processing by MotoristasController#index as HTML
+  [1m[36mEndereco Load (37.7ms)[0m  [1m[34mSELECT "enderecos".* FROM "enderecos" /*action='index',application='ManagementApi',controller='enderecos'*/[0m
+  ↳ app/controllers/enderecos_controller.rb:5:in 'EnderecosController#index'
+Completed 200 OK in 47ms (Views: -4.3ms | ActiveRecord: 50.5ms (1 query, 0 cached) | GC: 0.0ms)
+
+
+Processing by VeiculosController#index as HTML
+  [1m[36mVeiculo Load (1.2ms)[0m  [1m[34mSELECT "veiculos".* FROM "veiculos" /*action='index',application='ManagementApi',controller='veiculos'*/[0m
+  ↳ app/controllers/veiculos_controller.rb:8:in 'VeiculosController#index'
+Completed 200 OK in 9ms (Views: 7.5ms | ActiveRecord: 1.1ms (1 query, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/enderecos" for 172.19.0.1 at 2026-05-13 17:06:35 +0000
+  [1m[36mMotorista Load (53.6ms)[0m  [1m[34mSELECT "motoristas".* FROM "motoristas" /*action='index',application='ManagementApi',controller='motoristas'*/[0m
+  ↳ app/controllers/motoristas_controller.rb:8:in 'MotoristasController#index'
+Completed 200 OK in 62ms (Views: -16.6ms | ActiveRecord: 77.7ms (1 query, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/veiculos" for 172.19.0.1 at 2026-05-13 17:06:35 +0000
+Processing by EnderecosController#index as HTML
+  [1m[36mEndereco Load (2.1ms)[0m  [1m[34mSELECT "enderecos".* FROM "enderecos" /*action='index',application='ManagementApi',controller='enderecos'*/[0m
+  ↳ app/controllers/enderecos_controller.rb:5:in 'EnderecosController#index'
+Completed 200 OK in 9ms (Views: 6.8ms | ActiveRecord: 2.0ms (1 query, 0 cached) | GC: 0.0ms)
+
+
+Processing by VeiculosController#index as HTML
+  [1m[36mVeiculo Load (1.2ms)[0m  [1m[34mSELECT "veiculos".* FROM "veiculos" /*action='index',application='ManagementApi',controller='veiculos'*/[0m
+  ↳ app/controllers/veiculos_controller.rb:8:in 'VeiculosController#index'
+Completed 200 OK in 10ms (Views: 8.3ms | ActiveRecord: 1.2ms (1 query, 0 cached) | GC: 0.0ms)
+
+
+Started POST "/enderecos" for 172.19.0.1 at 2026-05-13 17:11:10 +0000
+Processing by EnderecosController#create as HTML
+  Parameters: {"endereco" => {"cep" => "", "rua" => "Rua Uricuri", "numero" => "248", "bairro" => "Vila Olinda", "cidade" => "Campo Grande", "estado" => "MS", "latitude" => -20.4961749, "longitude" => -54.6086057, "status" => "pendente"}}
+[31mUnpermitted parameter: :bairro. Context: { controller: EnderecosController, action: create, request: #<ActionDispatch::Request:0x0000718cb6374740>, params: {"endereco" => {"cep" => "", "rua" => "Rua Uricuri", "numero" => "248", "bairro" => "Vila Olinda", "cidade" => "Campo Grande", "estado" => "MS", "latitude" => -20.4961749, "longitude" => -54.6086057, "status" => "pendente"}, "controller" => "enderecos", "action" => "create"} }[0m
+  [1m[36mTRANSACTION (0.5ms)[0m  [1m[35mBEGIN /*action='create',application='ManagementApi',controller='enderecos'*/[0m
+  ↳ app/controllers/enderecos_controller.rb:12:in 'EnderecosController#create'
+  [1m[36mEndereco Create (27.4ms)[0m  [1m[32mINSERT INTO "enderecos" ("rua", "numero", "cidade", "estado", "cep", "latitude", "longitude", "status", "created_at", "updated_at") VALUES ('Rua Uricuri', '248', 'Campo Grande', 'MS', '', -20.496175, -54.608606, 'pendente', '2026-05-13 17:11:10.551055', '2026-05-13 17:11:10.551055') RETURNING "id" /*action='create',application='ManagementApi',controller='enderecos'*/[0m
+  ↳ app/controllers/enderecos_controller.rb:12:in 'EnderecosController#create'
+  [1m[36mTRANSACTION (3.0ms)[0m  [1m[35mCOMMIT /*action='create',application='ManagementApi',controller='enderecos'*/[0m
+  ↳ app/controllers/enderecos_controller.rb:12:in 'EnderecosController#create'
+Completed 201 Created in 56ms (Views: 0.6ms | ActiveRecord: 30.9ms (1 query, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/enderecos" for 172.19.0.1 at 2026-05-13 17:11:10 +0000
+Processing by EnderecosController#index as HTML
+  [1m[36mEndereco Load (1.3ms)[0m  [1m[34mSELECT "enderecos".* FROM "enderecos" /*action='index',application='ManagementApi',controller='enderecos'*/[0m
+  ↳ app/controllers/enderecos_controller.rb:5:in 'EnderecosController#index'

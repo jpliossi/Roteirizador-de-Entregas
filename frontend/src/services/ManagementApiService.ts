@@ -11,10 +11,10 @@ export interface Endereco {
   id?: number;
   rua: string;
   numero: string;
-  complemento?: string;
   cidade: string;
   estado: string;
   cep: string;
+  bairro: string;
   latitude: number;
   longitude: number;
   status?: string;
@@ -34,6 +34,37 @@ export interface Motorista {
   nome: string;
   cpf: string;
 }
+
+export const GeocodingService = {
+  async buscarEnderecoPorCEP(cep: string) {
+    const cleanCep = cep.replace(/\D/g, '');
+    if (cleanCep.length !== 8) throw new Error("CEP Inválido");
+
+    // 1. Busca dados do endereço
+    const viaCepRes = await fetch(`https://viacep.com.br/ws/${cleanCep}/json/`);
+    const addressData = await viaCepRes.json();
+
+    if (addressData.erro) throw new Error("CEP não encontrado");
+
+    // 2. Busca Latitude e Longitude usando os dados do ViaCEP
+    // Formatamos a query: "Rua, Bairro, Cidade, Estado"
+    const query = `${addressData.logradouro}, ${addressData.localidade}, Brazil`;
+    const nominatimRes = await fetch(
+      `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=1`
+    );
+    const geoData = await nominatimRes.json();
+
+    return {
+      rua: addressData.logradouro,
+      bairro: addressData.bairro,
+      cidade: addressData.localidade,
+      estado: addressData.uf,
+      // Se o Nominatim não achar, usamos uma coordenada padrão de Campo Grande como fallback
+      latitude: geoData.length > 0 ? parseFloat(geoData[0].lat) : -20.46,
+      longitude: geoData.length > 0 ? parseFloat(geoData[0].lon) : -54.61
+    };
+  }
+};
 
 export const ManagementApiService = {
   async getEnderecos(): Promise<Endereco[]> {
@@ -72,4 +103,5 @@ export const ManagementApiService = {
     });
     return response.data;
   }
+  
 };

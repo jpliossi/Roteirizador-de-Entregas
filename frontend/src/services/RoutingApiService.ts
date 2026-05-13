@@ -14,7 +14,7 @@ export interface RotaCalculada {
 }
 
 export const RoutingApiService = {
-  async calcularRota(veiculoId: string, enderecosIds: string[]): Promise<RotaCalculada> {
+  async calcularRota(veiculoId: string, enderecosIds: any[]): Promise<RotaCalculada> {
     const response = await api.post('/rotas/calcular', {
       veiculo_id: veiculoId,
       enderecos_ids: enderecosIds,
@@ -22,10 +22,10 @@ export const RoutingApiService = {
     return response.data;
   },
 
-  async atribuirRota(veiculoId: string, enderecosIds: string[]): Promise<any> {
+  async atribuirRota(veiculoId: string, ordemIds: string[]): Promise<any> {
     const response = await api.post('/rotas/atribuir', {
       veiculo_id: veiculoId,
-      enderecos_ids: enderecosIds,
+      enderecos_ids: ordemIds,
     });
     return response.data;
   },
