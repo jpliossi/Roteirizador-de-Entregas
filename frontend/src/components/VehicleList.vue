@@ -12,49 +12,60 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="bg-white shadow-md rounded-lg overflow-hidden border border-gray-200">
-    <div class="px-6 py-4 bg-gray-50 border-b border-gray-200 flex justify-between items-center">
-      <h3 class="text-lg font-semibold text-gray-800">Veículos Disponíveis</h3>
-      <button 
-        @click="deliveryStore.fetchVeiculos()" 
-        class="text-sm text-blue-600 hover:text-blue-800 font-medium"
-        :disabled="deliveryStore.loading"
-      >
-        {{ deliveryStore.loading ? 'Atualizando...' : 'Atualizar' }}
-      </button>
-    </div>
-
+  <div class="space-y-4">
     <div v-if="deliveryStore.loading && deliveryStore.veiculos.length === 0" class="p-8 text-center text-gray-500">
       <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-      <p class="mt-2 text-gray-500">Carregando veículos...</p>
+      <p class="mt-2 text-gray-500">Carregando frota...</p>
     </div>
 
-    <div v-else-if="deliveryStore.veiculos.length === 0" class="p-8 text-center text-gray-500">
-      Nenhum veículo encontrado.
+    <div v-else-if="deliveryStore.veiculos.length === 0" class="p-8 text-center text-gray-500 bg-white rounded-lg border border-dashed border-gray-300">
+      Nenhum veículo disponível.
     </div>
 
-    <div v-else class="grid grid-cols-1 sm:grid-cols-2 gap-4 p-6">
+    <template v-else>
       <div 
-        v-for="veiculo in deliveryStore.veiculos" 
+        v-for="veiculo in deliveryStore.veiculosComRotas" 
         :key="veiculo.id" 
-        class="flex flex-col p-4 bg-blue-50 border border-blue-100 rounded-lg"
+        class="bg-white shadow-sm rounded-xl overflow-hidden border border-gray-200 transition-all hover:shadow-md"
       >
-        <div class="flex items-center justify-between mb-2">
-          <span class="text-xs font-bold text-blue-600 uppercase tracking-wider">Placa</span>
-          <span class="px-2 py-1 bg-white border border-blue-200 rounded font-mono text-sm text-gray-800">
-            {{ veiculo.placa }}
-          </span>
-        </div>
-        <div class="flex flex-col">
-          <span class="text-sm font-semibold text-gray-800">{{ veiculo.modelo }}</span>
-          <div class="flex items-center mt-1 text-gray-500">
-            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-            </svg>
-            <span class="text-xs">Capacidade: {{ veiculo.capacidade }} m³</span>
+        <!-- Header do Veículo -->
+        <div class="px-5 py-4 bg-gray-50 border-b border-gray-200 flex items-center justify-between">
+          <div class="flex items-center space-x-3">
+            <div class="p-2 bg-blue-100 rounded-lg text-blue-600">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z" stroke-width="2"/><path d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0" stroke-width="2"/></svg>
+            </div>
+            <div>
+              <h4 class="font-black text-gray-900 leading-none">{{ veiculo.modelo }}</h4>
+              <span class="text-[10px] font-bold uppercase text-gray-500 tracking-widest">{{ veiculo.placa }}</span>
+            </div>
+          </div>
+          <div class="text-right">
+            <span class="text-xs font-black text-blue-600">{{ veiculo.capacidade }}m³</span>
           </div>
         </div>
+
+        <!-- Lista de Entregas do Veículo -->
+        <div class="p-2">
+          <div v-if="veiculo.enderecos.length === 0" class="py-4 text-center">
+            <p class="text-xs font-bold text-gray-400 italic">Nenhuma entrega atribuída</p>
+          </div>
+          <ul v-else class="space-y-1">
+            <li 
+              v-for="(addr, index) in veiculo.enderecos" 
+              :key="addr.id"
+              class="flex items-center p-3 bg-blue-50/50 rounded-lg border border-blue-100"
+            >
+              <div class="w-6 h-6 rounded-full bg-blue-600 text-white text-[10px] font-black flex items-center justify-center mr-3 flex-shrink-0">
+                {{ index + 1 }}
+              </div>
+              <div class="min-w-0">
+                <p class="text-xs font-bold text-gray-800 truncate">{{ addr.logradouro }}, {{ addr.numero }}</p>
+                <p class="text-[10px] text-gray-500 truncate">{{ addr.bairro }}</p>
+              </div>
+            </li>
+          </ul>
+        </div>
       </div>
-    </div>
+    </template>
   </div>
 </template>

@@ -43,20 +43,35 @@ const getStatusColor = (status?: string) => {
     </div>
 
     <ul v-else class="divide-y divide-gray-200">
-      <li v-for="addr in deliveryStore.enderecos" :key="addr.id" class="px-6 py-4 hover:bg-gray-50 transition-colors">
-        <div class="flex items-center justify-between">
+      <li 
+        v-for="addr in deliveryStore.enderecosPendentes" 
+        :key="addr.id" 
+        class="px-6 py-4 transition-colors cursor-pointer"
+        :class="[
+          deliveryStore.selectedEnderecoIds.includes(addr.id!) ? 'bg-blue-50' : 'hover:bg-gray-50'
+        ]"
+        @click="deliveryStore.toggleEnderecoSelection(addr.id!)"
+      >
+        <div class="flex items-center space-x-4">
+          <div class="flex-shrink-0">
+            <input 
+              type="checkbox" 
+              :checked="deliveryStore.selectedEnderecoIds.includes(addr.id!)"
+              class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+              @click.stop
+            >
+          </div>
           <div class="flex-1 min-w-0">
-            <p class="text-sm font-medium text-gray-900 truncate">
+            <p class="text-sm font-bold text-gray-900 truncate">
               {{ addr.logradouro }}, {{ addr.numero }}
             </p>
-            <p class="text-sm text-gray-500 truncate">
+            <p class="text-xs text-gray-500 truncate">
               {{ addr.bairro }} - {{ addr.cidade }}/{{ addr.estado }}
             </p>
-            <p class="text-xs text-gray-400 mt-1">CEP: {{ addr.cep }}</p>
           </div>
           <div class="ml-4">
             <span 
-              class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border"
+              class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase border"
               :class="getStatusColor(addr.status)"
             >
               {{ addr.status || 'Pendente' }}

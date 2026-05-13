@@ -18,6 +18,7 @@ export interface Endereco {
   latitude: number;
   longitude: number;
   status?: string;
+  veiculo_id?: number;
 }
 
 export interface Veiculo {
@@ -38,4 +39,25 @@ export const ManagementApiService = {
     const response = await api.get('/veiculos');
     return response.data;
   },
+
+  async createEndereco(endereco: Endereco): Promise<Endereco> {
+    const payload = {
+      ...endereco,
+      rua: endereco.logradouro // Garante compatibilidade com campo 'rua' do Rails
+    };
+    const response = await api.post('/enderecos', { endereco: payload });
+    return response.data;
+  },
+
+  async createVeiculo(veiculo: Veiculo): Promise<Veiculo> {
+    const response = await api.post('/veiculos', { veiculo });
+    return response.data;
+  },
+
+  async updateEnderecoStatus(id: number, status: string, veiculoId?: number): Promise<Endereco> {
+    const response = await api.patch(`/enderecos/${id}`, {
+      endereco: { status, veiculo_id: veiculoId }
+    });
+    return response.data;
+  }
 };
