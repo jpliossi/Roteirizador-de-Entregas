@@ -33,7 +33,7 @@ export class RouteService {
 
     // 2. Chamar a management-api para atualizar o status dos endereços
     await axios.put(`${this.managementApiUrl}/enderecos/atualizar_status`, {
-      ordem_ids
+      endereco_ids: ordem_ids
     });
 
     return {

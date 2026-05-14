@@ -9,7 +9,7 @@ app.use(express.json());
 app.use(cors());
 const routeController = new RouteController();
 app.post('/rotas/calcular', routeController.calcular);
-app.post('/rotas/efetivar', routeController.efetivar);
+app.post('/rotas/atribuir', routeController.efetivar);
 
 app.get('/ping', (req: Request, res: Response) => {
   res.status(200).json({ message: 'pong' });

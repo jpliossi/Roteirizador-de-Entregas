@@ -7344,3 +7344,55 @@ Processing by MotoristasController#index as HTML
 Completed 200 OK in 6ms (Views: 4.7ms | ActiveRecord: 0.5ms (1 query, 0 cached) | GC: 0.0ms)
 
 
+Started GET "/enderecos" for 172.18.0.1 at 2026-05-14 15:27:07 +0000
+Started GET "/veiculos" for 172.18.0.1 at 2026-05-14 15:27:07 +0000
+Started GET "/motoristas" for 172.18.0.1 at 2026-05-14 15:27:07 +0000
+Processing by EnderecosController#index as HTML
+  [1m[36mEndereco Load (0.8ms)[0m  [1m[34mSELECT "enderecos".* FROM "enderecos" /*action='index',application='ManagementApi',controller='enderecos'*/[0m
+  ↳ app/controllers/enderecos_controller.rb:5:in 'EnderecosController#index'
+Completed 200 OK in 6ms (Views: 5.2ms | ActiveRecord: 0.7ms (1 query, 0 cached) | GC: 0.0ms)
+
+
+Processing by VeiculosController#index as HTML
+  [1m[36mVeiculo Load (0.6ms)[0m  [1m[34mSELECT "veiculos".* FROM "veiculos" /*action='index',application='ManagementApi',controller='veiculos'*/[0m
+  ↳ app/controllers/veiculos_controller.rb:8:in 'VeiculosController#index'
+Completed 200 OK in 15ms (Views: 13.9ms | ActiveRecord: 0.6ms (1 query, 0 cached) | GC: 5.1ms)
+
+
+Processing by MotoristasController#index as HTML
+  [1m[36mMotorista Load (0.7ms)[0m  [1m[34mSELECT "motoristas".* FROM "motoristas" /*action='index',application='ManagementApi',controller='motoristas'*/[0m
+  ↳ app/controllers/motoristas_controller.rb:8:in 'MotoristasController#index'
+Completed 200 OK in 6ms (Views: 5.2ms | ActiveRecord: 0.6ms (1 query, 0 cached) | GC: 0.0ms)
+
+
+Started PUT "/enderecos/atualizar_status" for 172.18.0.5 at 2026-05-14 15:35:53 +0000
+Processing by EnderecosController#atualizar_status as HTML
+  Parameters: {"ordem_ids" => ["b6b7715b-74e0-4c9c-a503-9897c27fdab9", "cc776ed4-8451-4b08-afe2-32399dfefb82", "e2feed49-1243-4272-bd8d-84c6077584d6", "3dd5d64d-90a8-4b7a-b4ba-0026a44a5d8b"], "endereco" => {}}
+Completed 400 Bad Request in 2ms (Views: 0.6ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started PUT "/enderecos/atualizar_status" for 172.18.0.5 at 2026-05-14 15:40:22 +0000
+Processing by EnderecosController#atualizar_status as HTML
+  Parameters: {"ordem_ids" => ["b6b7715b-74e0-4c9c-a503-9897c27fdab9", "cc776ed4-8451-4b08-afe2-32399dfefb82", "e2feed49-1243-4272-bd8d-84c6077584d6", "3dd5d64d-90a8-4b7a-b4ba-0026a44a5d8b"], "endereco" => {}}
+Completed 400 Bad Request in 1ms (Views: 0.2ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started PUT "/enderecos/atualizar_status" for 172.18.0.5 at 2026-05-14 15:43:36 +0000
+Processing by EnderecosController#atualizar_status as HTML
+  Parameters: {"ordem_ids" => ["b6b7715b-74e0-4c9c-a503-9897c27fdab9", "cc776ed4-8451-4b08-afe2-32399dfefb82", "e2feed49-1243-4272-bd8d-84c6077584d6", "3dd5d64d-90a8-4b7a-b4ba-0026a44a5d8b"], "endereco" => {}}
+Completed 400 Bad Request in 1ms (Views: 0.2ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/enderecos" for 172.18.0.1 at 2026-05-14 15:43:43 +0000
+Processing by EnderecosController#index as HTML
+  [1m[36mEndereco Load (59.5ms)[0m  [1m[34mSELECT "enderecos".* FROM "enderecos" /*action='index',application='ManagementApi',controller='enderecos'*/[0m
+  ↳ app/controllers/enderecos_controller.rb:5:in 'EnderecosController#index'
+Completed 200 OK in 69ms (Views: -14.9ms | ActiveRecord: 83.8ms (1 query, 0 cached) | GC: 0.0ms)
+
+
+Started PUT "/enderecos/atualizar_status" for 172.18.0.5 at 2026-05-14 15:43:52 +0000
+Processing by EnderecosController#atualizar_status as HTML
+  Parameters: {"ordem_ids" => ["b6b7715b-74e0-4c9c-a503-9897c27fdab9", "cc776ed4-8451-4b08-afe2-32399dfefb82", "e2feed49-1243-4272-bd8d-84c6077584d6", "3dd5d64d-90a8-4b7a-b4ba-0026a44a5d8b"], "endereco" => {}}
+Completed 400 Bad Request in 0ms (Views: 0.2ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
