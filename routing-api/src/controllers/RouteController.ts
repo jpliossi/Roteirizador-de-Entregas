@@ -28,14 +28,14 @@ export class RouteController {
 
   efetivar = async (req: Request, res: Response): Promise<void> => {
     try {
-      const { veiculo_id, endereco_ids } = req.body;
+      const { veiculo_id, ordem_ids } = req.body;
 
-      if (!veiculo_id || !endereco_ids || !Array.isArray(endereco_ids)) {
-        res.status(400).json({ error: 'Payload inválido. Envie veiculo_id e endereco_ids (array).' });
+      if (!veiculo_id || !ordem_ids || !Array.isArray(ordem_ids)) {
+        res.status(400).json({ error: 'Payload inválido. Envie veiculo_id e ordem_ids (array).' });
         return;
       }
 
-      const result = await this.routeService.efetivarRota(veiculo_id, endereco_ids);
+      const result = await this.routeService.efetivarRota(veiculo_id, ordem_ids);
       res.status(200).json(result);
     } catch (error: any) {
       console.error('Erro ao efetivar rota:', error);

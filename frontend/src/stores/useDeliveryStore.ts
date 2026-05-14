@@ -99,7 +99,7 @@ export const useDeliveryStore = defineStore('delivery', {
       }
     },
 
-    async calcularRotaTemporaria() {
+   async calcularRotaTemporaria() {
       if (!this.selectedVeiculoId || this.selectedEnderecoIds.length === 0) {
         this.error = 'Selecione um veículo e pelo menos um endereço.';
         return;
@@ -109,21 +109,43 @@ export const useDeliveryStore = defineStore('delivery', {
       try {
         // 1. Transformamos os IDs selecionados em objetos com coordenadas
         const enderecosComCoordenadas = this.enderecos
-          .filter(e => this.selectedEnderecoIds.includes(e.id!))
-          .map(e => ({
-            id: e.id!.toString(),
-            latitude: e.latitude,
-            longitude: e.longitude
-          }));
+          .filter(e => {
+            // Garante que estamos comparando maçãs com maçãs (ID do endereço selecionado)
+            return this.selectedEnderecoIds.includes(e.id!);
+          })
+          .map(e => {
+            // Se o id for undefined aqui, o problema está na carga inicial dos endereços
+            if (!e.id) {
+              console.error("Endereço encontrado sem ID!", e);
+            }
+            return {
+              id: String(e.id), // Força virar string para o Node/Prisma
+              latitude: Number(e.latitude),
+              longitude: Number(e.longitude)
+            };
+          });
 
-        // 2. Enviamos os objetos completos para o Node.js
+        // DEBUG CRÍTICO: Veja se o array abaixo tem IDs ou está cheio de "undefined"
+        console.log("Payload para o Node:", {
+          veiculo_id: this.selectedVeiculoId,
+          enderecos: enderecosComCoordenadas
+        });
+
+        // Se estiver vazio ou com IDs inválidos, nem fazemos a chamada
+        if (enderecosComCoordenadas.length === 0 || enderecosComCoordenadas.some(e => e.id === 'undefined')) {
+          this.error = 'Erro: IDs de endereço não encontrados ou inválidos.';
+          return;
+        }
+
+        // 2. Chamada para a API
         this.previewRota = await RoutingApiService.calcularRota(
-          this.selectedVeiculoId.toString(),
-          enderecosComCoordenadas as any // Enviando o array de objetos {id, lat, lng}
+          String(this.selectedVeiculoId),
+          enderecosComCoordenadas
         );
         
         this.error = null;
       } catch (err: any) {
+        console.error("Erro no cálculo:", err);
         this.error = 'Erro ao calcular rota: ' + (err.message || '');
       } finally {
         this.loading = false;

@@ -22,25 +22,25 @@ export class RouteService {
   /**
    * Salva a rota no banco local e atualiza o status dos endereços na management-api.
    */
-  async efetivarRota(veiculo_id: string, endereco_ids: string[]) {
+  async efetivarRota(veiculo_id: string, ordem_ids: string[]) {
     // 1. Salvar no banco de dados local
     const rota = await this.prisma.rota.create({
       data: {
         veiculo_id,
-        endereco_ids,
+        ordem_ids,
       },
     });
 
     // 2. Chamar a management-api para atualizar o status dos endereços
     await axios.put(`${this.managementApiUrl}/enderecos/atualizar_status`, {
-      endereco_ids
+      ordem_ids
     });
 
     return {
       message: 'Rota efetivada e status dos endereços atualizados.',
       rota_id: rota.id,
       veiculo_id: rota.veiculo_id,
-      endereco_ids: rota.ordem_ids
+      ordem_ids: rota.ordem_ids
     };
   }
 
@@ -88,16 +88,18 @@ export class RouteService {
     }
 
     // Persistir no banco de dados
+
     const rota = await this.prisma.rota.create({
       data: {
         veiculo_id,
-        endereco_ids: orderedEnderecos.map(e => e.id),
+        ordem_ids: orderedEnderecos.filter(e => e && e.id).map(e => String(e.id)),
       },
     });
 
     return {
       id: rota.id,
       veiculo_id: rota.veiculo_id,
+      ordem_ids: rota.ordem_ids,
       ordem_sugerida: orderedEnderecos,
     };
   }

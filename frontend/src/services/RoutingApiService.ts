@@ -32,7 +32,7 @@ export const RoutingApiService = {
   async atribuirRota(veiculoId: string, ordemIds: string[]): Promise<any> {
     const response = await api.post('/rotas/atribuir', {
       veiculo_id: veiculoId,
-      enderecos_ids: ordemIds,
+      ordem_ids: ordemIds,
     });
     return response.data;
   },
