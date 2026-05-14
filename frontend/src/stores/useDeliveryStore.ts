@@ -107,10 +107,22 @@ export const useDeliveryStore = defineStore('delivery', {
 
       this.loading = true;
       try {
+        // 1. Transformamos os IDs selecionados em objetos com coordenadas
+        const enderecosComCoordenadas = this.enderecos
+          .filter(e => this.selectedEnderecoIds.includes(e.id!))
+          .map(e => ({
+            id: e.id!.toString(),
+            latitude: e.latitude,
+            longitude: e.longitude
+          }));
+
+        // 2. Enviamos os objetos completos para o Node.js
         this.previewRota = await RoutingApiService.calcularRota(
           this.selectedVeiculoId.toString(),
-          this.selectedEnderecoIds.map(id => id.toString())
+          enderecosComCoordenadas as any // Enviando o array de objetos {id, lat, lng}
         );
+        
+        this.error = null;
       } catch (err: any) {
         this.error = 'Erro ao calcular rota: ' + (err.message || '');
       } finally {
@@ -160,13 +172,24 @@ export const useDeliveryStore = defineStore('delivery', {
     enderecosPendentes: (state) => {
       return state.enderecos.filter(e => e.status === 'pendente' || !e.status);
     },
-    veiculosComRotas: (state: { veiculos: any[]; motoristas: any[]; enderecos: any[]; }) => {
-      return state.veiculos.map(v => ({
-        ...v,
-        motorista: state.motoristas.find(m => m.id === v.motorista_id),
-        enderecos: state.enderecos
-          .filter(e => (e.status === 'em rota' || e.status === 'em_rota') && (e as any).veiculo_id === v.id)
-      }));
+    veiculosComRotas: (state) => {
+      return state.veiculos.map(v => {
+        const rotas = state.enderecos.filter(e => {
+          // Log para você ver no console se os IDs estão batendo
+          // console.log(`Comparando Endereco ${e.veiculo_id} com Veiculo ${v.id}`);
+          
+          const statusMatch = e.status === 'em rota' || e.status === 'em_rota';
+          const veiculoMatch = String(e.veiculo_id) === String(v.id); // Força ambos para String
+          
+          return statusMatch && veiculoMatch;
+        });
+
+        return {
+          ...v,
+          enderecosAtribuidos: rotas,
+          motorista: state.motoristas.find(m => String(m.id) === String(v.motorista_id))
+        };
+      });
     }
   }
 });

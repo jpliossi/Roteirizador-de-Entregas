@@ -82,8 +82,22 @@ export const ManagementApiService = {
     return response.data;
   },
 
-  async createEndereco(endereco: Endereco): Promise<Endereco> {
-    const response = await api.post('/enderecos', { endereco });
+  async createEndereco(dados: any): Promise<Endereco> {
+    const response = await api.post('/enderecos', {
+      endereco: {
+        status: dados.status || 'Pendente', // status padrão como 'Pendente'
+        veiculo_id: dados.veiculo_id || null, // pode ser null inicialmente
+        rua: dados.rua,
+        numero: dados.numero,
+        bairro: dados.bairro,
+        cidade: dados.cidade,
+        estado: dados.estado,
+        cep: dados.cep,
+        latitude: dados.latitude,
+        longitude: dados.longitude,
+        
+      }
+    });
     return response.data;
   },
 

@@ -14,13 +14,20 @@ export interface RotaCalculada {
 }
 
 export const RoutingApiService = {
-  async calcularRota(veiculoId: string, enderecosIds: any[]): Promise<RotaCalculada> {
+  async calcularRota(veiculoId: string, enderecos: any[]): Promise<any> {
     const response = await api.post('/rotas/calcular', {
       veiculo_id: veiculoId,
-      enderecos_ids: enderecosIds,
+      enderecos: enderecos, // Enviando os objetos completos {id, lat, lng}
     });
-    return response.data;
+    
+    // IMPORTANTE: O seu Service retorna 'ordem_sugerida' e não 'ordem_ids'
+    // Precisamos mapear isso para o formato que a sua Store espera:
+    return {
+      ordem_ids: response.data.ordem_sugerida.map((e: any) => e.id),
+      distancia_total: 0 // O Service atual não calcula a distância real ainda
+    };
   },
+  
 
   async atribuirRota(veiculoId: string, ordemIds: string[]): Promise<any> {
     const response = await api.post('/rotas/atribuir', {

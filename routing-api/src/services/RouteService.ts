@@ -40,7 +40,7 @@ export class RouteService {
       message: 'Rota efetivada e status dos endereços atualizados.',
       rota_id: rota.id,
       veiculo_id: rota.veiculo_id,
-      endereco_ids: rota.endereco_ids
+      endereco_ids: rota.ordem_ids
     };
   }
 

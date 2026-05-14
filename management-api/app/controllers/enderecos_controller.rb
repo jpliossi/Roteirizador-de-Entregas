@@ -6,8 +6,7 @@ class EnderecosController < ApplicationController
   end
 
   # POST /enderecos
-  def create
-    binding.irb
+    def create
     @endereco = Endereco.new(endereco_params)
     if @endereco.save
       render json: @endereco, status: :created
@@ -29,6 +28,8 @@ class EnderecosController < ApplicationController
   private
 
   def endereco_params
-    params.require(:endereco).permit(:rua, :numero, :cidade, :estado, :cep, :latitude, :longitude, :status)
+    params.require(:endereco).permit(
+      :status, :veiculo_id, :rua, :numero, :bairro, 
+      :cidade, :estado, :cep, :latitude, :longitude)
   end
 end
