@@ -8,9 +8,11 @@ const api = axios.create({
 });
 
 export interface RotaCalculada {
+  veiculo_id: string;
   ordem_ids: string[];
-  distancia_total: number;
-  tempo_estimado: number;
+  distancia_total: number; 
+  tempo_estimado: number;  
+  ordem_sugerida?: any[];
 }
 
 export const RoutingApiService = {
@@ -24,7 +26,9 @@ export const RoutingApiService = {
     // Precisamos mapear isso para o formato que a sua Store espera:
     return {
       ordem_ids: response.data.ordem_sugerida.map((e: any) => e.id),
-      distancia_total: 0 // O Service atual não calcula a distância real ainda
+      ordem_sugerida: response.data.ordem_sugerida,
+      distancia_total: response.data.distancia_total,
+      tempo_estimado: response.data.tempo_estimado
     };
   },
   

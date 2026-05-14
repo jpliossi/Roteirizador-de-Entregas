@@ -18,6 +18,7 @@ export class RouteController {
       }
 
       const result = await this.routeService.calculateRoute(veiculo_id, enderecos);
+      console.log("Objeto enviado para o Front:", result);
       
       res.status(200).json(result);
     } catch (error) {

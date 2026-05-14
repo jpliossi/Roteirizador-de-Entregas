@@ -24,9 +24,25 @@ const handleCalculate = async () => {
   if (!canCalculate.value) return;
   calculating.value = true;
   try {
-    const ids = deliveryStore.selectedEnderecoIds.map(String);
+    // Pegamos os objetos completos dos endereços selecionados na Store
+    const enderecosSelecionados = deliveryStore.enderecos
+      .filter(e => deliveryStore.selectedEnderecoIds.includes(e.id!))
+      .map(e => ({
+        id: String(e.id),
+        latitude: Number(e.latitude),
+        longitude: Number(e.longitude),
+        rua: e.rua,
+        numero: e.numero,
+        cidade: e.cidade
+      }));
+
     const veiculoId = String(deliveryStore.selectedVeiculoId);
-    rotaSugerida.value = await RoutingApiService.calcularRota(veiculoId, ids);
+
+    const resposta = await RoutingApiService.calcularRota(veiculoId, enderecosSelecionados);
+
+    console.log('Resposta do cálculo de rota:', resposta);
+
+    rotaSugerida.value = resposta;
   } catch (err: any) {
     deliveryStore.error = "Erro ao calcular rota: " + err.message;
   } finally {
@@ -40,15 +56,18 @@ const handleConfirm = async () => {
   try {
     const ids = deliveryStore.selectedEnderecoIds.map(String);
     const veiculoId = String(deliveryStore.selectedVeiculoId);
+    
     await RoutingApiService.atribuirRota(veiculoId, ids);
     
-    // Reset da seleção e recarga dos dados
+    // RESET COMPLETO
     deliveryStore.selectedEnderecoIds = [];
     deliveryStore.selectedVeiculoId = null;
-    rotaSugerida.value = null;
-    await deliveryStore.fetchEnderecos();
+    rotaSugerida.value = null; // Limpa o card verde da tela
     
-    alert('Rota atribuída com sucesso! Os endereços agora estão em rota.');
+    await deliveryStore.fetchEnderecos();
+    await deliveryStore.fetchVeiculos(); // Recarrega veículos para ver a rota no card dele
+    
+    alert('Rota atribuída com sucesso!');
   } catch (err: any) {
     deliveryStore.error = "Erro ao atribuir rota: " + err.message;
   } finally {
@@ -125,16 +144,25 @@ onMounted(() => {
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
           <div class="bg-white p-4 rounded-xl shadow-sm border border-emerald-100 text-center">
             <p class="text-xs text-emerald-600 font-bold uppercase mb-1">Distância</p>
-            <p class="text-2xl font-black text-emerald-900">{{ (rotaSugerida.distancia_total / 1000).toFixed(2) }} km</p>
+            <p class="text-2xl font-black text-emerald-900">{{ rotaSugerida.distancia_total }} km</p>
           </div>
+
           <div class="bg-white p-4 rounded-xl shadow-sm border border-emerald-100 text-center">
-            <p class="text-xs text-emerald-600 font-bold uppercase mb-1">Tempo</p>
-            <p class="text-2xl font-black text-emerald-900">{{ (rotaSugerida.tempo_estimado / 60).toFixed(0) }} min</p>
+            <p class="text-xs text-emerald-600 font-bold uppercase mb-1">Tempo Estimado</p>
+            <p class="text-2xl font-black text-emerald-900">{{ rotaSugerida.tempo_estimado }} min</p>
           </div>
           <div class="bg-white p-4 rounded-xl shadow-sm border border-emerald-100 text-center">
             <p class="text-xs text-emerald-600 font-bold uppercase mb-1">Paradas</p>
             <p class="text-2xl font-black text-emerald-900">{{ rotaSugerida.ordem_ids.length }}</p>
           </div>
+          <div>
+            <p class="text-xs text-emerald-600 font-bold uppercase mb-1">Ordem Sugerida</p>
+            <ol class="text-sm text-emerald-900 font-bold list-decimal list-inside">
+              <li v-for="(endereco, index) in rotaSugerida.ordem_sugerida" :key="index">
+                {{ endereco.rua }}, {{ endereco.numero }} - {{ endereco.cidade }}
+              </li>
+            </ol>
+          </div>        
           <div class="flex items-center justify-center">
             <button @click="handleConfirm" class="w-full h-full bg-emerald-600 text-white font-black rounded-xl hover:bg-emerald-700 transition-all shadow-lg text-lg uppercase">
               Confirmar

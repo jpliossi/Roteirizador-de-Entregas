@@ -48,61 +48,70 @@ export class RouteService {
    * Ordena endereços com base na proximidade das coordenadas (ponto a ponto).
    * Começando do primeiro endereço fornecido.
    */
+
   async calculateRoute(veiculo_id: string, enderecos: Endereco[]) {
-    
-    if (enderecos.length === 0) return [];
+    if (enderecos.length === 0) return { ordem_ids: [], distancia_total: 0, tempo_estimado: 0 };
 
     const orderedEnderecos: Endereco[] = [];
     const remaining = [...enderecos];
+    let totalDistance = 0;
 
-    // Começamos pelo primeiro endereço da lista (ponto de partida)
-    const first = remaining.shift();
-    if (!first) return [];
-    
-    let current: Endereco = first;
+    let current = remaining.shift()!;
     orderedEnderecos.push(current);
 
     while (remaining.length > 0) {
       let closestIndex = 0;
-      const nextPotential = remaining[0];
-      if (!nextPotential) break;
+      
+      // Usamos o operador "!" ou uma verificação simples para garantir o primeiro item
+      let firstRemaining = remaining[0];
+      if (!firstRemaining) break; 
 
-      let minDistance = this.calculateDistance(current, nextPotential);
+      let minDistance = this.calculateDistance(current, firstRemaining);
 
       for (let i = 1; i < remaining.length; i++) {
-        const potential = remaining[i];
-        if (!potential) continue;
+        const nextCandidate = remaining[i];
+        if (!nextCandidate) continue;
 
-        const dist = this.calculateDistance(current, potential);
+        const dist = this.calculateDistance(current, nextCandidate);
         if (dist < minDistance) {
           minDistance = dist;
           closestIndex = i;
         }
       }
 
-      const next = remaining.splice(closestIndex, 1)[0];
-      if (!next) break;
+      // Acumula a distância (multiplicamos por 111 para converter graus em KM aprox.)
+      totalDistance += minDistance;
 
-      current = next;
+      // Remove o escolhido do array de "restantes" e torna ele o "atual"
+      current = remaining.splice(closestIndex, 1)[0]!;
       orderedEnderecos.push(current);
     }
 
-    // Persistir no banco de dados
+    // Cálculos simples de logística:
+    // 1. Converter distância euclidiana para KM aproximado (fator de correção de 111km por grau)
+    const distanciaEmKm = totalDistance * 111; 
+    
+    // 2. Tempo estimado (Velocidade média de 40km/h + 10 min por entrega)
+    const tempoEmMinutos = (distanciaEmKm / 40) * 60 + (orderedEnderecos.length * 10);
 
+    // Persistir no banco...
     const rota = await this.prisma.rota.create({
       data: {
-        veiculo_id,
-        ordem_ids: orderedEnderecos.filter(e => e && e.id).map(e => String(e.id)),
+        veiculo_id: String(veiculo_id),
+        ordem_ids: orderedEnderecos.map(e => String(e.id)),
       },
     });
 
-    return {
-      id: rota.id,
-      veiculo_id: rota.veiculo_id,
-      ordem_ids: rota.ordem_ids,
-      ordem_sugerida: orderedEnderecos,
-    };
-  }
+  return {
+    id: rota.id,
+    veiculo_id: rota.veiculo_id,
+    ordem_ids: rota.ordem_ids,
+    ordem_sugerida: orderedEnderecos,
+    distancia_total: Number(distanciaEmKm.toFixed(2)), // Envia para o Front
+    tempo_estimado: Math.round(tempoEmMinutos)    // Envia para o Front
+    
+  };
+}
 
   private calculateDistance(p1: Endereco, p2: Endereco): number {
     // Distância Euclidiana simples 
