@@ -40,4 +40,9 @@ export const RoutingApiService = {
     });
     return response.data;
   },
+
+  async geRotaPorVeiculo(veiculoId: string): Promise<any> {
+    const response = await api.get(`/rotas/veiculo/${veiculoId}`);
+    return response.data;
+  },
 };

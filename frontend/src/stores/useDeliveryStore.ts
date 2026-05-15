@@ -1,3 +1,4 @@
+﻿import axios from 'axios';
 import { defineStore } from 'pinia';
 import { ManagementApiService, type Endereco, type Veiculo, type Motorista } from '../services/ManagementApiService';
 import { RoutingApiService, type RotaCalculada } from '../services/RoutingApiService';
@@ -7,15 +8,15 @@ export const useDeliveryStore = defineStore('delivery', {
     enderecos: [] as Endereco[],
     veiculos: [] as Veiculo[],
     motoristas: [] as Motorista[],
-    selectedEnderecoIds: [] as number[],
-    selectedVeiculoId: null as number | null,
+    selectedEnderecoIds: [] as string[],
+    selectedVeiculoId: null as string | null,
     previewRota: null as RotaCalculada | null,
     loading: false,
     error: null as string | null,
   }),
 
   actions: {
-    toggleEnderecoSelection(id: number) {
+    toggleEnderecoSelection(id: string) {
       const index = this.selectedEnderecoIds.indexOf(id);
       if (index === -1) {
         this.selectedEnderecoIds.push(id);
@@ -79,7 +80,7 @@ export const useDeliveryStore = defineStore('delivery', {
       this.loading = true;
       try {
         await ManagementApiService.createEndereco(endereco);
-        await this.fetchEnderecos(); // Recarrega a lista oficial do servidor
+        await this.fetchEnderecos();
         } catch (err: any) {
         this.error = 'Erro ao criar endereco: ' + (err.message || '');
       } finally {
@@ -91,7 +92,7 @@ export const useDeliveryStore = defineStore('delivery', {
       this.loading = true;
       try {
         await ManagementApiService.createVeiculo(veiculo);
-        await this.fetchVeiculos(); // Recarrega a lista oficial do servidor
+        await this.fetchVeiculos();
       } catch (err: any) {
         this.error = 'Erro ao criar veículo: ' + (err.message || '');
       } finally {
@@ -99,7 +100,7 @@ export const useDeliveryStore = defineStore('delivery', {
       }
     },
 
-   async calcularRotaTemporaria() {
+    async calcularRotaTemporaria() {
       if (!this.selectedVeiculoId || this.selectedEnderecoIds.length === 0) {
         this.error = 'Selecione um veículo e pelo menos um endereço.';
         return;
@@ -107,45 +108,26 @@ export const useDeliveryStore = defineStore('delivery', {
 
       this.loading = true;
       try {
-        // 1. Transformamos os IDs selecionados em objetos com coordenadas
         const enderecosComCoordenadas = this.enderecos
-          .filter(e => {
-            // Garante que estamos comparando maçãs com maçãs (ID do endereço selecionado)
-            return this.selectedEnderecoIds.includes(e.id!);
-          })
-          .map(e => {
-            // Se o id for undefined aqui, o problema está na carga inicial dos endereços
-            if (!e.id) {
-              console.error("Endereço encontrado sem ID!", e);
-            }
-            return {
-              id: String(e.id), // Força virar string para o Node/Prisma
-              latitude: Number(e.latitude),
-              longitude: Number(e.longitude)
-            };
-          });
+          .filter(e => this.selectedEnderecoIds.includes(e.id!))
+          .map(e => ({
+            id: String(e.id),
+            latitude: Number(e.latitude),
+            longitude: Number(e.longitude)
+          }));
 
-        // DEBUG CRÍTICO: Veja se o array abaixo tem IDs ou está cheio de "undefined"
-        console.log("Payload para o Node:", {
-          veiculo_id: this.selectedVeiculoId,
-          enderecos: enderecosComCoordenadas
-        });
-
-        // Se estiver vazio ou com IDs inválidos, nem fazemos a chamada
-        if (enderecosComCoordenadas.length === 0 || enderecosComCoordenadas.some(e => e.id === 'undefined')) {
-          this.error = 'Erro: IDs de endereço não encontrados ou inválidos.';
+        if (enderecosComCoordenadas.length === 0) {
+          this.error = 'Erro: IDs de endereço não encontrados.';
           return;
         }
 
-        // 2. Chamada para a API
         this.previewRota = await RoutingApiService.calcularRota(
-          String(this.selectedVeiculoId),
+          this.selectedVeiculoId,
           enderecosComCoordenadas
         );
         
         this.error = null;
       } catch (err: any) {
-        console.error("Erro no cálculo:", err);
         this.error = 'Erro ao calcular rota: ' + (err.message || '');
       } finally {
         this.loading = false;
@@ -157,27 +139,46 @@ export const useDeliveryStore = defineStore('delivery', {
 
       this.loading = true;
       try {
-        // 1. Atribui no microserviço de roteamento (Prisma)
         await RoutingApiService.atribuirRota(
-          this.selectedVeiculoId.toString(),
+          this.selectedVeiculoId,
           this.previewRota.ordem_ids
         );
 
-        // 2. Atualiza status no microserviço de gestão (Rails)
-        // Idealmente seria um endpoint de batch update, mas faremos sequencial para este escopo
-        await Promise.all(
-          this.previewRota.ordem_ids.map(id => 
-            ManagementApiService.updateEnderecoStatus(parseInt(id), 'em rota', this.selectedVeiculoId!)
-          )
-        );
+        await axios.put('http://localhost:3000/enderecos/atualizar_status', {
+           endereco_ids: this.previewRota.ordem_ids,
+           veiculo_id: this.selectedVeiculoId
+        });
 
-        // 3. Limpa seleção e recarrega dados
         this.selectedEnderecoIds = [];
         this.selectedVeiculoId = null;
         this.previewRota = null;
-        await this.fetchEnderecos();
+        await Promise.all([this.fetchEnderecos(), this.fetchVeiculos()]);
       } catch (err: any) {
         this.error = 'Erro ao confirmar atribuição: ' + (err.message || '');
+      } finally {
+        this.loading = false;
+      }
+    },
+
+    async fetchRotaOrdenada(veiculoId: string) {
+      try {
+        const rota = await RoutingApiService.geRotaPorVeiculo(veiculoId);
+        return rota.ordem_ids || [];
+      } catch (err) {
+        return [];
+      }
+    },
+
+    async concluirRota(veiculoId: string) {
+      this.loading = true;
+      try {
+        await ManagementApiService.concluirRota(veiculoId);
+        await this.fetchEnderecos();
+        await this.fetchVeiculos();
+
+        alert("Veiculo liberado com sucesso!")
+      } catch (err: any) {
+        this.error = 'Erro ao concluir rota: ' + err.message;
       } finally {
         this.loading = false;
       }
@@ -185,35 +186,43 @@ export const useDeliveryStore = defineStore('delivery', {
   },
 
   getters: {
-    getEnderecoById: (state) => (id: number) => {
+    getEnderecoById: (state) => (id: string) => {
       return state.enderecos.find(e => e.id === id);
     },
-    getVeiculoById: (state) => (id: number) => {
+    getVeiculoById: (state) => (id: string) => {
       return state.veiculos.find(v => v.id === id);
     },
     enderecosPendentes: (state) => {
-      return state.enderecos.filter(e => e.status === 'pendente' || !e.status);
+      // Filtra apenas quem tem status 'pendente' E não tem veículo atribuído
+      return state.enderecos.filter(e => {
+      const isPendente = e.status?.toLowerCase() === 'pendente';
+      const semVeiculo = !e.veiculo_id || e.veiculo_id === null;
+      
+      // SÓ aparece na lista da esquerda se for pendente E não tiver veículo
+      return isPendente && semVeiculo;});
+    },
+    veiculosDisponiveis: (state) => {
+      return state.veiculos.filter(v => {
+        // Um veículo está disponível se ele NÃO aparecer na lista de Veículos Com Rotas
+        const temRotaAtiva = state.enderecos.some(e => String(e.veiculo_id) === String(v.id));
+        return !temRotaAtiva;
+      });
     },
     veiculosComRotas: (state) => {
+      // Pegamos todos os veículos
       return state.veiculos.map(v => {
-        const rotas = state.enderecos.filter(e => {
-          // Log para você ver no console se os IDs estão batendo
-          // console.log(`Comparando Endereco ${e.veiculo_id} com Veiculo ${v.id}`);
-          
-          const statusMatch = e.status === 'em rota' || e.status === 'em_rota';
-          const veiculoMatch = String(e.veiculo_id) === String(v.id); // Força ambos para String
-          
-          return statusMatch && veiculoMatch;
+        const enderecosDesteVeiculo = state.enderecos.filter(e => {
+          // Comparação blindada
+          return String(e.veiculo_id).trim() === String(v.id).trim() && 
+                e.status?.toLowerCase() !== 'em rota';
         });
-
         return {
           ...v,
-          enderecosAtribuidos: rotas,
+          enderecosAtribuidos: enderecosDesteVeiculo,
           motorista: state.motoristas.find(m => String(m.id) === String(v.motorista_id))
         };
-      });
-    }
+      })
+      .filter(v => v.enderecosAtribuidos.length > 0);
+    },
   }
 });
-
-

@@ -72,7 +72,7 @@ const getStatusColor = (status?: string) => {
                <p class="text-sm font-black text-gray-900 truncate">
                 {{ addr.rua }}, {{ addr.numero }}
               </p>
-              <span v-if="addr.complemento" class="text-[10px] bg-gray-100 px-1.5 py-0.5 rounded font-bold text-gray-400">{{ addr.complemento }}</span>
+              <span v-if="addr.bairro" class="text-[10px] bg-gray-100 px-1.5 py-0.5 rounded font-bold text-gray-400">{{ addr.bairro }}</span>
             </div>
             <p class="text-[11px] font-bold text-gray-400 uppercase tracking-tighter mt-0.5">
               {{ addr.cidade }} - {{ addr.estado }}

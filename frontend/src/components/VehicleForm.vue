@@ -21,7 +21,7 @@ const handleSubmit = async () => {
   try {
     const payload = {
       ...form.value,
-      motorista_id: form.value.motorista_id ? parseInt(form.value.motorista_id as string) : undefined
+      motorista_id: form.value.motorista_id ? String(form.value.motorista_id) : undefined
     };
     await deliveryStore.addVeiculo(payload);
     emit('close');

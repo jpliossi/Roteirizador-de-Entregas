@@ -1,0 +1,50 @@
+﻿import { defineStore } from 'pinia';
+import { ManagementApiService, type Endereco, type Veiculo, type Motorista } from '../services/ManagementApiService';
+import { RoutingApiService, type RotaCalculada } from '../services/RoutingApiService';
+
+export const useDeliveryStore = defineStore('delivery', {
+  state: () => ({
+    enderecos: [] as Endereco[],
+    veiculos: [] as Veiculo[],
+    motoristas: [] as Motorista[],
+    selectedEnderecoIds: [] as number[],
+    selectedVeiculoId: null as number | null,
+    previewRota: null as RotaCalculada | null,
+    loading: false,
+    error: null as string | null,
+  }),
+
+  REPLACE_TOKEN
+    getEnderecoById: (state) => (id: number) => {
+      return state.enderecos.find(e => e.id === id);
+    },
+    getVeiculoById: (state) => (id: number) => {
+      return state.veiculos.find(v => v.id === id);
+    },
+    enderecosPendentes: (state) => {
+      return state.enderecos.filter(e => e.status === 'pendente' || !e.status);
+    },
+    veiculosComRotas: (state) => {
+      return state.veiculos.map(v => {
+        const rotas = state.enderecos.filter(e => {
+          // Log para vocÃª ver no console se os IDs estÃ£o batendo
+          // console.log(`Comparando Endereco ${e.veiculo_id} com Veiculo ${v.id}`);
+          
+          const statusMatch = e.status === 'em rota' || e.status === 'em_rota';
+          const veiculoMatch = String(e.veiculo_id) === String(v.id); // ForÃ§a ambos para String
+          
+          return statusMatch && veiculoMatch;
+        });
+
+        return {
+          ...v,
+          enderecosAtribuidos: rotas,
+          motorista: state.motoristas.find(m => String(m.id) === String(v.motorista_id))
+        };
+      });
+    }
+  }
+);
+
+
+
