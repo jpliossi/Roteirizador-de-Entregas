@@ -107,6 +107,14 @@ export const ManagementApiService = {
     return response.data;
   },
 
+  async deleteMotorista(id: string): Promise<void> {
+    await api.delete(`/motoristas/${id}`);
+  },
+
+  async deleteVeiculo(id: string): Promise<void> {
+    await api.delete(`/veiculos/${id}`);
+  },
+
   async updateEnderecoStatus(id: string, status: string, veiculoId?: string): Promise<Endereco> {
     const response = await api.patch(/enderecos/ + id, {
       endereco: { status, veiculo_id: veiculoId }

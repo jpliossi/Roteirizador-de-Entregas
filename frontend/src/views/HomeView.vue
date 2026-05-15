@@ -1,339 +1,278 @@
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue';
+import { useDeliveryStore } from '../stores/useDeliveryStore';
+import { onMounted, computed, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import { 
-  Users, 
-  MapPin, 
-  Truck, 
-  ArrowRight,
+  TrendingUp,
+  Package,
+  Clock,
+  CheckCircle2,
+  Truck,
+  Layers,
+  Search,
   Plus,
-  Navigation,
-  History
+  ArrowRight,
+  ChevronRight,
+  Play,
+  X,
+  FileText,
+  Calendar,
+  MapPin,
+  History,
+  Users
 } from 'lucide-vue-next';
-import { useDeliveryStore } from '../stores/useDeliveryStore';
-import { RoutingApiService, type RotaCalculada } from '../services/RoutingApiService';
-
-import AppButton from '../components/ui/AppButton.vue';
-import AppCard from '../components/ui/AppCard.vue';
-import AppBadge from '../components/ui/AppBadge.vue';
 import AddressList from '../components/AddressList.vue';
 import VehicleList from '../components/VehicleList.vue';
+import DriverList from '../components/DriverList.vue';
 import AddressForm from '../components/AddressForm.vue';
 import VehicleForm from '../components/VehicleForm.vue';
 import DriverForm from '../components/DriverForm.vue';
+import AppButton from '../components/ui/AppButton.vue';
 
-const route = useRoute();
 const deliveryStore = useDeliveryStore();
-
-const showAddressForm = ref(false);
-const showVehicleForm = ref(false);
-const showDriverForm = ref(false);
-const calculating = ref(false);
-const rotaSugerida = ref<RotaCalculada | null>(null);
-
-const activeView = computed(() => route.name || 'home');
-
-const stats = computed(() => [
-  { label: 'Veículos em Rota', value: deliveryStore.veiculos.filter(v => v.status === 'em rota').length, icon: Navigation, color: 'text-blue-500', bg: 'bg-blue-50' },
-  { label: 'Veículos Ativos', value: deliveryStore.veiculos.length, icon: Truck, color: 'text-indigo-500', bg: 'bg-indigo-50' },
-  { label: 'Motoristas', value: deliveryStore.motoristas.length, icon: Users, color: 'text-emerald-500', bg: 'bg-emerald-50' },
-]);
-
-const canCalculate = computed(() => {
-  return deliveryStore.selectedEnderecoIds.length > 0 && deliveryStore.selectedVeiculoId !== null;
-});
-
-const handleCalculate = async () => {
-  if (!canCalculate.value) return;
-  calculating.value = true;
-  try {
-    const enderecosSelecionados = deliveryStore.enderecos
-      .filter(e => deliveryStore.selectedEnderecoIds.includes(e.id!))
-      .map(e => ({
-        id: String(e.id),
-        latitude: Number(e.latitude),
-        longitude: Number(e.longitude),
-        rua: e.rua,
-        numero: e.numero,
-        cidade: e.cidade
-      }));
-
-    const veiculoId = String(deliveryStore.selectedVeiculoId);
-    const resposta = await RoutingApiService.calcularRota(veiculoId, enderecosSelecionados);
-    rotaSugerida.value = resposta;
-  } catch (err: any) {
-    deliveryStore.error = "Erro ao calcular rota: " + err.message;
-  } finally {
-    calculating.value = false;
-  }
-};
-
-const handleConfirm = async () => {
-  if (!rotaSugerida.value || !deliveryStore.selectedVeiculoId) return;
-  calculating.value = true;
-  try {
-    const ids = deliveryStore.selectedEnderecoIds.map(String);
-    const veiculoId = String(deliveryStore.selectedVeiculoId);
-    await RoutingApiService.atribuirRota(veiculoId, ids);
-    
-    deliveryStore.selectedEnderecoIds = [];
-    deliveryStore.selectedVeiculoId = null;
-    rotaSugerida.value = null;
-    
-    await deliveryStore.fetchEnderecos();
-    await deliveryStore.fetchVeiculos();
-  } catch (err: any) {
-    deliveryStore.error = "Erro ao atribuir rota: " + err.message;
-  } finally {
-    calculating.value = false;
-  }
-};
+const route = useRoute();
 
 onMounted(() => {
   deliveryStore.loadInitialData();
 });
+
+const stats = computed(() => [
+  { 
+    label: 'Pendentes', 
+    value: deliveryStore.enderecos.filter(e => e.status === 'pendente').length, 
+    icon: Clock,
+    color: 'text-amber-600',
+    bg: 'bg-amber-100'
+  },
+  { 
+    label: 'Em Rota', 
+    value: deliveryStore.enderecos.filter(e => e.status === 'em rota').length, 
+    icon: Truck,
+    color: 'text-blue-600',
+    bg: 'bg-blue-100'
+  },
+  { 
+    label: 'Entregues', 
+    value: deliveryStore.enderecos.filter(e => e.status === 'entregue').length, 
+    icon: CheckCircle2,
+    color: 'text-emerald-600',
+    bg: 'bg-emerald-100'
+  },
+  { 
+    label: 'Média de Tempo', 
+    value: '22 min', 
+    icon: TrendingUp,
+    color: 'text-primary',
+    bg: 'bg-primary/10'
+  }
+]);
+
+const canCalculate = computed(() => 
+  deliveryStore.selectedEnderecoIds.length > 0 && deliveryStore.selectedVeiculoId
+);
+
+const handleCalculate = async () => {
+  if (!canCalculate.value) return;
+  await deliveryStore.calcularRota();
+};
+
+const clearSelection = () => {
+  deliveryStore.selectedEnderecoIds = [];
+  deliveryStore.selectedVeiculoId = null;
+};
+
+// Normalização do path para evitar problemas com '/' final ou espaços
+const currentPath = computed(() => route.path.replace(/\/$/, '') || '/');
 </script>
 
 <template>
-  <div class="space-y-8 animate-in fade-in duration-500">
+  <div class="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
     
-    <!-- DASHBOARD VIEW -->
-    <template v-if="activeView === 'home'">
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h1 class="text-3xl font-bold tracking-tight">Centro Operacional</h1>
-          <p class="text-muted-foreground mt-1 text-lg">Visão geral da frota e logística em tempo real.</p>
-        </div>
-        <div class="flex gap-3">
-          <AppButton @click="showAddressForm = true" variant="outline" :icon="Plus">Novo Pedido</AppButton>
-          <AppButton @click="showVehicleForm = true" variant="primary" :icon="Truck">Adicionar Veículo</AppButton>
-        </div>
-      </div>
-
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        <AppCard v-for="stat in stats" :key="stat.label">
-          <div class="flex items-center justify-between">
-            <div>
-              <p class="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{{ stat.label }}</p>
-              <h3 class="text-3xl font-bold mt-1">{{ stat.value }}</h3>
+    <!-- MODO DASHBOARD -->
+    <template v-if="currentPath === '/'">
+      <!-- Summary Cards -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div v-for="stat in stats" :key="stat.label" class="bg-card p-6 rounded-2xl border shadow-sm hover:shadow-md transition-all group overflow-hidden relative">
+          <div :class="['absolute right-0 top-0 w-24 h-24 -mr-8 -mt-8 rounded-full opacity-10 transition-transform group-hover:scale-110', stat.bg]"></div>
+          <div class="flex items-center gap-4">
+            <div :class="['p-3 rounded-xl shrink-0', stat.bg, stat.color]">
+              <component :is="stat.icon" class="w-6 h-6" />
             </div>
-            <div :class="['p-3 rounded-xl', stat.bg]">
-              <component :is="stat.icon" :class="['w-6 h-6', stat.color]" />
+            <div>
+              <p class="text-xs font-bold text-muted-foreground uppercase tracking-wider">{{ stat.label }}</p>
+              <h3 class="text-2xl font-black mt-1">{{ stat.value }}</h3>
             </div>
           </div>
-        </AppCard>
-      </div>
-
-      <!-- Historical / Route Management View -->
-      <div v-if="deliveryStore.veiculos.some(v => v.status === 'em rota')" class="space-y-4">
-        <h2 class="text-xl font-bold flex items-center gap-2">
-          <History class="w-5 h-5 text-muted-foreground" />
-          Acompanhamento de Rotas Ativas
-        </h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <AppCard v-for="veiculo in deliveryStore.veiculos.filter(v => v.status === 'em rota')" :key="veiculo.id" class="border-l-4 border-l-blue-500">
-            <div class="flex justify-between items-start mb-4">
-              <div>
-                <h3 class="font-bold text-lg">{{ veiculo.placa }} - {{ veiculo.modelo }}</h3>
-                <p class="text-sm text-muted-foreground">Motorista: {{ deliveryStore.motoristas.find(m => m.id === veiculo.motorista_id)?.nome || 'Não atribuído' }}</p>
-              </div>
-              <AppBadge variant="secondary" class="bg-blue-100 text-blue-700 hover:bg-blue-100 border-none">Em Rota</AppBadge>
-            </div>
-            
-            <div class="space-y-3 mb-6">
-              <p class="text-xs font-bold uppercase text-muted-foreground tracking-wider">Paradas da Rota</p>
-              <div class="space-y-2">
-                <div v-for="(addr, idx) in deliveryStore.enderecos.filter(e => e.veiculo_id == veiculo.id && e.status === 'em rota')" :key="addr.id" class="flex items-center gap-3 text-sm">
-                  <div class="w-5 h-5 rounded-full bg-slate-100 flex items-center justify-center text-[10px] font-bold">{{ idx + 1 }}</div>
-                  <span class="truncate">{{ addr.rua }}, {{ addr.numero }}</span>
-                </div>
-              </div>
-            </div>
-
-            <AppButton 
-              @click="deliveryStore.concluirRota(String(veiculo.id))" 
-              variant="primary" 
-              class="w-full bg-emerald-600 hover:bg-emerald-700 border-none"
-              :loading="deliveryStore.loading"
-            >
-              Concluir Rota e Liberar Veículo
-            </AppButton>
-          </AppCard>
         </div>
       </div>
 
-      <!-- Quick Actions / Roteirização Inteligente Overlay -->
-      <transition 
-        enter-active-class="transition duration-300 ease-out"
-        enter-from-class="transform -translate-y-4 opacity-0"
-        enter-to-class="transform translate-y-0 opacity-100"
-        leave-active-class="transition duration-200 ease-in"
-        leave-from-class="transform translate-y-0 opacity-100"
-        leave-to-class="transform -translate-y-4 opacity-0"
-      >
-        <div v-if="deliveryStore.selectedEnderecoIds.length > 0" class="relative z-10">
-          <AppCard class="bg-primary text-primary-foreground border-none shadow-2xl">
-            <div class="flex flex-col md:flex-row items-center justify-between gap-6">
-              <div class="flex items-center gap-4">
-                <div class="p-3 bg-white/10 rounded-xl">
-                  <Navigation class="w-6 h-6" />
-                </div>
-                <div>
-                  <h3 class="text-lg font-bold">{{ deliveryStore.selectedEnderecoIds.length }} locais selecionados</h3>
-                  <div class="flex items-center gap-2 mt-1">
-                    <span class="text-xs text-primary-foreground/70 uppercase">Veículo Alvo:</span>
-                    <select 
-                      v-model="deliveryStore.selectedVeiculoId"
-                      class="bg-white/10 border-none text-sm font-medium rounded px-2 py-0.5 focus:ring-0 cursor-pointer"
-                    >
-                      <option :value="null" class="text-foreground">Selecione...</option>
-                      <option v-for="v in deliveryStore.veiculos" :key="v.id!" :value="v.id" class="text-foreground">
-                        {{ v.placa }} ({{ v.modelo }})
-                      </option>
-                    </select>
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        <div class="lg:col-span-8 space-y-8">
+          <div class="flex items-center justify-between">
+            <h2 class="text-xl font-black flex items-center gap-2">
+              <Package class="w-6 h-6 text-primary" />
+              Operações em Tempo Real
+            </h2>
+            <div class="relative hidden md:block">
+              <Search class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+              <input v-model="deliveryStore.searchQuery" placeholder="Filtrar dados..." class="pl-9 pr-4 py-2 bg-muted/50 border rounded-full text-sm focus:ring-2 ring-primary/20 outline-none w-64" />
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <AddressList />
+            <div class="space-y-6">
+               <VehicleList />
+               <DriverList />
+            </div>
+          </div>
+        </div>
+
+        <!-- Sidebar Dashboard -->
+        <div class="lg:col-span-4 space-y-6 sticky top-8">
+          <div class="bg-card border rounded-3xl p-6 shadow-sm">
+            <div class="flex items-center justify-between mb-6">
+              <h3 class="text-lg font-black flex items-center gap-2">
+                <Layers class="w-5 h-5 text-primary" />
+                Atribuição de Rota
+              </h3>
+              <button @click="clearSelection" v-if="deliveryStore.selectedEnderecoIds.length || deliveryStore.selectedVeiculoId" class="text-[10px] text-muted-foreground hover:text-primary underline uppercase font-bold">Limpar</button>
+            </div>
+
+            <div class="space-y-4">
+              <div class="p-4 rounded-2xl bg-muted/30 border border-dashed flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                  <div class="p-2 bg-primary/10 rounded-lg"><Package class="w-4 h-4 text-primary" /></div>
+                  <div>
+                    <p class="text-[10px] uppercase font-bold text-muted-foreground">Entregas</p>
+                    <p class="text-sm font-black">{{ deliveryStore.selectedEnderecoIds.length }} selecionadas</p>
                   </div>
                 </div>
               </div>
-              <div class="flex gap-3">
-                <AppButton 
-                  @click="handleCalculate" 
-                  variant="secondary" 
-                  :loading="calculating"
-                  v-if="!rotaSugerida"
-                >
-                  Otimizar Rota
-                </AppButton>
-                <AppButton 
-                  @click="handleConfirm" 
-                  variant="secondary" 
-                  class="bg-emerald-500 hover:bg-emerald-600 border-none text-white font-bold"
-                  v-if="rotaSugerida"
-                  :loading="calculating"
-                >
-                  Confirmar e Atribuir
+
+              <div class="p-4 rounded-2xl border transition-all" :class="deliveryStore.selectedVeiculoId ? 'bg-primary/5 border-primary/20' : 'bg-muted/30 border-dashed'">
+                <div class="flex items-center gap-3">
+                  <div :class="['p-2 rounded-lg', deliveryStore.selectedVeiculoId ? 'bg-primary/20' : 'bg-muted']"><Truck class="w-4 h-4" :class="deliveryStore.selectedVeiculoId ? 'text-primary' : 'text-muted-foreground'" /></div>
+                  <div>
+                    <p class="text-[10px] uppercase font-bold text-muted-foreground">Veículo</p>
+                    <p class="text-sm font-black" v-if="deliveryStore.selectedVeiculoId">{{ deliveryStore.veiculos.find(v => String(v.id) === deliveryStore.selectedVeiculoId)?.placa || 'Selecionado' }}</p>
+                    <p class="text-xs text-muted-foreground italic" v-else>Nenhum selecionado</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="pt-4">
+                <AppButton class="w-full rounded-2xl h-14 font-bold text-base shadow-lg shadow-primary/20" variant="primary" :disabled="!canCalculate" :loading="deliveryStore.loading" @click="handleCalculate">
+                  <Play class="w-5 h-5 mr-2" />
+                  Iniciar Roteirização
                 </AppButton>
               </div>
             </div>
-            
-            <!-- Sugestão de Rota Inline -->
-            <transition mode="out-in">
-              <div v-if="rotaSugerida" class="mt-6 pt-6 border-t border-white/10 grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div class="space-y-1">
-                  <p class="text-xs text-primary-foreground/60 font-bold uppercase">Estimativa</p>
-                  <p class="text-2xl font-black">{{ rotaSugerida.distancia_total }} km <span class="text-sm font-normal opacity-60">/ {{ rotaSugerida.tempo_estimado }} min</span></p>
+          </div>
+
+          <!-- Rota Result -->
+          <div v-if="deliveryStore.results" class="bg-primary text-white rounded-3xl p-6 shadow-xl animate-in fade-in zoom-in duration-300">
+             <div class="flex justify-between items-start mb-4">
+               <div class="bg-white/20 p-2 rounded-lg"><TrendingUp class="w-5 h-5" /></div>
+               <button @click="deliveryStore.results = null" class="p-1 hover:bg-white/10 rounded-full transition-colors"><X class="w-4 h-4" /></button>
+             </div>
+             <h4 class="font-black text-xl mb-1">Rota Otimizada</h4>
+             <div class="grid grid-cols-2 gap-4 border-t border-white/10 pt-4 mt-4">
+                <div><p class="text-[10px] text-white/60 uppercase font-black">Distância</p><p class="text-lg font-black">{{ deliveryStore.results.distancia_total_km || 0 }} km</p></div>
+                <div><p class="text-[10px] text-white/60 uppercase font-black">Tempo Est.</p><p class="text-lg font-black">{{ deliveryStore.results.tempo_total_estimado || '0 min' }}</p></div>
+             </div>
+             <AppButton variant="outline" class="w-full mt-6 bg-white text-primary hover:bg-white/90 font-bold rounded-xl h-12 transition-all active:scale-95" @click="deliveryStore.concluirRota(deliveryStore.results.id)">Finalizar Entrega</AppButton>
+          </div>
+        </div>
+      </div>
+    </template>
+
+    <!-- MODO RELATÓRIO DE ROTAS -->
+    <template v-else-if="currentPath === '/rotas'">
+       <div class="space-y-6">
+          <div class="flex items-center gap-3">
+             <div class="p-3 bg-primary/10 rounded-2xl text-primary"><History class="w-6 h-6" /></div>
+             <div>
+                <h2 class="text-2xl font-black tracking-tight">Relatório de Roteirização</h2>
+                <p class="text-muted-foreground text-sm font-medium uppercase tracking-widest text-[10px]">Todas as rotas atribuídas e finalizadas</p>
+             </div>
+          </div>
+
+          <div v-if="deliveryStore.finalizedRoutes.length === 0" class="bg-card border rounded-3xl p-20 text-center flex flex-col items-center gap-4">
+             <div class="w-20 h-20 bg-muted rounded-full flex items-center justify-center opacity-30"><FileText class="w-10 h-10" /></div>
+             <p class="text-muted-foreground font-medium italic">Nenhuma rota finalizada para exibir no relatório.</p>
+          </div>
+
+          <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+             <div v-for="routeItem in deliveryStore.finalizedRoutes" :key="routeItem.id" class="bg-card border rounded-3xl p-6 shadow-sm hover:shadow-md transition-all">
+                <div class="flex justify-between items-center mb-4 pb-4 border-b">
+                   <div class="flex items-center gap-2">
+                      <Truck class="w-4 h-4 text-primary" />
+                      <span class="font-black text-sm uppercase">{{ routeItem.veiculo }}</span>
+                   </div>
+                   <span class="text-[9px] font-bold bg-muted px-2 py-1 rounded-full text-muted-foreground">{{ routeItem.data }}</span>
                 </div>
-                <div class="md:col-span-2">
-                   <p class="text-xs text-primary-foreground/60 font-bold uppercase mb-2">Sequência Sugerida</p>
-                   <div class="flex flex-wrap gap-2" v-if="rotaSugerida.ordem_sugerida">
-                     <span v-for="(ponto, i) in rotaSugerida.ordem_sugerida" :key="i" class="flex items-center gap-2 bg-white/10 px-3 py-1.5 rounded-lg text-sm">
-                       <span class="w-5 h-5 flex items-center justify-center bg-white/20 rounded-full text-[10px]">{{ i+1 }}</span>
-                       {{ ponto.rua }}, {{ ponto.numero }}
-                       <ArrowRight v-if="i < rotaSugerida.ordem_sugerida.length - 1" class="w-3 h-3 opacity-40" />
-                     </span>
+                
+                <div class="space-y-3">
+                   <div class="flex justify-between">
+                      <span class="text-xs font-bold text-muted-foreground uppercase tracking-widest text-[9px]">Distância</span>
+                      <span class="font-black text-sm">{{ routeItem.distancia_total_km }} km</span>
+                   </div>
+                   <div class="flex justify-between">
+                      <span class="text-xs font-bold text-muted-foreground uppercase tracking-widest text-[9px]">Tempo Estimado</span>
+                      <span class="font-black text-sm">{{ routeItem.tempo_total_estimado }}</span>
+                   </div>
+                   <div class="flex justify-between">
+                      <span class="text-xs font-bold text-muted-foreground uppercase tracking-widest text-[9px]">Status</span>
+                      <span class="text-[10px] font-black uppercase text-emerald-600 flex items-center gap-1"><CheckCircle2 class="w-3 h-3"/> Finalizada</span>
                    </div>
                 </div>
-              </div>
-            </transition>
-          </AppCard>
-        </div>
-      </transition>
-
-      <!-- Main Activity Area -->
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div class="lg:col-span-2 space-y-4">
-          <div class="flex items-center justify-between">
-            <h2 class="text-xl font-bold flex items-center gap-2">
-              <MapPin class="w-5 h-5 text-muted-foreground" />
-              Gestão de Pedidos
-            </h2>
+             </div>
           </div>
-          <AddressList />
-        </div>
-
-        <div class="space-y-8">
-          <div class="space-y-4">
-            <h2 class="text-xl font-bold flex items-center gap-2">
-              <Truck class="w-5 h-5 text-muted-foreground" />
-              Frota Ativa
-            </h2>
-            <VehicleList />
-          </div>
-        </div>
-      </div>
+       </div>
     </template>
 
-    <!-- OTHER VIEWS -->
-    <template v-else>
-       <div class="flex items-center justify-between mb-8">
-        <div>
-          <h1 class="text-3xl font-bold tracking-tight capitalize">{{ activeView }}</h1>
-          <p class="text-muted-foreground mt-1">Gestão detalhada de {{ activeView }}.</p>
-        </div>
-        <AppButton @click="showAddressForm = true" v-if="activeView === 'enderecos'" :icon="Plus">Novo Endereço</AppButton>
-        <AppButton @click="showVehicleForm = true" v-if="activeView === 'veiculos'" :icon="Plus">Novo Veículo</AppButton>
-        <AppButton @click="showDriverForm = true" v-if="activeView === 'motoristas'" :icon="Plus">Novo Motorista</AppButton>
-      </div>
-      
-      <div v-if="activeView === 'enderecos'" class="animate-in slide-in-from-bottom-2 duration-300">
-        <AddressList />
-      </div>
-      <div v-if="activeView === 'veiculos'" class="animate-in slide-in-from-bottom-2 duration-300">
-        <VehicleList />
-      </div>
-      <div v-if="activeView === 'motoristas'" class="animate-in slide-in-from-bottom-2 duration-300">
-        <AppCard>
-           <div class="divide-y">
-             <div v-for="m in deliveryStore.motoristas" :key="m.id" class="py-4 flex items-center justify-between">
-               <div class="flex items-center gap-4">
-                 <div class="w-12 h-12 rounded-full bg-indigo-50 flex items-center justify-center text-indigo-600 font-bold border border-indigo-100">
-                   {{ m.nome.substring(0,2).toUpperCase() }}
-                 </div>
-                 <div>
-                   <p class="font-bold">{{ m.nome }}</p>
-                   <p class="text-sm text-muted-foreground">CPF: {{ m.cpf }}</p>
-                 </div>
-               </div>
-               <div class="flex items-center gap-4">
-                 <AppBadge variant="success">Disponível</AppBadge>
-                 <AppButton variant="ghost" size="icon"><History class="w-4 h-4" /></AppButton>
-               </div>
+    <!-- MODO ENDEREÇOS -->
+    <template v-else-if="currentPath === '/enderecos'">
+       <div class="flex flex-col lg:flex-row gap-8">
+          <div class="flex-1 space-y-4">
+             <div class="flex items-center gap-2 mb-4">
+                <MapPin class="w-5 h-5 text-primary" />
+                <h2 class="text-xl font-black">Cadastro de Destinos</h2>
              </div>
-             <div v-if="deliveryStore.motoristas.length === 0" class="py-12 text-center text-muted-foreground">
-               Nenhum motorista cadastrado.
-             </div>
-           </div>
-        </AppCard>
-      </div>
-      <div v-if="activeView === 'rotas'" class="bg-primary rounded-2xl p-12 text-center text-primary-foreground min-h-100 flex flex-col items-center justify-center border shadow-xl overflow-hidden relative">
-        <div class="absolute inset-0 bg-[radial-gradient(circle_at_50%_120%,rgba(120,119,198,0.3),rgba(255,255,255,0))]"></div>
-        <Navigation class="w-20 h-20 mb-6 opacity-20 animate-pulse relative z-10" />
-        <h2 class="text-3xl font-bold relative z-10">Mapa Geo-Inteligente</h2>
-        <p class="text-primary-foreground/60 mt-2 max-w-md relative z-10">Módulo de visualização cartográfica em tempo real sendo sincronizado com o provedor de mapas.</p>
-        <AppButton variant="secondary" class="mt-8 relative z-10">Conectar GPS</AppButton>
-      </div>
+             <AddressList :show-all="true" />
+          </div>
+          <div class="w-full lg:w-96"><AddressForm /></div>
+       </div>
     </template>
 
-    <!-- Modals -->
-    <div v-if="showAddressForm || showVehicleForm || showDriverForm" class="fixed inset-0 z-100 flex items-center justify-center p-4">
-      <div class="absolute inset-0 bg-background/80 backdrop-blur-md" @click="showAddressForm = showVehicleForm = showDriverForm = false"></div>
-      <div class="w-full max-w-lg relative z-10 animate-in zoom-in-95 duration-200">
-        <AddressForm v-if="showAddressForm" @close="showAddressForm = false" />
-        <VehicleForm v-if="showVehicleForm" @close="showVehicleForm = false" />
-        <DriverForm v-if="showDriverForm" @close="showDriverForm = false" />
-      </div>
-    </div>
+    <!-- MODO VEÍCULOS -->
+    <template v-else-if="currentPath === '/veiculos'">
+       <div class="flex flex-col lg:flex-row gap-8">
+          <div class="flex-1 space-y-4">
+             <div class="flex items-center gap-2 mb-4">
+                <Truck class="w-5 h-5 text-primary" />
+                <h2 class="text-xl font-black">Frota Registrada</h2>
+             </div>
+             <VehicleList />
+          </div>
+          <div class="w-full lg:w-96"><VehicleForm /></div>
+       </div>
+    </template>
+
+    <!-- MODO MOTORISTAS -->
+    <template v-else-if="currentPath === '/motoristas'">
+       <div class="flex flex-col lg:flex-row gap-8">
+          <div class="flex-1 space-y-4">
+             <div class="flex items-center gap-2 mb-4">
+                <Users class="w-5 h-5 text-primary" />
+                <h2 class="text-xl font-black">Motoristas Ativos</h2>
+             </div>
+             <DriverList />
+          </div>
+          <div class="w-full lg:w-96"><DriverForm /></div>
+       </div>
+    </template>
+
   </div>
 </template>
-
-<style scoped>
-.v-enter-active,
-.v-leave-active {
-  transition: all 0.3s ease;
-}
-
-.v-enter-from,
-.v-leave-to {
-  opacity: 0;
-  transform: translateY(10px);
-}
-</style>

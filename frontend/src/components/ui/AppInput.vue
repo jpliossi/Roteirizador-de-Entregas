@@ -1,23 +1,31 @@
 <script setup lang="ts">
+// 1. Desabilitamos a herança automática
+defineOptions({
+  inheritAttrs: false
+});
+
 defineProps<{
   label?: string;
   error?: string;
   modelValue?: string | number;
 }>();
+
 defineEmits(['update:modelValue']);
 </script>
 
 <template>
-  <div class="space-y-2">
-    <label v-if="label" class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+  <div class="space-y-1.5">
+    <label v-if="label" class="text-[10px] font-black uppercase text-muted-foreground ml-1 tracking-widest">
       {{ label }}
     </label>
+    
     <input
       :value="modelValue"
-      @input="$emit('update:modelValue', ($event.target as HTMLInputElement).value)"
+      @input="$event => $emit('update:modelValue', ($event.target as HTMLInputElement).value)"
       v-bind="$attrs"
-      class="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+      class="flex h-12 w-full rounded-xl border border-input bg-background px-4 py-2 text-sm shadow-sm transition-all file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
     />
-    <p v-if="error" class="text-xs font-medium text-destructive">{{ error }}</p>
+    
+    <p v-if="error" class="text-xs font-medium text-destructive mt-1">{{ error }}</p>
   </div>
 </template>
