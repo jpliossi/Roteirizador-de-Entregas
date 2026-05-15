@@ -5,8 +5,34 @@ const router = createRouter({
   routes: [
     {
       path: '/',
-      name: 'home',
-      component: () => import('@/views/HomeView.vue')
+      component: () => import('@/layouts/DashboardLayout.vue'),
+      children: [
+        {
+          path: '',
+          name: 'home',
+          component: () => import('@/views/HomeView.vue')
+        },
+        {
+          path: 'enderecos',
+          name: 'enderecos',
+          component: () => import('@/views/HomeView.vue') // Placeholder logic: for now HomeView handles all in current SPA
+        },
+        {
+          path: 'veiculos',
+          name: 'veiculos',
+          component: () => import('@/views/HomeView.vue')
+        },
+        {
+          path: 'motoristas',
+          name: 'motoristas',
+          component: () => import('@/views/HomeView.vue')
+        },
+        {
+          path: 'rotas',
+          name: 'rotas',
+          component: () => import('@/views/HomeView.vue')
+        }
+      ]
     }
   ]
 })

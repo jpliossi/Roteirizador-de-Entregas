@@ -3,6 +3,8 @@ import { defineStore } from 'pinia';
 import { ManagementApiService, type Endereco, type Veiculo, type Motorista } from '../services/ManagementApiService';
 import { RoutingApiService, type RotaCalculada } from '../services/RoutingApiService';
 
+import { toast } from 'vue-sonner';
+
 export const useDeliveryStore = defineStore('delivery', {
   state: () => ({
     enderecos: [] as Endereco[],
@@ -48,6 +50,21 @@ export const useDeliveryStore = defineStore('delivery', {
       }
     },
 
+    async concluirRota(veiculoId: string) {
+      this.loading = true;
+      try {
+        await ManagementApiService.concluirRota(veiculoId);
+        await this.fetchEnderecos();
+        await this.fetchVeiculos();
+        toast.success('Rota concluída e veículo liberado!');
+      } catch (err: any) {
+        this.error = 'Erro ao concluir rota: ' + (err.message || '');
+        toast.error('Erro ao concluir rota');
+      } finally {
+        this.loading = false;
+      }
+    },
+
     async fetchMotoristas() {
       this.loading = true;
       try {
@@ -66,11 +83,14 @@ export const useDeliveryStore = defineStore('delivery', {
 
     async addMotorista(motorista: Motorista) {
       this.loading = true;
+      const t = toast.loading('Credenciando motorista...');
       try {
         await ManagementApiService.createMotorista(motorista);
         await this.fetchMotoristas();
+        toast.success('Motorista credenciado com sucesso', { id: t });
       } catch (err: any) {
         this.error = 'Erro ao criar motorista: ' + (err.message || '');
+        toast.error(this.error, { id: t });
       } finally {
         this.loading = false;
       }
@@ -78,11 +98,14 @@ export const useDeliveryStore = defineStore('delivery', {
 
     async addEndereco(endereco: Endereco) {
       this.loading = true;
+      const t = toast.loading('Registrando pedido...');
       try {
         await ManagementApiService.createEndereco(endereco);
         await this.fetchEnderecos();
+        toast.success('Pedido registrado no sistema', { id: t });
         } catch (err: any) {
         this.error = 'Erro ao criar endereco: ' + (err.message || '');
+        toast.error(this.error, { id: t });
       } finally {
         this.loading = false;
       }
@@ -90,11 +113,14 @@ export const useDeliveryStore = defineStore('delivery', {
 
     async addVeiculo(veiculo: Veiculo) {
       this.loading = true;
+      const t = toast.loading('Incorporando veículo...');
       try {
         await ManagementApiService.createVeiculo(veiculo);
         await this.fetchVeiculos();
+        toast.success('Veículo pronto para operação', { id: t });
       } catch (err: any) {
         this.error = 'Erro ao criar veículo: ' + (err.message || '');
+        toast.error(this.error, { id: t });
       } finally {
         this.loading = false;
       }
@@ -166,21 +192,6 @@ export const useDeliveryStore = defineStore('delivery', {
         return rota.ordem_ids || [];
       } catch (err) {
         return [];
-      }
-    },
-
-    async concluirRota(veiculoId: string) {
-      this.loading = true;
-      try {
-        await ManagementApiService.concluirRota(veiculoId);
-        await this.fetchEnderecos();
-        await this.fetchVeiculos();
-
-        alert("Veiculo liberado com sucesso!")
-      } catch (err: any) {
-        this.error = 'Erro ao concluir rota: ' + err.message;
-      } finally {
-        this.loading = false;
       }
     }
   },

@@ -1,29 +1,26 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { useDeliveryStore } from '../stores/useDeliveryStore';
-import { storeToRefs } from 'pinia';
+import { Truck, X, Save } from 'lucide-vue-next';
+import AppButton from './ui/AppButton.vue';
+import AppInput from './ui/AppInput.vue';
+import AppCard from './ui/AppCard.vue';
 
-const emit = defineEmits(['close']);
 const deliveryStore = useDeliveryStore();
-const { motoristas } = storeToRefs(deliveryStore);
+const emit = defineEmits(['close']);
 
+const isSubmitting = ref(false);
 const form = ref({
   placa: '',
   modelo: '',
-  capacidade: 0,
-  motorista_id: '' as string | number
+  capacidade: 1000
 });
 
-const isSubmitting = ref(false);
-
 const handleSubmit = async () => {
+  if (!form.value.placa || !form.value.modelo) return;
   isSubmitting.value = true;
   try {
-    const payload = {
-      ...form.value,
-      motorista_id: form.value.motorista_id ? String(form.value.motorista_id) : undefined
-    };
-    await deliveryStore.addVeiculo(payload);
+    await deliveryStore.addVeiculo(form.value);
     emit('close');
   } catch (err) {
     console.error(err);
@@ -34,46 +31,37 @@ const handleSubmit = async () => {
 </script>
 
 <template>
-  <div class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-    <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-8 transform transition-all scale-100">
-      <div class="flex justify-between items-center mb-6">
-        <h2 class="text-2xl font-black text-gray-900 uppercase tracking-tighter">Novo Veículo</h2>
-        <button @click="$emit('close')" class="text-gray-400 hover:text-gray-600 transition-colors">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12" stroke-width="2.5" /></svg>
+  <AppCard class="shadow-2xl border-none p-0 overflow-hidden">
+    <template #header>
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-3">
+           <div class="p-2 bg-primary/10 rounded-lg">
+             <Truck class="w-5 h-5 text-primary" />
+           </div>
+           <div>
+             <h2 class="text-xl font-bold">Incorporar Veículo</h2>
+             <p class="text-xs text-muted-foreground uppercase font-semibold">Expansão de Frota</p>
+           </div>
+        </div>
+        <button @click="emit('close')" class="p-2 hover:bg-muted rounded-full transition-colors">
+          <X class="w-5 h-5" />
         </button>
       </div>
+    </template>
 
-      <form @submit.prevent="handleSubmit" class="space-y-5">
-        <div>
-          <label class="block text-xs font-black uppercase text-gray-500 mb-1 ml-1">Placa</label>
-          <input v-model="form.placa" type="text" required class="block w-full px-4 py-3 bg-gray-50 border-2 border-gray-100 rounded-xl focus:border-indigo-600 focus:bg-white outline-none transition-all font-bold text-gray-900" placeholder="ABC-1234">
-        </div>
-        <div>
-          <label class="block text-xs font-black uppercase text-gray-500 mb-1 ml-1">Modelo</label>
-          <input v-model="form.modelo" type="text" required class="block w-full px-4 py-3 bg-gray-50 border-2 border-gray-100 rounded-xl focus:border-indigo-600 focus:bg-white outline-none transition-all font-bold text-gray-900" placeholder="Ex: Mercedes Sprinter">
-        </div>
-        <div>
-          <label class="block text-xs font-black uppercase text-gray-500 mb-1 ml-1">Capacidade (m³)</label>
-          <input v-model.number="form.capacidade" type="number" required class="block w-full px-4 py-3 bg-gray-50 border-2 border-gray-100 rounded-xl focus:border-indigo-600 focus:bg-white outline-none transition-all font-bold text-gray-900">
-        </div>
+    <form @submit.prevent="handleSubmit" class="space-y-6">
+      <div class="grid grid-cols-2 gap-4">
+        <AppInput v-model="form.placa" label="Placa" placeholder="ABC-1234" />
+        <AppInput v-model="form.modelo" label="Modelo" placeholder="MB Sprinter" />
+      </div>
 
-        <div>
-          <label class="block text-xs font-black uppercase text-gray-500 mb-1 ml-1">Motorista Responsável</label>
-          <select v-model="form.motorista_id" class="block w-full px-4 py-3 bg-gray-50 border-2 border-gray-100 rounded-xl focus:border-indigo-600 focus:bg-white outline-none transition-all font-bold text-gray-900 appearance-none">
-            <option value="">Nenhum motorista vinculado</option>
-            <option v-for="m in motoristas" :key="m.id" :value="m.id">{{ m.nome }} ({{ m.cpf }})</option>
-          </select>
-        </div>
+      <AppInput v-model="form.capacidade" label="Capacidade de Carga (kg)" type="number" />
 
-        <div class="flex flex-col gap-3 pt-6">
-          <button type="submit" :disabled="isSubmitting" class="w-full py-4 bg-indigo-600 text-white font-black rounded-xl hover:bg-indigo-700 disabled:opacity-50 transition-all shadow-lg shadow-indigo-200 uppercase tracking-widest text-sm">
-            {{ isSubmitting ? 'Salvando...' : 'Cadastrar Veículo' }}
-          </button>
-          <button type="button" @click="$emit('close')" class="w-full py-3 text-gray-400 font-bold hover:text-gray-600 transition-all text-sm uppercase">
-            Cancelar
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>
+      <div class="flex gap-3 pt-2">
+        <AppButton type="submit" variant="primary" class="w-full h-12 text-md font-bold" :loading="isSubmitting" :icon="Save">
+          Confirmar Cadastro
+        </AppButton>
+      </div>
+    </form>
+  </AppCard>
 </template>

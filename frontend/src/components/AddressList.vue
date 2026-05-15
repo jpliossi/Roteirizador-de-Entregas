@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { useDeliveryStore } from '../stores/useDeliveryStore';
 import { onMounted } from 'vue';
+import { MapPin, RefreshCcw, CheckCircle2, Clock } from 'lucide-vue-next';
+import AppBadge from './ui/AppBadge.vue';
+import AppButton from './ui/AppButton.vue';
 
 const deliveryStore = useDeliveryStore();
 
@@ -10,85 +13,79 @@ onMounted(() => {
   }
 });
 
-const getStatusColor = (status?: string) => {
+const getStatusVariant = (status?: string) => {
   switch (status?.toLowerCase()) {
-    case 'pendente': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-    case 'em rota': return 'bg-blue-100 text-blue-800 border-blue-200';
-    case 'entregue': return 'bg-green-100 text-green-800 border-green-200';
-    default: return 'bg-gray-100 text-gray-800 border-gray-200';
+    case 'pendente': return 'warning';
+    case 'em rota': return 'secondary';
+    case 'entregue': return 'success';
+    default: return 'outline';
   }
 };
 </script>
 
 <template>
-  <div class="bg-white shadow-md rounded-lg overflow-hidden border border-gray-200">
-    <div class="px-6 py-4 bg-gray-50 border-b border-gray-200 flex justify-between items-center">
-      <h3 class="text-lg font-semibold text-gray-800">Endereços para Entrega</h3>
-      <button 
-        @click="deliveryStore.fetchEnderecos()" 
-        class="text-sm text-blue-600 hover:text-blue-800 font-medium"
-        :disabled="deliveryStore.loading"
-      >
-        {{ deliveryStore.loading ? 'Atualizando...' : 'Atualizar' }}
-      </button>
+  <div class="bg-card border rounded-xl overflow-hidden shadow-sm">
+    <div class="px-6 py-4 border-b flex justify-between items-center bg-muted/30">
+      <div class="flex items-center gap-2">
+        <MapPin class="w-4 h-4 text-primary" />
+        <h3 class="font-bold text-sm uppercase tracking-wider">Endereços Pendentes</h3>
+      </div>
+      <AppButton variant="ghost" size="sm" @click="deliveryStore.fetchEnderecos()" :loading="deliveryStore.loading">
+        <RefreshCcw class="w-3.5 h-3.5 mr-2" v-if="!deliveryStore.loading" />
+        Sincronizar
+      </AppButton>
     </div>
 
-    <div v-if="deliveryStore.loading && deliveryStore.enderecos.length === 0" class="p-8 text-center">
-      <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-      <p class="mt-2 text-gray-500">Carregando endereços...</p>
+    <div v-if="deliveryStore.loading && deliveryStore.enderecos.length === 0" class="p-12 text-center text-muted-foreground">
+      <div class="inline-block animate-spin rounded-full h-8 w-8 border-2 border-primary border-t-transparent mb-4"></div>
+      <p class="text-sm font-medium">Buscando geolocalização...</p>
     </div>
 
-    <div v-else-if="deliveryStore.enderecos.length === 0" class="p-8 text-center text-gray-500">
-      Nenhum endereço encontrado.
+    <div v-else-if="deliveryStore.enderecos.length === 0" class="p-12 text-center text-muted-foreground border-dashed border-2 m-4 rounded-xl">
+      <p class="text-sm">Sem pedidos pendentes no momento.</p>
     </div>
 
-    <ul v-else class="divide-y divide-gray-200">
-      <li 
-        v-for="addr in deliveryStore.enderecosPendentes" 
+    <div v-else class="divide-y overflow-y-auto max-h-[600px] scrollbar-thin">
+      <div 
+        v-for="addr in deliveryStore.enderecos" 
         :key="addr.id" 
-        class="group px-6 py-5 transition-all cursor-pointer border-l-4"
+        class="group p-4 transition-all cursor-pointer flex items-center gap-4 relative border-l-4"
         :class="[
           deliveryStore.selectedEnderecoIds.includes(addr.id!) 
-            ? 'bg-blue-100/50 border-blue-600' 
-            : 'hover:bg-gray-50 border-transparent'
+            ? 'bg-primary/5 border-primary' 
+            : 'hover:bg-muted/50 border-transparent'
         ]"
         @click="deliveryStore.toggleEnderecoSelection(addr.id!)"
       >
-        <div class="flex items-center space-x-6">
-          <div class="flex-shrink-0">
-            <div 
-              class="w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-all"
-              :class="[
-                deliveryStore.selectedEnderecoIds.includes(addr.id!)
-                  ? 'bg-blue-600 border-blue-600'
-                  : 'bg-white border-gray-200 group-hover:border-blue-400'
-              ]"
-            >
-              <svg v-if="deliveryStore.selectedEnderecoIds.includes(addr.id!)" class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke-width="3"/></svg>
-            </div>
+        <div 
+          class="w-5 h-5 rounded border-2 flex items-center justify-center transition-all flex-shrink-0"
+          :class="[
+            deliveryStore.selectedEnderecoIds.includes(addr.id!)
+              ? 'bg-primary border-primary'
+              : 'bg-transparent border-muted group-hover:border-primary/50'
+          ]"
+        >
+          <svg v-if="deliveryStore.selectedEnderecoIds.includes(addr.id!)" class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke-width="3"/></svg>
+        </div>
+
+        <div class="flex-1 min-w-0">
+          <div class="flex items-center gap-2">
+            <p class="font-bold text-sm truncate">{{ addr.rua }}, {{ addr.numero }}</p>
+            <AppBadge :variant="getStatusVariant(addr.status || 'pendente')">{{ addr.status || 'Pendente' }}</AppBadge>
           </div>
-          <div class="flex-1 min-w-0">
-            <div class="flex items-center gap-2">
-               <p class="text-sm font-black text-gray-900 truncate">
-                {{ addr.rua }}, {{ addr.numero }}
-              </p>
-              <span v-if="addr.bairro" class="text-[10px] bg-gray-100 px-1.5 py-0.5 rounded font-bold text-gray-400">{{ addr.bairro }}</span>
-            </div>
-            <p class="text-[11px] font-bold text-gray-400 uppercase tracking-tighter mt-0.5">
-              {{ addr.cidade }} - {{ addr.estado }}
-            </p>
-          </div>
-          <div class="ml-4 flex flex-col items-end gap-1">
-            <span 
-              class="inline-flex items-center px-3 py-1 rounded-full text-[9px] font-black uppercase border shadow-sm"
-              :class="getStatusColor(addr.status)"
-            >
-              {{ addr.status || 'Pendente' }}
-            </span>
-            <span class="text-[9px] font-black text-gray-300 uppercase letter tracking-widest">REF: #{{ addr.id }}</span>
+          <p class="text-xs text-muted-foreground flex items-center mt-1">
+            <span class="truncate">{{ addr.bairro }} • {{ addr.cidade }}</span>
+          </p>
+        </div>
+
+        <div class="text-right flex-shrink-0">
+          <p class="text-[10px] font-bold text-muted-foreground uppercase opacity-40">#{{ addr.id }}</p>
+          <div class="flex gap-1 mt-2 justify-end">
+             <CheckCircle2 class="w-3 h-3 text-emerald-500" v-if="addr.status === 'entregue'" />
+             <Clock class="w-3 h-3 text-amber-500" v-if="addr.status === 'pendente'" />
           </div>
         </div>
-      </li>
-    </ul>
+      </div>
+    </div>
   </div>
 </template>

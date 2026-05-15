@@ -46,23 +46,43 @@ Thumbs.db
 .docker-data/
 *.log
 docker-compose.override.yml
-# Raiz
-node_modules/
-package-lock.json
 
-# Routing API (Node/TypeScript + Prisma)
-/routing-api/node_modules/
-/routing-api/dist/
-/routing-api/.env
-/routing-api/prisma/migrations/
-/routing-api/test-results/
-/routing-api/coverage/
+# Compiled files / OS
+*.class
+*.exe
+*.dll
+*.so
+*.dylib
+bin/
+obj/
+out/
+build/
+.cache/
+.parcel-cache/
+.eslintcache
+.stylelintcache
 
-# Frontend
-/frontend/node_modules/
-/frontend/dist/
-/frontend/.vscode/
-/routing-api/node_modules/
-/routing-api/dist/
-/routing-api/.env
-/routing-api/prisma/migrations/
+# Ruby/Rails (additional)
+/management-api/.ruby-version
+/management-api/.ruby-lsp/
+/management-api/.bundle/
+/management-api/db/*.sqlite3
+/management-api/db/*.sqlite3-journal
+/management-api/log/*.log
+/management-api/tmp/
+/management-api/public/assets
+/management-api/public/packs
+/management-api/public/vite
+/management-api/node_modules/
+/management-api/vendor/bundle
+
+# Mac/Windows
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Desktop.ini
+

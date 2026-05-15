@@ -1,36 +1,39 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { useDeliveryStore } from '../stores/useDeliveryStore';
-import { GeocodingService } from '../services/ManagementApiService'; // Certifique-se que o caminho está correto
-import type { Endereco } from '../services/ManagementApiService';
+import { GeocodingService } from '../services/ManagementApiService';
+import { MapPin, X, Navigation, Search } from 'lucide-vue-next';
+import AppButton from './ui/AppButton.vue';
+import AppInput from './ui/AppInput.vue';
+import AppCard from './ui/AppCard.vue';
 
 const deliveryStore = useDeliveryStore();
 const emit = defineEmits(['close']);
 
 const isSubmitting = ref(false);
-const cepInput = ref(''); // Ref separada para o input de busca
+const isSearching = ref(false);
+const cepInput = ref('');
 
-// Formulário único com todos os campos necessários
-const form = ref<Omit<Endereco, 'id' | 'status' | 'veiculo_id'>>({
+const form = ref({
   cep: '',
   rua: '',
   numero: '',
-  bairro: '', // Agora o TS reconhece porque está na interface!
+  bairro: '',
   cidade: '',
   estado: '',
   latitude: 0,
   longitude: 0
 });
 
-// Função para buscar dados pelo CEP
 const handleCepBlur = async () => {
   const cleanCep = cepInput.value.replace(/\D/g, '');
   if (cleanCep.length >= 8) {
+    isSearching.value = true;
     try {
       const data = await GeocodingService.buscarEnderecoPorCEP(cleanCep);
-      // Mescla os dados recebidos no formulário
       form.value = { 
         ...form.value, 
+        cep: cleanCep,
         rua: data.rua,
         bairro: data.bairro,
         cidade: data.cidade,
@@ -39,17 +42,15 @@ const handleCepBlur = async () => {
         longitude: data.longitude
       };
     } catch (error) {
-      alert("Erro ao buscar CEP. Verifique os dados.");
+       // Silent error for simplicity
+    } finally {
+      isSearching.value = false;
     }
   }
 };
 
 const handleSubmit = async () => {
-  if (!form.value.numero) {
-    alert("Por favor, preencha o número.");
-    return;
-  }
-
+  if (!form.value.numero || !form.value.rua) return;
   isSubmitting.value = true;
   try {
     await deliveryStore.addEndereco({
@@ -59,7 +60,6 @@ const handleSubmit = async () => {
     emit('close');
   } catch (err) {
     console.error(err);
-    alert("Erro ao salvar endereço.");
   } finally {
     isSubmitting.value = false;
   }
@@ -67,59 +67,66 @@ const handleSubmit = async () => {
 </script>
 
 <template>
-  <div class="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-    <div class="bg-white rounded-xl shadow-2xl max-w-md w-full p-6">
-      <h2 class="text-xl font-bold text-gray-900 mb-6">Novo Endereço de Entrega</h2>
-      
-      <form @submit.prevent="handleSubmit" class="space-y-4">
+  <AppCard class="shadow-2xl border-none p-0 overflow-hidden">
+    <template #header>
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-3">
+           <div class="p-2 bg-primary/10 rounded-lg">
+             <MapPin class="w-5 h-5 text-primary" />
+           </div>
+           <div>
+             <h2 class="text-xl font-bold">Novo Destino</h2>
+             <p class="text-xs text-muted-foreground uppercase font-semibold">Logística Receptiva</p>
+           </div>
+        </div>
+        <button @click="emit('close')" class="p-2 hover:bg-muted rounded-full transition-colors">
+          <X class="w-5 h-5" />
+        </button>
+      </div>
+    </template>
+
+    <form @submit.prevent="handleSubmit" class="space-y-6">
+      <div class="relative">
+        <AppInput 
+          v-model="cepInput" 
+          @blur="handleCepBlur" 
+          label="CEP Principal"
+          placeholder="Ex: 01001-000"
+        />
+        <div v-if="isSearching" class="absolute right-3 top-9">
+          <div class="h-4 w-4 animate-spin border-2 border-primary border-t-transparent rounded-full"></div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div class="md:col-span-3">
+          <AppInput v-model="form.rua" label="Logradouro" readonly class="bg-muted cursor-not-allowed" />
+        </div>
         <div>
-          <label class="block text-sm font-medium text-gray-700">CEP (Busca automática)</label>
-          <input 
-            v-model="cepInput" 
-            @blur="handleCepBlur" 
-            type="text" 
-            required 
-            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm" 
-            placeholder="00000-000"
-          >
+          <AppInput v-model="form.numero" label="Nº" type="text" required />
         </div>
+      </div>
 
+      <div class="grid grid-cols-2 gap-4">
+        <AppInput v-model="form.bairro" label="Bairro" readonly class="bg-muted cursor-not-allowed" />
+        <AppInput v-model="form.cidade" label="Cidade" readonly class="bg-muted cursor-not-allowed" />
+      </div>
+
+      <div class="bg-primary/5 p-4 rounded-xl flex items-center gap-4" v-if="form.latitude">
+        <div class="w-10 h-10 bg-white rounded-lg flex items-center justify-center shadow-sm">
+          <Navigation class="w-5 h-5 text-primary" />
+        </div>
         <div>
-          <label class="block text-sm font-medium text-gray-700">Rua</label>
-          <input v-model="form.rua" type="text" readonly class="mt-1 block w-full bg-gray-50 border-gray-300 rounded-md shadow-sm sm:text-sm" placeholder="Preenchido pelo CEP">
+          <p class="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Coordenadas Ativas</p>
+          <p class="text-sm font-mono font-bold">{{ form.latitude.toFixed(4) }}, {{ form.longitude.toFixed(4) }}</p>
         </div>
+      </div>
 
-        <div class="grid grid-cols-2 gap-4">
-          <div>
-            <label class="block text-sm font-medium text-gray-700">Número</label>
-            <input v-model="form.numero" type="text" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700">Bairro</label>
-            <input v-model="form.bairro" type="text" readonly class="mt-1 block w-full bg-gray-50 border-gray-300 rounded-md shadow-sm sm:text-sm">
-          </div>
-        </div>
-
-        <div class="grid grid-cols-2 gap-4">
-          <div>
-            <label class="block text-sm font-medium text-gray-700">Cidade</label>
-            <input v-model="form.cidade" type="text" readonly class="mt-1 block w-full bg-gray-50 border-gray-300 rounded-md shadow-sm sm:text-sm">
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700">Estado</label>
-            <input v-model="form.estado" type="text" readonly class="mt-1 block w-full bg-gray-50 border-gray-300 rounded-md shadow-sm sm:text-sm">
-          </div>
-        </div>
-
-        <div class="flex justify-end space-x-3 mt-8">
-          <button type="button" @click="$emit('close')" class="px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 border border-gray-300 rounded-md shadow-sm">
-            Cancelar
-          </button>
-          <button type="submit" :disabled="isSubmitting" class="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md shadow-sm transition-colors">
-            {{ isSubmitting ? 'Salvando...' : 'Salvar Endereço' }}
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>
+      <div class="flex gap-3 pt-2">
+        <AppButton type="submit" variant="primary" class="w-full h-12 text-md font-bold" :loading="isSubmitting" :disabled="!form.rua">
+          Registrar Destino
+        </AppButton>
+      </div>
+    </form>
+  </AppCard>
 </template>
