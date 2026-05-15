@@ -10,6 +10,7 @@ app.use(cors());
 const routeController = new RouteController();
 app.post('/rotas/calcular', routeController.calcular);
 app.post('/rotas/atribuir', routeController.efetivar);
+app.get('/rotas/veiculo/:veiculo_id', routeController.buscarPorVeiculo);
 
 app.get('/ping', (req: Request, res: Response) => {
   res.status(200).json({ message: 'pong' });

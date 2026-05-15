@@ -23,25 +23,43 @@ export class RouteService {
    * Salva a rota no banco local e atualiza o status dos endereços na management-api.
    */
   async efetivarRota(veiculo_id: string, ordem_ids: string[]) {
-    // 1. Salvar no banco de dados local
+    // 1. Salva a rota no histórico
     const rota = await this.prisma.rota.create({
       data: {
+        //status: 'em_rota',
         veiculo_id,
         ordem_ids,
       },
     });
 
-    // 2. Chamar a management-api para atualizar o status dos endereços
+    // 2. IMPORTANTE: O Rails precisa saber QUAL veículo pegou esses endereços
+    // Adicione o veiculo_id no corpo da requisição para a management-api
     await axios.put(`${this.managementApiUrl}/enderecos/atualizar_status`, {
-      endereco_ids: ordem_ids
+      endereco_ids: ordem_ids, // plural e snake_case
+      veiculo_id: veiculo_id,  // EXATAMENTE assim para o Rails entender
+      status: 'em rota'        // use "em rota" com espaço, como está no seu Rails
     });
 
     return {
       message: 'Rota efetivada e status dos endereços atualizados.',
       rota_id: rota.id,
       veiculo_id: rota.veiculo_id,
-      ordem_ids: rota.ordem_ids
+      ordem_ids: rota.ordem_ids,
+      status: 'em_rota'
     };
+  }
+
+  /**
+   * Busca a última rota ativa de um veículo.
+   */
+  async buscarUltimaRotaPorVeiculo(veiculo_id: string) {
+    const rota = await this.prisma.rota.findFirst({
+      where: { veiculo_id: String(veiculo_id) },
+      orderBy: { createdAt: 'desc' }
+    });
+
+    if (!rota) throw new Error('Rota não encontrada');
+    return rota;
   }
 
   /**
