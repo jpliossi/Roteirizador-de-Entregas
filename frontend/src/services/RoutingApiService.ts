@@ -8,25 +8,41 @@ const api = axios.create({
 });
 
 export interface RotaCalculada {
+  veiculo_id: string;
   ordem_ids: string[];
-  distancia_total: number;
-  tempo_estimado: number;
+  distancia_total: number; 
+  tempo_estimado: number;  
+  ordem_sugerida?: any[];
 }
 
 export const RoutingApiService = {
-  async calcularRota(veiculoId: string, enderecosIds: string[]): Promise<RotaCalculada> {
+  async calcularRota(veiculoId: string, enderecos: any[]): Promise<any> {
     const response = await api.post('/rotas/calcular', {
       veiculo_id: veiculoId,
-      enderecos_ids: enderecosIds,
+      enderecos: enderecos, // Enviando os objetos completos {id, lat, lng}
+    });
+    
+    // IMPORTANTE: O seu Service retorna 'ordem_sugerida' e não 'ordem_ids'
+    // Precisamos mapear isso para o formato que a sua Store espera:
+    return {
+      ordem_ids: response.data.ordem_sugerida.map((e: any) => e.id),
+      ordem_sugerida: response.data.ordem_sugerida,
+      distancia_total: response.data.distancia_total,
+      tempo_estimado: response.data.tempo_estimado
+    };
+  },
+  
+
+  async atribuirRota(veiculoId: string, ordemIds: string[]): Promise<any> {
+    const response = await api.post('/rotas/atribuir', {
+      veiculo_id: veiculoId,
+      ordem_ids: ordemIds,
     });
     return response.data;
   },
 
-  async atribuirRota(veiculoId: string, enderecosIds: string[]): Promise<any> {
-    const response = await api.post('/rotas/atribuir', {
-      veiculo_id: veiculoId,
-      enderecos_ids: enderecosIds,
-    });
+  async geRotaPorVeiculo(veiculoId: string): Promise<any> {
+    const response = await api.get(`/rotas/veiculo/${veiculoId}`);
     return response.data;
   },
 };

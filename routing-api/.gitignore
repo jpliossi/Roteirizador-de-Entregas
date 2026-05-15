@@ -16,17 +16,9 @@ yarn-error.log*
 # Prisma
 /prisma/migrations/
 /prisma/dev.db*
-
-# IDE / Editores
-.vscode/
-.idea/
-*.swp
-*.swo
-
-# Diagnostic reports (Next.js, etc, mas bom ter para Node genérico)
-.pnpm-debug.log*
-
-# Mac OS
-.DS_Store
-
 /src/generated/prisma
+!/prisma/schema.prisma
+
+# TypeScript
+*.tsbuildinfo
+
