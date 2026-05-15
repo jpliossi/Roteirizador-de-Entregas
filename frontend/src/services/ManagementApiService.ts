@@ -7,6 +7,8 @@ const api = axios.create({
   },
 });
 
+export { api };
+
 export interface Endereco {
   id?: string;
   rua: string;
@@ -26,12 +28,12 @@ export interface Veiculo {
   placa: string;
   modelo: string;
   capacidade: number;
-  motorista_id?: string;
+  motorista_id?: string | number | null;
   status?: string;
 }
 
 export interface Motorista {
-  id?: string;
+  id?: string | number;
   nome: string;
   cpf: string;
 }
@@ -51,10 +53,10 @@ export const GeocodingService = {
     const geoData = await nominatimRes.json();
 
     return {
-      rua: addressData.logradouro,
-      bairro: addressData.bairro,
-      cidade: addressData.localidade,
-      estado: addressData.uf,
+      rua: addressData.logradouro || '',
+      bairro: addressData.bairro || '',
+      cidade: addressData.localidade || '',
+      estado: addressData.uf || '',
       latitude: geoData.length > 0 ? parseFloat(geoData[0].lat) : -20.46,
       longitude: geoData.length > 0 ? parseFloat(geoData[0].lon) : -54.61
     };
@@ -97,8 +99,13 @@ export const ManagementApiService = {
 
   async createVeiculo(veiculo: Veiculo): Promise<Veiculo> {
     const response = await api.post('/veiculos', { 
-      veiculo: { ...veiculo, status: 'disponivel' } 
+      veiculo: { ...veiculo, status: 'disponivel' }
     });
+    return response.data;
+  },
+
+  async updateVeiculo(id: string, dados: any): Promise<Veiculo> {
+    const response = await api.patch(`/veiculos/${id}`, { veiculo: dados });
     return response.data;
   },
 
@@ -107,22 +114,26 @@ export const ManagementApiService = {
     return response.data;
   },
 
-  async deleteMotorista(id: string): Promise<void> {
+  async deleteMotorista(id: string | number): Promise<void> {
     await api.delete(`/motoristas/${id}`);
   },
 
-  async deleteVeiculo(id: string): Promise<void> {
+  async deleteVeiculo(id: string | number): Promise<void> {
     await api.delete(`/veiculos/${id}`);
   },
 
-  async updateEnderecoStatus(id: string, status: string, veiculoId?: string): Promise<Endereco> {
-    const response = await api.patch(/enderecos/ + id, {
+  async deleteEndereco(id: string | number): Promise<void> {
+    await api.delete(`/enderecos/${id}`);
+  },
+
+  async updateEnderecoStatus(id: string, status: string, veiculoId?: string | null): Promise<Endereco> {
+    const response = await api.patch(`/enderecos/${id}`, {
       endereco: { status, veiculo_id: veiculoId }
     });
     return response.data;
   },
 
-  async concluirRota(veiculoId: string): Promise<any> {
+  async concluirRota(veiculoId: string | number): Promise<any> {
     const response = await api.put('/enderecos/atualizar_status', {
       veiculo_id: veiculoId,
       concluir: true

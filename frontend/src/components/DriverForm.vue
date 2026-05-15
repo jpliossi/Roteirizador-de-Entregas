@@ -29,9 +29,10 @@ const handleSubmit = async () => {
     alert('Preencha os dados corretamente (Nome e CPF completo).');
     return;
   }
+  const cleanCpf = form.value.cpf.replace(/\D/g, '');
   isSubmitting.value = true;
   try {
-    const success = await deliveryStore.addMotorista(form.value);
+    const success = await deliveryStore.addMotorista({ ...form.value, cpf: cleanCpf });
     if (success) {
       form.value = { nome: '', cpf: '' };
       alert('Motorista cadastrado com sucesso!');

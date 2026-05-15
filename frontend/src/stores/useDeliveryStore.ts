@@ -1,6 +1,12 @@
-import { defineStore } from 'pinia';
-import { ManagementApiService, type Endereco, type Veiculo, type Motorista } from '../services/ManagementApiService';
+﻿import { defineStore } from 'pinia';
+import { ManagementApiService, type Endereco, type Veiculo, type Motorista, api } from '../services/ManagementApiService';
 import { RoutingApiService } from '../services/RoutingApiService';
+
+export interface ToastInfo {
+  message: string;
+  type: 'success' | 'error' | 'info';
+  id: number;
+}
 
 export const useDeliveryStore = defineStore('delivery', {
   state: () => ({
@@ -9,17 +15,20 @@ export const useDeliveryStore = defineStore('delivery', {
     motoristas: [] as Motorista[],
     selectedEnderecoIds: [] as string[],
     selectedVeiculoId: null as string | null,
+    pendingRoutes: [] as any[],
     results: null as any | null,
     loading: false,
     searchQuery: '',
-    finalizedRoutes: [] as any[], // Historico para relatório
+    finalizedRoutes: [] as any[],
+    toasts: [] as ToastInfo[],
   }),
 
   getters: {
-    // Filtro e Ordenação (Pendentes primeiro)
+    enderecosPendentes: (state) => state.enderecos.filter(e => e.status === 'pendente'),
+    enderecosEmRota: (state) => state.enderecos.filter(e => e.status === 'em rota'),
+    
     filteredEnderecos: (state) => {
       let list = state.enderecos;
-      
       if (state.searchQuery) {
         const query = state.searchQuery.toLowerCase();
         list = list.filter(e => 
@@ -28,7 +37,6 @@ export const useDeliveryStore = defineStore('delivery', {
           e.cidade.toLowerCase().includes(query)
         );
       }
-
       return [...list].sort((a, b) => {
         if (a.status === 'pendente' && b.status !== 'pendente') return -1;
         if (a.status !== 'pendente' && b.status === 'pendente') return 1;
@@ -36,7 +44,6 @@ export const useDeliveryStore = defineStore('delivery', {
       });
     },
 
-    // Apenas pendentes e em rota para Dashboard
     operationalEnderecos: (state) => {
       return state.enderecos.filter(e => e.status === 'pendente' || e.status === 'em rota');
     },
@@ -61,7 +68,15 @@ export const useDeliveryStore = defineStore('delivery', {
   },
 
   actions: {
-    async loadInitialData() {
+    addToast(message: string, type: 'success' | 'error' | 'info' = 'info') {
+      const id = Date.now();
+      this.toasts.push({ message, type, id });
+      setTimeout(() => {
+        this.toasts = this.toasts.filter(t => t.id !== id);
+      }, 5000);
+    },
+
+    async fetchInitialData() {
       this.loading = true;
       try {
         await Promise.all([
@@ -69,6 +84,8 @@ export const useDeliveryStore = defineStore('delivery', {
           this.fetchVeiculos(),
           this.fetchMotoristas()
         ]);
+      } catch (error) {
+        console.error('Error fetching initial data:', error);
       } finally {
         this.loading = false;
       }
@@ -87,21 +104,54 @@ export const useDeliveryStore = defineStore('delivery', {
     },
 
     async addEndereco(dados: any) {
-      const res = await ManagementApiService.createEndereco(dados);
-      this.enderecos.push(res);
-      return res;
+      try {
+        const res = await ManagementApiService.createEndereco(dados);
+        this.addToast('Endereço cadastrado com sucesso!', 'success');
+        await this.fetchEnderecos();
+        return res;
+      } catch (e) {
+        this.addToast('Erro ao cadastrar endereço', 'error');
+        throw e;
+      }
     },
 
     async addVeiculo(veiculo: any) {
-      const res = await ManagementApiService.createVeiculo(veiculo);
-      await this.fetchVeiculos();
-      return res;
+      try {
+        const res = await ManagementApiService.createVeiculo(veiculo);
+        this.addToast('Veículo salvo com sucesso!', 'success');
+        await this.fetchVeiculos();
+        return res;
+      } catch (e) {
+        this.addToast('Erro ao salvar veículo', 'error');
+        throw e;
+      }
     },
 
     async addMotorista(motorista: any) {
-      const res = await ManagementApiService.createMotorista(motorista);
-      await this.fetchMotoristas();
-      return res;
+      try {
+        const res = await ManagementApiService.createMotorista(motorista);
+        this.addToast('Motorista registrado!', 'success');
+        await this.fetchMotoristas();
+        return res;
+      } catch (e) {
+        this.addToast('Erro ao registrar motorista', 'error');
+        throw e;
+      }
+    },
+
+    async updateVeiculoMotorista(veiculoId: string, motoristaId: string | null) {
+      try {
+        const veiculo = this.veiculos.find(v => String(v.id) === veiculoId);
+        if (!veiculo) return;
+        
+        await api.patch(`/veiculos/${veiculoId}`, {
+          veiculo: { motorista_id: motoristaId }
+        });
+        this.addToast('Motorista vinculado ao veículo!', 'success');
+        await this.fetchVeiculos();
+      } catch (e) {
+        this.addToast('Erro ao vincular motorista', 'error');
+      }
     },
 
     toggleEnderecoSelection(id: string) {
@@ -119,47 +169,72 @@ export const useDeliveryStore = defineStore('delivery', {
 
     async removeMotorista(id: string) {
       await ManagementApiService.deleteMotorista(id);
+      this.addToast('Motorista removido');
       await this.fetchMotoristas();
     },
 
     async removeVeiculo(id: string) {
       await ManagementApiService.deleteVeiculo(id);
+      this.addToast('Veículo removido');
       await this.fetchVeiculos();
     },
 
-    async calcularRota() {
-      if (this.selectedEnderecoIds.length === 0 || !this.selectedVeiculoId) return;
+    async calcularRota(veiculoId: string, enderecosIds: string[]) {
       this.loading = true;
       try {
+        const selectedEnderecos = this.enderecos.filter(e => e.id && enderecosIds.includes(e.id));
         const res = await RoutingApiService.calcularRota(
-          this.selectedVeiculoId,
-          this.enderecos.filter(e => e.id && this.selectedEnderecoIds.includes(e.id))
+          veiculoId,
+          selectedEnderecos
         );
-        this.results = res;
+        
+        // Atualizar status dos endereços para 'em rota'
+        for (const id of enderecosIds) {
+          await ManagementApiService.updateEnderecoStatus(id, 'em rota', veiculoId);
+        }
+
+        const vehicle = this.veiculos.find(v => String(v.id) === veiculoId);
+        
+        const routeWithContext = {
+          ...res,
+          vehicle: vehicle,
+          enderecosIds: [...enderecosIds],
+          status: 'pendente'
+        };
+
+        this.pendingRoutes.push(routeWithContext);
+        this.results = routeWithContext;
+        
+        this.addToast('Nova rota calculada e atribuída!', 'success');
+        await this.fetchEnderecos();
+      } catch (e) {
+        this.addToast('Erro ao calcular rota', 'error');
+        console.error(e);
       } finally {
         this.loading = false;
       }
     },
 
-    async concluirRota(rotaId: any) {
+    async concluirRota(veiculoId: string) {
       this.loading = true;
       try {
-        if (this.selectedVeiculoId) {
-          await ManagementApiService.concluirRota(this.selectedVeiculoId);
-          // Adicionar ao relatório local (opcional)
-          if (this.results) {
-             this.finalizedRoutes.push({
-               id: Date.now(),
-               veiculo: this.veiculos.find(v => String(v.id) === this.selectedVeiculoId)?.placa,
-               ...this.results,
-               data: new Date().toLocaleString()
-             });
-          }
+        await ManagementApiService.concluirRota(veiculoId);
+        
+        const routeIndex = this.pendingRoutes.findIndex(r => String(r.vehicle.id) === String(veiculoId));
+        if (routeIndex > -1) {
+          const finishedRoute = {
+            ...this.pendingRoutes[routeIndex],
+            finalizedAt: new Date().toISOString()
+          };
+          this.finalizedRoutes.push(finishedRoute);
+          this.pendingRoutes.splice(routeIndex, 1);
         }
-        await this.fetchEnderecos();
-        this.results = null;
-        this.selectedEnderecoIds = [];
-        this.selectedVeiculoId = null;
+
+        this.addToast('Rota concluída com sucesso!', 'success');
+        await Promise.all([this.fetchEnderecos(), this.fetchVeiculos()]);
+      } catch (e) {
+        this.addToast('Erro ao concluir rota', 'error');
+        console.error(e);
       } finally {
         this.loading = false;
       }

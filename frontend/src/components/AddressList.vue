@@ -1,77 +1,181 @@
 <script setup lang="ts">
+import { ref, computed } from 'vue';
 import { useDeliveryStore } from '../stores/useDeliveryStore';
-import { Package, RotateCcw } from 'lucide-vue-next';
-import AppButton from './ui/AppButton.vue';
-
-const props = defineProps<{
-  showAll?: boolean
-}>();
+import { Truck, Navigation2, CheckCircle2, MapPin, Package, Route, Clock } from 'lucide-vue-next';
 
 const deliveryStore = useDeliveryStore();
+const selectedVehicleId = ref('');
+const selectedAddressIds = ref<string[]>([]);
+const isCalculating = ref(false);
 
-const toggleSelection = (id: any) => {
-  deliveryStore.toggleEnderecoSelection(String(id));
+const availableVehicles = computed(() => 
+  deliveryStore.veiculos.filter(v => v.status === 'disponivel')
+);
+
+// Traz apenas os pendentes para a lista de seleção
+const pendingAddresses = computed(() => 
+  deliveryStore.enderecos.filter(addr => addr.status === 'pendente')
+);
+
+// Lógica de seleção múltipla de endereços
+const toggleAddress = (id: string) => {
+  const index = selectedAddressIds.value.indexOf(id);
+  if (index > -1) {
+    selectedAddressIds.value.splice(index, 1);
+  } else {
+    selectedAddressIds.value.push(id);
+  }
+};
+
+const handleCalcular = async () => {
+  if (!selectedVehicleId.value) {
+    deliveryStore.addToast('Selecione um veículo.', 'error');
+    return;
+  }
+  
+  if (selectedAddressIds.value.length === 0) {
+    deliveryStore.addToast('Selecione pelo menos um endereço para criar a rota.', 'error');
+    return;
+  }
+
+  isCalculating.value = true;
+  try {
+    // Agora enviamos apenas os IDs que o usuário marcou manualmente
+    await deliveryStore.calcularRota(selectedVehicleId.value, selectedAddressIds.value);
+    
+    // Limpa a seleção após o sucesso
+    selectedVehicleId.value = '';
+    selectedAddressIds.value = [];
+  } catch (error) {
+    console.error(error);
+  } finally {
+    isCalculating.value = false;
+  }
+};
+
+const getIniciais = (nome: string) => {
+  return nome.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
 };
 </script>
 
 <template>
-  <div class="bg-card border rounded-3xl overflow-hidden shadow-sm flex flex-col h-full">
-    <div class="px-6 py-5 border-b flex justify-between items-center bg-muted/30">
-      <div class="flex items-center gap-3">
-        <div class="p-2 bg-primary/10 rounded-lg">
-          <Package class="w-5 h-5 text-primary" />
+  <div class="bg-white rounded-[40px] shadow-sm border border-slate-100 overflow-hidden">
+    <div class="p-10 border-b border-slate-50 bg-slate-50/30">
+      <div class="flex items-center gap-4 mb-4">
+        <div class="p-3 bg-slate-900 text-white rounded-2xl">
+          <Route class="w-6 h-6" />
         </div>
-        <div>
-          <h3 class="font-black text-sm uppercase tracking-tight">Endereços</h3>
-          <p class="text-[10px] text-muted-foreground font-bold uppercase">{{ showAll ? 'Base Completa' : 'Pendentes e em Rota' }}</p>
-        </div>
+        <h2 class="text-3xl font-black text-slate-900 tracking-tight italic">Montar Rota</h2>
       </div>
-      <AppButton variant="ghost" size="sm" @click="deliveryStore.fetchEnderecos()" :loading="deliveryStore.loading" class="rounded-full w-10 h-10 p-0">
-        <RotateCcw class="w-4 h-4" v-if="!deliveryStore.loading" />
-      </AppButton>
+      <p class="text-slate-500 font-medium max-w-xl">
+        Selecione o veículo e os destinos específicos para calcular a rota ideal.
+      </p>
     </div>
 
-    <div v-if="(showAll ? deliveryStore.filteredEnderecos : deliveryStore.operationalEnderecos).length === 0" class="p-12 text-center text-muted-foreground italic flex-1 flex flex-col items-center justify-center gap-4">
-      <div class="w-16 h-16 bg-muted rounded-full flex items-center justify-center opacity-20">
-        <Package class="w-8 h-8" />
-      </div>
-      <p class="text-sm font-medium">Nenhum endereço encontrado.</p>
-    </div>
-
-    <div v-else class="divide-y overflow-y-auto flex-1 scrollbar-thin">
-      <div 
-        v-for="e in (showAll ? deliveryStore.filteredEnderecos : deliveryStore.operationalEnderecos)" 
-        :key="e.id" 
-        class="group p-4 hover:bg-muted/50 transition-all cursor-pointer flex items-center gap-4 border-l-4"
-        :class="[
-          deliveryStore.selectedEnderecoIds.includes(String(e.id)) 
-            ? 'bg-primary/5 border-primary shadow-inner' 
-            : 'border-transparent'
-        ]"
-        @click="toggleSelection(e.id)"
-      >
-        <div class="w-10 h-10 rounded-xl bg-muted flex items-center justify-center shrink-0 group-hover:bg-white transition-colors">
-          <Package class="w-5 h-5 text-muted-foreground group-hover:text-primary transition-colors" />
+    <div class="p-10 space-y-10">
+      <div class="space-y-6">
+        <div class="flex items-center justify-between">
+          <h3 class="text-sm font-black text-slate-400 uppercase tracking-[0.2em]">1. Escolha o Veículo</h3>
+          <span class="px-3 py-1 bg-emerald-100 text-emerald-600 rounded-full text-[10px] font-black uppercase">{{ availableVehicles.length }} livres</span>
         </div>
         
-        <div class="flex-1 min-w-0">
-          <p class="font-black text-sm text-slate-900 truncate tracking-tight">{{ e.rua }}, {{ e.numero }}</p>
-          <p class="text-xs text-muted-foreground font-bold uppercase truncate mt-0.5">{{ e.bairro }}</p>
+        <div v-if="availableVehicles.length === 0" class="p-8 text-center bg-slate-50 rounded-3xl border-2 border-dashed border-slate-200">
+          <Truck class="w-10 h-10 text-slate-300 mx-auto mb-3" />
+          <p class="text-sm text-slate-500 font-bold uppercase tracking-wider">Nenhum veículo disponível</p>
         </div>
 
-        <div class="flex items-center gap-3">
-          <span 
-            class="px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-tighter shadow-sm"
-            :class="{
-              'bg-amber-100 text-amber-700': e.status === 'pendente',
-              'bg-blue-100 text-blue-700': e.status === 'em rota',
-              'bg-emerald-100 text-emerald-700': e.status === 'entregue'
-            }"
+        <div v-else class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <button 
+            v-for="veiculo in availableVehicles" 
+            :key="veiculo.id"
+            @click="selectedVehicleId = veiculo.id!"
+            class="group text-left p-6 rounded-[32px] border-2 transition-all duration-300 relative overflow-hidden"
+            :class="selectedVehicleId === veiculo.id 
+              ? 'border-slate-900 bg-slate-900 text-white shadow-xl -translate-y-1' 
+              : 'border-slate-100 bg-white hover:border-slate-200 hover:shadow-md'"
           >
-            {{ e.status }}
-          </span>
+            <div class="flex items-center gap-4">
+              <div class="w-12 h-12 rounded-2xl flex items-center justify-center font-black transition-colors"
+                   :class="selectedVehicleId === veiculo.id ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-900'">
+                {{ getIniciais(veiculo.placa) }}
+              </div>
+              <div>
+                <p class="font-black text-lg">{{ veiculo.modelo }}</p>
+                <p class="text-[10px] font-bold uppercase tracking-widest opacity-60">{{ veiculo.placa }}</p>
+              </div>
+            </div>
+          </button>
         </div>
       </div>
+
+      <div class="space-y-6 border-t border-slate-100 pt-10">
+        <div class="flex items-center justify-between">
+          <h3 class="text-sm font-black text-slate-400 uppercase tracking-[0.2em]">2. Selecione os Destinos</h3>
+          <span class="px-3 py-1 bg-slate-100 text-slate-600 rounded-full text-[10px] font-black uppercase">{{ pendingAddresses.length }} pendentes</span>
+        </div>
+
+        <div v-if="pendingAddresses.length === 0" class="p-8 text-center bg-slate-50 rounded-3xl border-2 border-dashed border-slate-200">
+          <MapPin class="w-10 h-10 text-slate-300 mx-auto mb-3" />
+          <p class="text-sm text-slate-500 font-bold uppercase tracking-wider">Nenhum destino pendente</p>
+        </div>
+
+        <div v-else class="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-[300px] overflow-y-auto pr-2 scrollbar-thin">
+          <button 
+            v-for="addr in pendingAddresses" 
+            :key="addr.id"
+            @click="toggleAddress(addr.id!)"
+            class="text-left p-4 rounded-2xl border-2 transition-all flex items-start gap-4"
+            :class="selectedAddressIds.includes(addr.id!)
+              ? 'border-slate-900 bg-slate-50' 
+              : 'border-slate-100 bg-white hover:border-slate-200'"
+          >
+            <div class="mt-0.5 w-5 h-5 rounded-md border-2 flex items-center justify-center transition-colors"
+                 :class="selectedAddressIds.includes(addr.id!) ? 'bg-slate-900 border-slate-900' : 'border-slate-300'">
+              <CheckCircle2 v-if="selectedAddressIds.includes(addr.id!)" class="w-3 h-3 text-white" stroke-width="4" />
+            </div>
+            <div>
+              <p class="font-bold text-sm text-slate-900 leading-tight">{{ addr.rua }}, {{ addr.numero }}</p>
+              <p class="text-[10px] font-bold text-slate-400 uppercase mt-1">{{ addr.bairro }} • {{ addr.cidade }}</p>
+            </div>
+          </button>
+        </div>
+      </div>
+
+      <div v-if="selectedAddressIds.length > 0" class="bg-slate-50 rounded-[32px] p-8 border border-slate-100">
+        <div class="flex items-center justify-between mb-6">
+          <h3 class="text-sm font-black text-slate-400 uppercase tracking-[0.2em]">Resumo da Rota</h3>
+          <Package class="w-5 h-5 text-slate-400" />
+        </div>
+
+        <div class="grid grid-cols-2 gap-8">
+           <div>
+             <p class="text-[10px] font-black text-slate-400 uppercase leading-none mb-2">Entregas Selecionadas</p>
+             <p class="font-black text-3xl text-slate-900 leading-none">{{ selectedAddressIds.length }}</p>
+           </div>
+           <div>
+             <p class="text-[10px] font-black text-slate-400 uppercase leading-none mb-2">Previsão (Base)</p>
+             <div class="flex items-center gap-2">
+               <Clock class="w-4 h-4 text-slate-400" />
+               <p class="font-black text-xl text-slate-900 leading-none">~{{ selectedAddressIds.length * 12 }} min</p>
+             </div>
+           </div>
+        </div>
+      </div>
+
+      <button 
+        @click="handleCalcular"
+        :disabled="isCalculating || !selectedVehicleId || selectedAddressIds.length === 0"
+        class="w-full py-6 rounded-[32px] font-black text-sm uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-3 shadow-xl"
+        :class="isCalculating || !selectedVehicleId || selectedAddressIds.length === 0
+          ? 'bg-slate-100 text-slate-300 cursor-not-allowed shadow-none' 
+          : 'bg-slate-900 text-white hover:bg-black active:scale-[0.98]'"
+      >
+        <div v-if="isCalculating" class="w-5 h-5 border-4 border-white/20 border-t-white rounded-full animate-spin"></div>
+        <template v-else>
+          <Route class="w-5 h-5" />
+          Calcular Rota
+        </template>
+      </button>
     </div>
   </div>
 </template>

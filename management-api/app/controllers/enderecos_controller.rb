@@ -14,6 +14,11 @@ class EnderecosController < ApplicationController
       render json: @endereco.errors, status: :unprocessable_entity
     end
   end
+  
+  #delete /enderecos/:id
+  def :destroy
+    @endereco = Endereco.find(params[:id])
+    @endereco.destroy! 
 
   # PUT /enderecos/atualizar_status
   def atualizar_status
