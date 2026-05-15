@@ -53,7 +53,6 @@ docker-compose.override.yml
 *.dll
 *.so
 *.dylib
-bin/
 obj/
 out/
 build/
