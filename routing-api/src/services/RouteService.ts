@@ -132,9 +132,22 @@ export class RouteService {
 }
 
   private calculateDistance(p1: Endereco, p2: Endereco): number {
-    // Distância Euclidiana simples 
+    // Converte para número, garantindo que "undefined" ou textos vazios virem 0
+    const lat1 = Number(p1.latitude) || 0;
+    const lng1 = Number(p1.longitude) || 0;
+    const lat2 = Number(p2.latitude) || 0;
+    const lng2 = Number(p2.longitude) || 0;
+
+    // O "alarme" para te ajudar a debugar no terminal do Node
+    if ((lat1 === 0 && lng1 === 0) || (lat2 === 0 && lng2 === 0)) {
+      console.warn('ALERTA: Coordenadas ausentes ou zeradas entre os endereços!');
+      console.warn(`Ponto 1 (ID: ${p1.id}): Lat ${p1.latitude}, Lng ${p1.longitude}`);
+      console.warn(`Ponto 2 (ID: ${p2.id}): Lat ${p2.latitude}, Lng ${p2.longitude}`);
+    }
+
+    // Distância Euclidiana segura
     return Math.sqrt(
-      Math.pow(p2.latitude - p1.latitude, 2) + Math.pow(p2.longitude - p1.longitude, 2)
+      Math.pow(lat2 - lat1, 2) + Math.pow(lng2 - lng1, 2)
     );
   }
 }

@@ -37,7 +37,7 @@ onMounted(async () => {
 });
 
 const finalizarRota = async (veiculoId: string) => {
-  await deliveryStore.concluirRota(veiculoId);
+  await deliveryStore.concluirRota(String(veiculoId));
 };
 
 const formatRouteAddresses = (ids?: string[]) => {
@@ -183,11 +183,11 @@ const excluirEndereco = async (id: string) => {
               <div class="flex gap-8">
                 <div>
                   <p class="text-[10px] font-black text-white/30 uppercase tracking-widest">Distância</p>
-                  <p class="text-xl font-black">{{ (res.totalDistance / 1000).toFixed(1) }} km</p>
+                  <p class="text-xl font-black">{{ res.distancia_total || 0 }} km</p>
                 </div>
                 <div>
                   <p class="text-[10px] font-black text-white/30 uppercase tracking-widest">Tempo Est.</p>
-                  <p class="text-xl font-black">{{ Math.round(res.totalDuration / 60) }} min</p>
+                  <p class="text-xl font-black">{{ res.tempo_estimado || 0}} min</p>
                 </div>
               </div>
               <button class="p-4 bg-white/5 hover:bg-white/10 rounded-2xl transition-all">

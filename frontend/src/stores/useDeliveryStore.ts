@@ -211,8 +211,9 @@ export const useDeliveryStore = defineStore('delivery', {
         const res = await RoutingApiService.calcularRota(veiculoId, selectedEnderecos);
         
         // Supondo que o 'res' traga propriedades como 'totalDistance' e 'totalDuration'
-        const kmCalculado = res.totalDistance || 0; 
-        const tempoCalculado = res.totalDuration || 0; 
+        const dadosRota = res.data || res;
+        const kmCalculado = dadosRota.distancia_total || 0; 
+        const tempoCalculado = dadosRota.tempo_estimado || 0; 
 
         // 2. Atualiza o status dos endereços selecionados para 'em rota'
         await ManagementApiService.calcularRota(enderecosIds, veiculoId);
@@ -242,6 +243,8 @@ export const useDeliveryStore = defineStore('delivery', {
         
         this.addToast('Nova rota calculada e persistida no banco!', 'success');
         await this.fetchEnderecos();
+        // await this.fetchRotas(); // Recarrega as rotas para garantir que temos os dados mais recentes do banco
+        await this.fetchVeiculos(); // Atualiza os veículos para refletir possíveis mudanças de status
       } catch (e) {
         this.addToast('Erro ao calcular rota', 'error');
         console.error(e);
