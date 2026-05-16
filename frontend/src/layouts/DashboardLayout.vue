@@ -87,8 +87,8 @@ const menuItems = [
           
           <div class="flex items-center gap-3 pl-4 border-l border-slate-200">
             <div class="text-right hidden sm:block">
-              <p class="text-xs font-black text-slate-900 leading-none">Admin Jr</p>
-              <p class="text-[10px] text-slate-500 font-bold uppercase tracking-wider mt-1">Logística</p>
+              <p class="text-xs font-black text-slate-900 leading-none">Admin</p>
+              <p class="text-[10px] text-slate-500 font-bold uppercase tracking-wider mt-1">TrackLand</p>
             </div>
             <div class="w-10 h-10 rounded-full bg-slate-900 flex items-center justify-center text-white font-black text-sm border-2 border-white shadow-md">
                JD

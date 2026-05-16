@@ -38,6 +38,7 @@ export interface Motorista {
   cpf: string;
 }
 
+
 export const GeocodingService = {
   async buscarEnderecoPorCEP(cep: string) {
     const cleanCep = cep.replace(/\D/g, '');
@@ -77,6 +78,10 @@ export const ManagementApiService = {
   async getMotoristas(): Promise<Motorista[]> {
     const response = await api.get('/motoristas');
     return response.data;
+  },
+
+  async getRotum() {
+    return await api.get('/rotas');
   },
 
   async createEndereco(dados: any): Promise<Endereco> {
@@ -133,11 +138,26 @@ export const ManagementApiService = {
     return response.data;
   },
 
-  async concluirRota(veiculoId: string | number): Promise<any> {
-    const response = await api.put('/enderecos/atualizar_status', {
+  async calcularRota(enderecoIds: string[], veiculoId: string) {
+    return await api.put('/enderecos/atualizar_status', {
+      endereco_ids: enderecoIds,
+      veiculo_id: veiculoId
+    });
+  },
+
+  async concluirRota(veiculoId: string) {
+    return await api.put(`/enderecos/atualizar_status`, {
       veiculo_id: veiculoId,
       concluir: true
     });
-    return response.data;
+  },
+
+  async salvarRotaNoBanco(veiculoId: string, enderecoIds: string[], km: number, tempo: number) {
+    return await api.post('/rotas', {
+      veiculo_id: veiculoId,
+      endereco_ids: enderecoIds,
+      km_total: km,
+      tempo_previsto: tempo
+    });
   }
 };

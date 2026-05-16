@@ -22,8 +22,6 @@ export const RoutingApiService = {
       enderecos: enderecos, // Enviando os objetos completos {id, lat, lng}
     });
     
-    // IMPORTANTE: O seu Service retorna 'ordem_sugerida' e não 'ordem_ids'
-    // Precisamos mapear isso para o formato que a sua Store espera:
     return {
       ordem_ids: response.data.ordem_sugerida.map((e: any) => e.id),
       ordem_sugerida: response.data.ordem_sugerida,

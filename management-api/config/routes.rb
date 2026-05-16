@@ -6,5 +6,9 @@ Rails.application.routes.draw do
   end
   resources :motoristas
   resources :veiculos
+
+  get '/rotas', to: 'rotas#index'
+  post '/rotas', to: 'rotas#create'
+  
   get "up" => "rails/health#show", as: :rails_health_check
 end

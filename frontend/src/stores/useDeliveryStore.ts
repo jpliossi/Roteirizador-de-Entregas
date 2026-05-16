@@ -82,7 +82,8 @@ export const useDeliveryStore = defineStore('delivery', {
         await Promise.all([
           this.fetchEnderecos(),
           this.fetchVeiculos(),
-          this.fetchMotoristas()
+          this.fetchMotoristas(),
+          this.fetchRotas()
         ]);
       } catch (error) {
         console.error('Error fetching initial data:', error);
@@ -101,6 +102,28 @@ export const useDeliveryStore = defineStore('delivery', {
 
     async fetchMotoristas() {
       this.motoristas = await ManagementApiService.getMotoristas();
+    },
+
+    async fetchRotas() {
+      try {
+        const response = await ManagementApiService.getRotum(); // ou getRotum()
+        
+        // Monta as rotas recheando com os dados reativos dos veículos
+        this.pendingRoutes = response.data.map((r: any) => ({
+          id: r.id,
+          enderecosIds: r.enderecosIds,
+          km_total: r.km_total,
+          tempo_previsto: r.tempo_previsto,
+          status: r.status,
+          // Procura o veículo correspondente na lista de veículos da store
+          vehicle: this.veiculos.find(v => String(v.id) === String(r.veiculo_id))
+        }));
+        
+        console.log("🚀 Rotas carregadas com sucesso no Pinia:", this.pendingRoutes);
+      } catch (error) {
+        console.error("Erro ao buscar rotas do banco:", error);
+        this.addToast('Erro ao carregar rotas ativas', 'error');
+      }
     },
 
     async addEndereco(dados: any) {
@@ -183,20 +206,32 @@ export const useDeliveryStore = defineStore('delivery', {
       this.loading = true;
       try {
         const selectedEnderecos = this.enderecos.filter(e => e.id && enderecosIds.includes(e.id));
-        const res = await RoutingApiService.calcularRota(
-          veiculoId,
-          selectedEnderecos
-        );
         
-        // Atualizar status dos endereços para 'em rota'
-        for (const id of enderecosIds) {
-          await ManagementApiService.updateEnderecoStatus(id, 'em rota', veiculoId);
-        }
+        // 1. Calcula a rota no microsserviço (que devolve a ordem ideal, km e tempo)
+        const res = await RoutingApiService.calcularRota(veiculoId, selectedEnderecos);
+        
+        // Supondo que o 'res' traga propriedades como 'totalDistance' e 'totalDuration'
+        const kmCalculado = res.totalDistance || 0; 
+        const tempoCalculado = res.totalDuration || 0; 
+
+        // 2. Atualiza o status dos endereços selecionados para 'em rota'
+        await ManagementApiService.calcularRota(enderecosIds, veiculoId);
+        
+        // 3. Grava a rota de forma definitiva no Postgres com todas as métricas exigidas
+        const responseBanco = await ManagementApiService.salvarRotaNoBanco(
+          veiculoId, 
+          enderecosIds, // A ordem aqui já deve ser a ordenada pelo seu algoritmo
+          kmCalculado, 
+          tempoCalculado
+        );
 
         const vehicle = this.veiculos.find(v => String(v.id) === veiculoId);
         
+        // Reconstroi o objeto reativo local usando o ID real gerado pelo banco do Rails
         const routeWithContext = {
-          ...res,
+          id: responseBanco.data.id, // O ID oficial da rota vindo do banco
+          km_total: kmCalculado,
+          tempo_previsto: tempoCalculado,
           vehicle: vehicle,
           enderecosIds: [...enderecosIds],
           status: 'pendente'
@@ -205,7 +240,7 @@ export const useDeliveryStore = defineStore('delivery', {
         this.pendingRoutes.push(routeWithContext);
         this.results = routeWithContext;
         
-        this.addToast('Nova rota calculada e atribuída!', 'success');
+        this.addToast('Nova rota calculada e persistida no banco!', 'success');
         await this.fetchEnderecos();
       } catch (e) {
         this.addToast('Erro ao calcular rota', 'error');
@@ -218,17 +253,18 @@ export const useDeliveryStore = defineStore('delivery', {
     async concluirRota(veiculoId: string) {
       this.loading = true;
       try {
-        await ManagementApiService.concluirRota(veiculoId);
+        await ManagementApiService.concluirRota(veiculoId); // Atualiza status dos endereços para 'concluido'
         
-        const routeIndex = this.pendingRoutes.findIndex(r => String(r.vehicle.id) === String(veiculoId));
-        if (routeIndex > -1) {
-          const finishedRoute = {
-            ...this.pendingRoutes[routeIndex],
-            finalizedAt: new Date().toISOString()
-          };
-          this.finalizedRoutes.push(finishedRoute);
-          this.pendingRoutes.splice(routeIndex, 1);
-        }
+        const routeIndex = this.pendingRoutes.findIndex(r => String(r.vehicle?.id) === String(veiculoId));
+          if (routeIndex > -1) {
+            const finishedRoute = {
+              ...this.pendingRoutes[routeIndex],
+              finalizedAt: new Date().toISOString(),
+              status: 'concluido'
+            };
+            this.finalizedRoutes.push(finishedRoute);
+            this.pendingRoutes.splice(routeIndex, 1);
+          }
 
         this.addToast('Rota concluída com sucesso!', 'success');
         await Promise.all([this.fetchEnderecos(), this.fetchVeiculos()]);

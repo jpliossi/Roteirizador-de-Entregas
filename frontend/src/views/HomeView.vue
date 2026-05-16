@@ -54,10 +54,23 @@ const formatRouteAddresses = (ids?: string[]) => {
 
 // Função placeholder para excluir
 const excluirEndereco = async (id: string) => {
+  if (!id) {
+    deliveryStore.addToast('Erro no sistema: O ID do endereço está vazio.', 'error');
+    return;
+  }
+
   if (confirm('Tem certeza que deseja excluir este endereço?')) {
-    // Chamar a store: await deliveryStore.deleteEndereco(id);
-    await ManagementApiService.deleteEndereco(id);
-    console.log('Excluir ID:', id);
+    try {
+      // 2. Chama a API
+      await ManagementApiService.deleteEndereco(id);
+      
+      // 3. Limpa da tela sem precisar dar F5 (Atualiza o Estado da Store)
+      deliveryStore.enderecos = deliveryStore.enderecos.filter(addr => addr.id !== id);
+      deliveryStore.addToast('Endereço excluído com sucesso.', 'success');
+    } catch (error) {
+      console.error(error);
+      deliveryStore.addToast('Erro ao excluir o endereço.', 'error');
+    }
   }
 };
 

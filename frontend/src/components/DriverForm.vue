@@ -26,7 +26,7 @@ const maskCPF = (e: any) => {
 
 const handleSubmit = async () => {
   if (!form.value.nome || form.value.cpf.length < 14) {
-    alert('Preencha os dados corretamente (Nome e CPF completo).');
+    deliveryStore.addToast('Preencha os dados corretamente (Nome e CPF completo).', 'error');
     return;
   }
   const cleanCpf = form.value.cpf.replace(/\D/g, '');
@@ -35,11 +35,10 @@ const handleSubmit = async () => {
     const success = await deliveryStore.addMotorista({ ...form.value, cpf: cleanCpf });
     if (success) {
       form.value = { nome: '', cpf: '' };
-      alert('Motorista cadastrado com sucesso!');
       emit('close');
     }
   } catch (err) {
-    alert('Erro ao cadastrar motorista.');
+    deliveryStore.addToast('Erro ao cadastrar motorista.', 'error');
     console.error(err);
   } finally {
     isSubmitting.value = false;

@@ -2,7 +2,7 @@
 import { ref } from 'vue';
 import { useDeliveryStore } from '../stores/useDeliveryStore';
 import { GeocodingService } from '../services/ManagementApiService';
-import { MapPin, Search, Plus, Save, Building2, Navigation, X } from 'lucide-vue-next';
+import { MapPin, Search, Save, Building2, Navigation, X } from 'lucide-vue-next';
 import AppButton from './ui/AppButton.vue';
 import AppInput from './ui/AppInput.vue';
 import AppCard from './ui/AppCard.vue';
@@ -54,6 +54,15 @@ const handleSubmit = async () => {
     isSubmitting.value = false;
   }
 };
+
+// Força o formato de máscara enquanto o usuário digita
+const aplicarMascaraCEP = (valor: string) => {
+  return valor
+    .replace(/\D/g, '') // Remove tudo que não é número
+    .replace(/^(\d{5})(\d)/, '$1-$2') // Adiciona o hífen após o 5º dígito
+    .substring(0, 9); // Limita o tamanho máximo
+};
+
 </script>
 
 <template>
@@ -78,11 +87,12 @@ const handleSubmit = async () => {
         <div class="relative group">
           <label class="text-[10px] font-black uppercase text-muted-foreground ml-1 mb-2 block tracking-widest">CEP Principal</label>
           <AppInput 
-            v-model="form.cep" 
-            placeholder="Ex: 01001-000" 
-            @blur="handleCepBlur"
-            class="pl-12"
-          />
+          v-model="form.cep" 
+          @input="form.cep = aplicarMascaraCEP(form.cep)"
+          placeholder="00000-000"
+          maxlength="9"
+          @blur="handleCepBlur"
+          class="pl-12" />
           <Search 
             class="absolute left-4 bottom-3.5 w-5 h-5 text-muted-foreground transition-colors group-focus-within:text-primary" 
             :class="{'animate-spin': isSearching}" 

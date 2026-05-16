@@ -29,7 +29,7 @@ const maskPlate = (e: any) => {
 
 const handleSubmit = async () => {
   if (form.value.placa.length < 8 || !form.value.modelo) {
-    alert('Preencha a placa corretamente (Ex: AAA-9999) e o modelo.');
+    deliveryStore.addToast('Preencha a placa corretamente (Ex: AAA-9999) e o modelo.', 'error');
     return;
   }
   isSubmitting.value = true;
@@ -39,11 +39,10 @@ const handleSubmit = async () => {
       // Forçar atualização da lista para garantir visualização
       await deliveryStore.fetchVeiculos();
       form.value = { placa: '', modelo: '', capacidade: 0 };
-      alert('Veículo registrado com sucesso!');
       emit('close');
     }
   } catch (err) {
-    alert('Erro ao registrar veículo.');
+    deliveryStore.addToast('Erro ao registrar veículo.', 'error');
   } finally {
     isSubmitting.value = false;
   }
@@ -92,7 +91,7 @@ const handleSubmit = async () => {
         </div>
 
         <div>
-           <label class="text-[10px] font-black uppercase text-muted-foreground ml-1 mb-2 block">Capacidade (kg)</label>
+           <label class="text-[10px] font-black uppercase text-muted-foreground ml-1 mb-2 block">Capacidade (M³)</label>
            <AppInput v-model.number="form.capacidade" type="number" placeholder="Ex: 1500" class="h-14 bg-muted/50 border-2" />
         </div>
       </div>
