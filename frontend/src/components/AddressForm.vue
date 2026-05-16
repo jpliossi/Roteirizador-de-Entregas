@@ -131,7 +131,7 @@ const aplicarMascaraCEP = (valor: string) => {
           :loading="isSubmitting"
         >
           <Save class="w-5 h-5 mr-3" />
-          Registrar Destino
+          Salvar Endereço
         </AppButton>
       </div>
     </form>

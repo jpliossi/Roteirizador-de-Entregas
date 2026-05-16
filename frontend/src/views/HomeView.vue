@@ -183,7 +183,7 @@ const excluirEndereco = async (id: string) => {
               <div class="flex gap-8">
                 <div>
                   <p class="text-[10px] font-black text-white/30 uppercase tracking-widest">Distância</p>
-                  <p class="text-xl font-black">{{ Number(res.distancia_total || 0).toFixed(2) }} km</p>
+                  <p class="text-xl font-black">{{ Number(res.km_total || 0).toFixed(2) }} km</p>
                 </div>
                 <div>
                   <p class="text-[10px] font-black text-white/30 uppercase tracking-widest">Tempo Est.</p>
@@ -393,7 +393,7 @@ const excluirEndereco = async (id: string) => {
             <div class="flex gap-8">
               <div>
                 <p class="text-[10px] font-black text-white/30 uppercase tracking-widest">Distância</p>
-                <p class="text-xl font-black">{{ Number(res.km_total || 0).toFixed(1) }} km</p>
+                <p class="text-xl font-black">{{ Number(res.km_total || 0).toFixed(2) }} km</p>
               </div>
               <div>
                 <p class="text-[10px] font-black text-white/30 uppercase tracking-widest">Tempo Est.</p>
@@ -426,7 +426,7 @@ const excluirEndereco = async (id: string) => {
                   <div>
                     <p class="font-black text-slate-900 text-sm tracking-tight">{{ route.placa }}</p>
                     <p class="text-[10px] text-slate-500 font-bold uppercase tracking-widest">
-                      {{ route.enderecos_relacionados?.length || 0 }} paradas • {{ Number(route.km_total || 0).toFixed(1) }} km
+                      {{ route.enderecos_relacionados?.length || 0 }} paradas • {{ Number(route.km_total || 0).toFixed(2) }} km
                     </p>
                   </div>
                 </div>

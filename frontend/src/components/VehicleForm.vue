@@ -100,7 +100,7 @@ const handleSubmit = async () => {
         <AppButton 
           type="submit" 
           variant="primary" 
-          class="w-full h-14 rounded-2xl font-black text-base shadow-lg shadow-primary/20 active:scale-95 transition-all"
+          class="w-full h-14 bg-[#171717] hover:bg-black text-white rounded-2xl font-bold shadow-xl active:scale-[0.98] transition-all"
           :loading="isSubmitting"
         >
           <Save class="w-5 h-5 mr-3" />
