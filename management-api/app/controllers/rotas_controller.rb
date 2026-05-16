@@ -27,7 +27,7 @@ class RotasController < ApplicationController
     }
   end
 
-  # POST /rotas - Cria a rota com o contrato de dados idêntico ao do index
+  # POST /rotas - Cria a rota e já devolve o itinerário completo e populado
   def create
     @rota = Rotum.new(
       veiculo_id: params[:veiculo_id],
@@ -40,15 +40,25 @@ class RotasController < ApplicationController
     if @rota.save
       veiculo = Veiculo.find_by(id: @rota.veiculo_id)
 
-      render json: {
+      # Resgata e ordena os endereços REAIS enviados, igualzinho fazemos no index
+      enderecos_ids_array = @rota.respond_to?(:endereco_ids) ? @rota.endereco_ids : (@rota.respond_to?(:enderecos_ids) ? @rota.enderecos_ids : [])
+      enderecos_banco = Endereco.where(id: enderecos_ids_array).index_by(&:id)
+      enderecos_ordenados = enderecos_ids_array.map { |id| enderecos_banco[id] }.compact
+
+      resposta_formatada = {
         id: @rota.id,
-        veiculo_id: @rota.veiculo_id.to_s, # Evita o undefined no primeiro clique
+        veiculo_id: @rota.veiculo_id.to_s,
         placa: veiculo&.placa || "Sem Veículo",
-        km_total: @rota.km_total || 0,
-        tempo_previsto: @rota.tempo_previsto || 0,
+        km_total: (@rota.km_total || 0).to_f,
+        tempo_previsto: (@rota.tempo_previsto || 0).to_f,
         status: @rota.status,
-        enderecos_relacionados: []
-      }, status: :created
+        # 🎯 AGORA VAI PREENCHIDO: O Vue não vai mais receber uma rota vazia ou quebrar o contrato
+        enderecos_relacionados: enderecos_ordenados.map { |e| 
+          { id: e.id, rua: e.rua, numero: e.numero, bairro: e.bairro }
+        }
+      }
+
+      render json: resposta_formatada, status: :created
     else
       render json: @rota.errors, status: :unprocessable_entity
     end

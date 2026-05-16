@@ -230,7 +230,6 @@ export const useDeliveryStore = defineStore('delivery', {
         // 1. Calcula a rota no microsserviço (que devolve a ordem ideal, km e tempo)
         const res = await RoutingApiService.calcularRota(veiculoId, selectedEnderecos);
         
-        // Supondo que o 'res' traga propriedades como 'totalDistance' e 'totalDuration'
         const dadosRota = res.data || res;
         const kmCalculado = dadosRota.distancia_total || 0; 
         const tempoCalculado = dadosRota.tempo_estimado || 0; 
@@ -241,30 +240,41 @@ export const useDeliveryStore = defineStore('delivery', {
         // 3. Grava a rota de forma definitiva no Postgres com todas as métricas exigidas
         const responseBanco = await ManagementApiService.salvarRotaNoBanco(
           veiculoId, 
-          enderecosIds, // A ordem aqui já deve ser a ordenada pelo seu algoritmo
+          enderecosIds,
           kmCalculado, 
           tempoCalculado
         );
 
         const vehicle = this.veiculos.find(v => String(v.id) === veiculoId);
         
-        // Reconstroi o objeto reativo local usando o ID real gerado pelo banco do Rails
+        // 🎯 CORREÇÃO CIRÚRGICA: Monta o contrato idêntico ao index do Rails
         const routeWithContext = {
-          id: responseBanco.data.id, // O ID oficial da rota vindo do banco
+          id: responseBanco.data.id, 
+          veiculo_id: String(veiculoId), // 🔥 Essencial! Garante que o botão leia o ID imediato como string
+          placa: vehicle?.placa || "Sem Veículo", // 🔥 Essencial! Exibe a placa sem precisar de F5
           km_total: kmCalculado,
           tempo_previsto: tempoCalculado,
-          vehicle: vehicle,
-          enderecosIds: [...enderecosIds],
-          status: 'pendente'
+          status: 'pendente',
+          // Mapeia os endereços em andamento para montar a linha do tempo visual na tela na hora
+          enderecos_relacionados: selectedEnderecos.map(e => ({
+            id: e.id,
+            rua: e.rua,
+            numero: e.numero,
+            bairro: e.bairro
+          }))
         };
 
+        // Adiciona no topo ou no final da lista reativa
         this.pendingRoutes.push(routeWithContext);
         this.results = routeWithContext;
         
         this.addToast('Nova rota calculada e persistida no banco!', 'success');
+        
+        // 🎯 DISPARA O FETCH ASSÍNCRONO: Atualiza o estado da store com o banco de forma limpa
         await this.fetchEnderecos();
-        // await this.fetchRotas(); // Recarrega as rotas para garantir que temos os dados mais recentes do banco
-        await this.fetchVeiculos(); // Atualiza os veículos para refletir possíveis mudanças de status
+        await this.fetchVeiculos(); 
+        await this.fetchRotas(); // 🔥 Ative essa linha! Ela vai sincronizar tudo em background com o Rails de forma segura.
+
       } catch (e) {
         this.addToast('Erro ao calcular rota', 'error');
         console.error(e);
