@@ -154,10 +154,10 @@ export const ManagementApiService = {
 
   async salvarRotaNoBanco(veiculoId: string, enderecoIds: string[], km: number, tempo: number) {
     return await api.post('/rotas', {
-      veiculo_id: veiculoId,
-      endereco_ids: enderecoIds,
-      km_total: km,
-      tempo_previsto: tempo
+        veiculo_id: veiculoId,
+        endereco_ids: enderecoIds,
+        km_total: km,
+        tempo_previsto: tempo
     });
   }
 };

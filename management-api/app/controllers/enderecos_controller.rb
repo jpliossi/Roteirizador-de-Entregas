@@ -32,6 +32,8 @@ class EnderecosController < ApplicationController
       
       # 2. Libera o veículo
       Veiculo.find(params[:veiculo_id]).update(status: "disponivel")
+
+      Rotum.where(veiculo_id: params[:veiculo_id]).update_all(status: "concluido")
       
       return render json: { message: "Veículo liberado!" }, status: :ok
     end

@@ -157,7 +157,7 @@ const excluirEndereco = async (id: string) => {
                   <p class="text-xs text-white/50 font-bold uppercase tracking-widest">{{ res.vehicle?.placa || 'Sem Placa' }} • {{ res.vehicle?.modelo || 'Veículo' }}</p>
                 </div>
               </div>
-              <button @click="finalizarRota(res.vehicle.id)" class="px-6 py-3 bg-emerald-500 hover:bg-emerald-600 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all shadow-lg shadow-emerald-500/20">
+              <button @click="deliveryStore.concluirRota(res.veiculo_id)" class="px-6 py-3 bg-emerald-500 hover:bg-emerald-600 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all shadow-lg shadow-emerald-500/20">
                 Concluir Rota
               </button>
             </div>
@@ -183,11 +183,11 @@ const excluirEndereco = async (id: string) => {
               <div class="flex gap-8">
                 <div>
                   <p class="text-[10px] font-black text-white/30 uppercase tracking-widest">Distância</p>
-                  <p class="text-xl font-black">{{ res.distancia_total || 0 }} km</p>
+                  <p class="text-xl font-black">{{ Number(res.distancia_total || 0).toFixed(2) }} km</p>
                 </div>
                 <div>
                   <p class="text-[10px] font-black text-white/30 uppercase tracking-widest">Tempo Est.</p>
-                  <p class="text-xl font-black">{{ res.tempo_estimado || 0}} min</p>
+                  <p class="text-xl font-black">{{ Math.round(Number(res.tempo_previsto || 0)) }} min</p>
                 </div>
               </div>
               <button class="p-4 bg-white/5 hover:bg-white/10 rounded-2xl transition-all">
@@ -352,7 +352,9 @@ const excluirEndereco = async (id: string) => {
           <Navigation2 class="w-6 h-6 text-blue-600" />
           Rotas em Andamento
         </h2>
-        <div v-for="(res, idx) in deliveryStore.pendingRoutes" :key="idx" class="bg-slate-900 rounded-4xl p-8 text-white">
+        
+        <div v-for="res in deliveryStore.pendingRoutes" :key="res.id" class="bg-slate-900 rounded-4xl p-8 text-white mb-6">
+          
           <div class="flex items-center justify-between mb-8">
             <div class="flex items-center gap-4">
               <div class="p-3 bg-white/10 rounded-2xl">
@@ -360,25 +362,30 @@ const excluirEndereco = async (id: string) => {
               </div>
               <div>
                 <h3 class="font-black text-lg uppercase tracking-tight">Rota em Andamento</h3>
-                <p class="text-xs text-white/50 font-bold uppercase tracking-widest">{{ res.vehicle?.placa || 'Sem Placa' }} • {{ res.vehicle?.modelo || 'Veículo' }}</p>
+                <p class="text-xs text-white/50 font-bold uppercase tracking-widest">{{ res.placa || 'Sem Placa' }}</p>
               </div>
             </div>
-            <button @click="finalizarRota(res.vehicle.id)" class="px-6 py-3 bg-emerald-500 hover:bg-emerald-600 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all shadow-lg shadow-emerald-500/20">
+            
+            <button @click="deliveryStore.concluirRota(res.veiculo_id)" class="px-6 py-3 bg-emerald-500 hover:bg-emerald-600 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all shadow-lg shadow-emerald-500/20">
               Concluir Rota
             </button>
           </div>
 
           <div class="space-y-4">
-            <div v-for="(stop, sIdx) in res.route" :key="sIdx" class="relative pl-8">
-              <div v-if="Number(sIdx) < res.route.length - 1" class="absolute left-1.75 top-6 w-0.5 h-full bg-slate-800 my-1"></div>
+            <div v-for="(stop, sIdx) in res.enderecos_relacionados" :key="stop.id || sIdx" class="relative pl-8">
+              
+              <div v-if="Number(sIdx) < res.enderecos_relacionados.length - 1" class="absolute left-1.75 top-6 w-0.5 h-full bg-slate-800 my-1"></div>
+              
               <div class="absolute left-0 top-1.5 w-3.5 h-3.5 rounded-full border-2 border-slate-700 bg-slate-900 flex items-center justify-center">
                 <div class="w-1.5 h-1.5 rounded-full bg-emerald-500"></div>
               </div>
+              
               <div class="bg-white/5 p-4 rounded-2xl border border-white/5 group hover:bg-white/10 transition-all cursor-default">
                 <p class="text-xs font-black text-white group-hover:text-emerald-400 transition-colors uppercase tracking-tight">Parada #{{ Number(sIdx) + 1 }}</p>
                 <p class="text-sm text-white/70 font-medium">{{ stop.rua }}, {{ stop.numero }}</p>
                 <p class="text-[10px] text-white/40 font-bold uppercase tracking-widest mt-1">{{ stop.bairro }}</p>
               </div>
+              
             </div>
           </div>
 
@@ -386,17 +393,18 @@ const excluirEndereco = async (id: string) => {
             <div class="flex gap-8">
               <div>
                 <p class="text-[10px] font-black text-white/30 uppercase tracking-widest">Distância</p>
-                <p class="text-xl font-black">{{ (res.totalDistance / 1000).toFixed(1) }} km</p>
+                <p class="text-xl font-black">{{ Number(res.km_total || 0).toFixed(1) }} km</p>
               </div>
               <div>
                 <p class="text-[10px] font-black text-white/30 uppercase tracking-widest">Tempo Est.</p>
-                <p class="text-xl font-black">{{ Math.round(res.totalDuration / 60) }} min</p>
+                <p class="text-xl font-black">{{ Math.round(Number(res.tempo_previsto || 0)) }} min</p>
               </div>
             </div>
             <button class="p-4 bg-white/5 hover:bg-white/10 rounded-2xl transition-all">
               <Printer class="w-5 h-5 text-white/50" />
             </button>
           </div>
+          
         </div>
       </div>
 
@@ -408,20 +416,35 @@ const excluirEndereco = async (id: string) => {
         </h2>
         <div class="bg-white rounded-4xl p-8 border border-slate-100 shadow-sm">
           <div class="space-y-4">
-            <div v-for="(route, rIdx) in deliveryStore.finalizedRoutes" :key="rIdx" class="flex items-center justify-between p-4 bg-slate-50 rounded-2xl">
-              <div class="flex items-center gap-4">
-                <div class="w-10 h-10 rounded-xl bg-emerald-100 flex items-center justify-center">
-                  <Truck class="w-5 h-5 text-emerald-600" />
+            <div v-for="(route, rIdx) in deliveryStore.finalizedRoutes" :key="route.id || rIdx" class="p-6 bg-slate-50 rounded-2xl space-y-4">
+              
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-4">
+                  <div class="w-10 h-10 rounded-xl bg-emerald-100 flex items-center justify-center">
+                    <Truck class="w-5 h-5 text-emerald-600" />
+                  </div>
+                  <div>
+                    <p class="font-black text-slate-900 text-sm tracking-tight">{{ route.placa }}</p>
+                    <p class="text-[10px] text-slate-500 font-bold uppercase tracking-widest">
+                      {{ route.enderecos_relacionados?.length || 0 }} paradas • {{ Number(route.km_total || 0).toFixed(1) }} km
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <p class="font-black text-slate-900 text-sm tracking-tight">{{ route.vehicle?.placa }}</p>
-                  <p class="text-[10px] text-slate-500 font-bold uppercase tracking-widest">{{ route.enderecosIds?.length }} paradas</p>
+                <div class="text-right">
+                  <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Concluído</p>
+                  <p class="text-xs font-black text-slate-900">
+                    {{ route.updated_at ? new Date(route.updated_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : 'Concluído' }}
+                  </p>
                 </div>
               </div>
-              <div class="text-right">
-                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Concluído</p>
-                <p class="text-xs font-black text-slate-900">{{ new Date(route.finalizedAt).toLocaleTimeString() }}</p>
+
+              <div v-if="route.enderecos_relacionados && route.enderecos_relacionados.length > 0" class="pt-3 border-t border-slate-200/60 text-xs font-semibold text-slate-500 flex items-center gap-2">
+                <span class="text-[9px] font-black uppercase tracking-wider text-slate-400 bg-slate-200/50 px-1.5 py-0.5 rounded">Trajeto</span>
+                <p class="truncate tracking-tight text-slate-600">
+                  {{ route.enderecos_relacionados.map((e: { rua: any; numero: any; }) => `${e.rua}, ${e.numero}`).join(' → ') }}
+                </p>
               </div>
+
             </div>
           </div>
         </div>
@@ -442,9 +465,6 @@ const excluirEndereco = async (id: string) => {
           <p class="text-slate-500 font-medium text-lg">Gerencie os veículos disponíveis para roteirização.</p>
         </div>
         <div class="flex gap-4">
-          <button @click="showDriverForm = true" class="flex items-center gap-2 px-6 py-4 bg-white border-2 border-slate-200 text-slate-700 rounded-3xl font-black hover:border-slate-300 transition-all uppercase tracking-widest text-xs">
-            <UserPlus class="w-5 h-5" /> Novo Motorista
-          </button>
           <button @click="showVehicleForm = true" class="flex items-center gap-2 px-6 py-4 bg-slate-900 text-white rounded-3xl font-black hover:bg-slate-800 transition-all shadow-xl shadow-slate-200 uppercase tracking-widest text-xs">
             <Plus class="w-5 h-5" /> Novo Veículo
           </button>

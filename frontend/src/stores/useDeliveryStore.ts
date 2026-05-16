@@ -98,31 +98,51 @@ export const useDeliveryStore = defineStore('delivery', {
 
     async fetchVeiculos() {
       this.veiculos = await ManagementApiService.getVeiculos();
-    },
+        },
 
-    async fetchMotoristas() {
-      this.motoristas = await ManagementApiService.getMotoristas();
-    },
+        async fetchMotoristas() {
+          this.motoristas = await ManagementApiService.getMotoristas();
+        },
+
+        // src/stores/useDeliveryStore.ts
 
     async fetchRotas() {
       try {
-        const response = await ManagementApiService.getRotum(); // ou getRotum()
-        
-        // Monta as rotas recheando com os dados reativos dos veículos
-        this.pendingRoutes = response.data.map((r: any) => ({
-          id: r.id,
-          enderecosIds: r.enderecosIds,
-          km_total: r.km_total,
-          tempo_previsto: r.tempo_previsto,
-          status: r.status,
-          // Procura o veículo correspondente na lista de veículos da store
-          vehicle: this.veiculos.find(v => String(v.id) === String(r.veiculo_id))
-        }));
-        
-        console.log("🚀 Rotas carregadas com sucesso no Pinia:", this.pendingRoutes);
+        const response = await ManagementApiService.getRotum(); 
+        const rawData = response.data || response;
+        console.log("🔍 PROVA REAL DO QUE VEIO DO RAILS:");
+        console.table(rawData);
+
+        if (!Array.isArray(rawData)) {
+          console.warn("⚠️ Dados de retorno não são um Array válido:", rawData);
+          return;
+        }
+
+        // Mapeamento à prova de falhas
+        const todasAsRotasMapeadas = rawData.map((r: any) => {
+          // Força a descoberta do ID do veículo buscando em todas as variações possíveis
+          const idDoVeiculo = r.veiculo_id || r.vehicle_id || r.vehicle?.id;
+
+          return {
+            id: r.id,
+            veiculo_id: idDoVeiculo ? String(idDoVeiculo) : undefined, // Garante que salva como string na raiz!
+            placa: r.placa || r.vehicle?.placa || "Sem Placa",
+            km_total: Number(r.km_total || 0),
+            tempo_previsto: Number(r.tempo_previsto || 0),
+            status: r.status,
+            enderecos_relacionados: r.enderecos_relacionados || [],
+            updated_at: r.updated_at
+          };
+        });
+
+        // Filtra aplicando o estado reativo correto
+        this.pendingRoutes = todasAsRotasMapeadas.filter((r: any) => r.status === 'pendente');
+        this.finalizedRoutes = todasAsRotasMapeadas.filter((r: any) => r.status === 'concluido');
+
+        console.log("🎯 Rotas pendentes mapeadas com sucesso:", this.pendingRoutes);
       } catch (error) {
-        console.error("Erro ao buscar rotas do banco:", error);
-        this.addToast('Erro ao carregar rotas ativas', 'error');
+        console.error("Erro ao carregar rotas:", error);
+        this.addToast('Erro ao atualizar painel de rotas', 'error');
       }
     },
 
@@ -254,6 +274,7 @@ export const useDeliveryStore = defineStore('delivery', {
     },
 
     async concluirRota(veiculoId: string) {
+      console.log("ID do Veículo para concluir:", veiculoId);
       this.loading = true;
       try {
         await ManagementApiService.concluirRota(veiculoId); // Atualiza status dos endereços para 'concluido'
@@ -270,7 +291,7 @@ export const useDeliveryStore = defineStore('delivery', {
           }
 
         this.addToast('Rota concluída com sucesso!', 'success');
-        await Promise.all([this.fetchEnderecos(), this.fetchVeiculos()]);
+        await Promise.all([this.fetchEnderecos(), this.fetchVeiculos(), this.fetchRotas()]);
       } catch (e) {
         this.addToast('Erro ao concluir rota', 'error');
         console.error(e);
