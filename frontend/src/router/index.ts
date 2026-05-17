@@ -15,7 +15,7 @@ const router = createRouter({
         {
           path: 'enderecos',
           name: 'enderecos',
-          component: () => import('@/views/HomeView.vue') // Placeholder logic: for now HomeView handles all in current SPA
+          component: () => import('@/views/HomeView.vue')
         },
         {
           path: 'veiculos',

@@ -1,116 +1,111 @@
 ﻿<script setup lang="ts">
+import { ref, onMounted } from 'vue';
 import { useDeliveryStore } from '../stores/useDeliveryStore';
-import { onMounted, ref, watch } from 'vue';
-import { Truck, CheckCircle, User } from 'lucide-vue-next';
-import AppCard from './ui/AppCard.vue';
-import AppButton from './ui/AppButton.vue';
-import AppBadge from './ui/AppBadge.vue';
+import { Trash2, User, Truck, CheckCircle2, Navigation2, LogIn } from 'lucide-vue-next';
+
+interface Veiculo {
+  id: string;
+  placa: string;
+  modelo: string;
+  capacidade: number;
+  motorista_id: string | number | null;
+  status: string;
+}
 
 const deliveryStore = useDeliveryStore();
-const extraInfosPorVeiculo = ref<Record<string, { ordemIds: string[], distancia?: number, tempo?: number, paradas?: number }>>({});
+const selectMotoristaId = ref<{ [key: string]: string | number }>({});
 
-const carregarDadosDinamicos = async (veiculoId: string) => {
-  try {
-    const res = await fetch(`http://localhost:3001/rota/${veiculoId}`);
-    if (res.ok) {
-      const data = await res.json();
-      extraInfosPorVeiculo.value[veiculoId] = {
-        ordemIds: data.ordem_ids || [],
-        distancia: data.distancia_total,
-        tempo: data.tempo_estimado,
-        paradas: data.ordem_ids?.length || 0
-      };
-    }
-  } catch (err) {
-    // Silent fail if no route
-  }
-};
-
-const concluirRota = async (veiculoId: string) => {
-  await deliveryStore.concluirRota(veiculoId);
-  delete extraInfosPorVeiculo.value[veiculoId];
-};
-
-onMounted(() => {
-  deliveryStore.loadInitialData();
-});
-
-watch(() => deliveryStore.veiculos, (novosVeiculos) => {
-  novosVeiculos.forEach(v => {
-    if (v.id && !extraInfosPorVeiculo.value[v.id]) {
-       carregarDadosDinamicos(String(v.id));
+onMounted(async () => {
+  await deliveryStore.fetchInitialData();
+  // Inicializar o select com o ID do motorista atual de cada veículo
+  deliveryStore.veiculos.forEach(v => {
+    if (v.motorista_id) {
+      selectMotoristaId.value[v.id!] = v.motorista_id;
     }
   });
-}, { immediate: true, deep: true });
+});
+
+const vincularMotorista = async (veiculoId: string) => {
+  const motoristaId = selectMotoristaId.value[veiculoId];
+  await deliveryStore.updateVeiculoMotorista(veiculoId, String(motoristaId) || null);
+};
+
+const deletarVeiculo = async (id: string) => {
+  if (confirm('Tem certeza que deseja excluir este veículo?')) {
+    await deliveryStore.removeVeiculo(id);
+  }
+};
 </script>
 
 <template>
-  <div class="space-y-4">
-    <div v-if="deliveryStore.loading && deliveryStore.veiculos.length === 0" class="p-12 text-center text-muted-foreground bg-card border border-dashed rounded-xl">
-       <div class="inline-block animate-spin rounded-full h-8 w-8 border-2 border-primary border-t-transparent mb-4"></div>
-       <p class="text-sm">Sincronizando frota...</p>
+  <div class="space-y-6">
+    <div v-if="deliveryStore.veiculos.length === 0" class="text-center py-20 bg-slate-50 rounded-[32px] border-2 border-dashed border-slate-200">
+      <Truck class="w-16 h-16 text-slate-300 mx-auto mb-4" />
+      <p class="text-slate-500 font-bold uppercase tracking-widest text-xs">Nenhum veículo cadastrado na frota</p>
     </div>
 
-    <div v-else-if="deliveryStore.veiculos.length === 0" class="p-12 text-center text-muted-foreground bg-card border border-dashed rounded-xl">
-       <Truck class="w-12 h-12 mx-auto mb-4 opacity-10" />
-       <p class="text-sm font-medium">Nenhum veículo operacional.</p>
-    </div>
-
-    <template v-else>
-      <AppCard 
-        v-for="veiculo in deliveryStore.veiculos" 
-        :key="veiculo.id" 
-        class="border transition-all hover:shadow-md"
-        :class="extraInfosPorVeiculo[veiculo.id!] ? 'border-primary/30 ring-1 ring-primary/10' : ''"
-      >
-        <div class="flex items-start justify-between mb-4">
-          <div class="flex items-center gap-4">
-            <div class="p-3 bg-secondary rounded-xl">
-              <Truck class="w-6 h-6 text-primary" />
-            </div>
-            <div>
-              <h4 class="font-bold text-lg leading-none">{{ veiculo.placa }}</h4>
-              <p class="text-xs font-semibold text-muted-foreground uppercase tracking-wider mt-1.5">{{ veiculo.modelo }} • {{ veiculo.capacidade }}kg</p>
-            </div>
-          </div>
-          <AppBadge :variant="extraInfosPorVeiculo[veiculo.id!] ? 'default' : 'outline'">
-            {{ extraInfosPorVeiculo[veiculo.id!] ? 'Em Rota' : 'Estacionado' }}
-          </AppBadge>
-        </div>
-
-        <div v-if="extraInfosPorVeiculo[veiculo.id!]" class="space-y-4 mt-6 animate-in slide-in-from-top-2">
-          <div class="grid grid-cols-2 gap-2">
-            <div class="bg-muted px-4 py-3 rounded-xl">
-              <p class="text-[10px] font-bold text-muted-foreground uppercase">KM Estimado</p>
-              <p class="text-lg font-bold">{{ extraInfosPorVeiculo[veiculo.id!].distancia }} km</p>
-            </div>
-            <div class="bg-muted px-4 py-3 rounded-xl">
-              <p class="text-[10px] font-bold text-muted-foreground uppercase">Tempo ETA</p>
-              <p class="text-lg font-bold">{{ extraInfosPorVeiculo[veiculo.id!].tempo }} min</p>
-            </div>
-          </div>
-          
-          <AppButton 
-            variant="outline" 
-            size="md" 
-            class="w-full text-emerald-600 border-emerald-200 hover:bg-emerald-50 font-bold"
-            @click="concluirRota(String(veiculo.id))"
-            :icon="CheckCircle"
-          >
-            Finalizar Operação
-          </AppButton>
-        </div>
+    <div v-else class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+      <div v-for="veiculo in deliveryStore.veiculos" :key="veiculo.id" 
+           class="group bg-white border border-slate-100 rounded-[32px] p-6 shadow-sm hover:shadow-xl hover:shadow-slate-200/50 transition-all duration-500 flex flex-col justify-between">
         
-        <div v-else class="mt-4 flex items-center justify-between text-xs text-muted-foreground border-t pt-4">
-          <div class="flex items-center gap-2">
-            <div class="w-5 h-5 rounded-full bg-secondary flex items-center justify-center">
-               <User class="w-3 h-3" />
+        <div class="space-y-4">
+          <div class="flex items-start justify-between">
+            <div class="p-4 bg-slate-900 text-white rounded-2xl shadow-lg shadow-slate-200">
+              <p class="text-[10px] font-black uppercase tracking-widest opacity-60 mb-1">Placa</p>
+              <p class="font-black text-lg tracking-tighter">{{ veiculo.placa }}</p>
             </div>
-            <span class="font-medium">Motorista não escalado</span>
+            <div :class="veiculo.status === 'em rota' ? 'bg-blue-50 text-blue-600' : 'bg-emerald-50 text-emerald-600'" 
+                 class="px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full animate-pulse" :class="veiculo.status === 'em rota' ? 'bg-blue-600' : 'bg-emerald-600'"></span>
+              {{ veiculo.status }}
+            </div>
           </div>
-          <AppButton variant="ghost" size="sm" class="h-8 text-[10px] uppercase font-bold tracking-widest text-primary">Escalar</AppButton>
+
+          <div>
+            <h3 class="text-xl font-black text-slate-900 tracking-tight">{{ veiculo.modelo }}</h3>
+            <p class="text-sm text-slate-500 font-bold uppercase tracking-widest">Capacidade: {{ veiculo.capacidade }} m³</p>
+          </div>
+
+          <!-- VINCULAR MOTORISTA -->
+          <div class="pt-4 border-t border-slate-50">
+            <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Motorista Responsável</label>
+            <div class="flex gap-2">
+              <select 
+                v-model="selectMotoristaId[veiculo.id!]"
+                class="flex-1 bg-slate-50 border-0 rounded-xl px-4 py-2 text-sm font-bold text-slate-700 focus:ring-2 focus:ring-slate-900 transition-all appearance-none"
+              >
+                <option :value="undefined">Nenhum Selecionado</option>
+                <option v-for="m in deliveryStore.motoristas" :key="m.id" :value="m.id">
+                  {{ m.nome }}
+                </option>
+              </select>
+              <button 
+                @click="vincularMotorista(veiculo.id!)"
+                class="p-2 bg-slate-900 text-white rounded-xl hover:bg-slate-800 transition-all shadow-md active:scale-95"
+                title="Salvar Vínculo"
+              >
+                <LogIn class="w-4 h-4" />
+              </button>
+            </div>
+          </div>
         </div>
-      </AppCard>
-    </template>
+
+        <div class="mt-8 flex items-center justify-between gap-4">
+          <button @click="deletarVeiculo(veiculo.id!)" 
+                  class="p-4 bg-red-50 text-red-500 rounded-2xl hover:bg-red-500 hover:text-white transition-all duration-300">
+            <Trash2 class="w-5 h-5" />
+          </button>
+          
+          <div class="flex-1 flex gap-2">
+            <div v-if="veiculo.status === 'em rota'" class="flex-1 py-4 text-center bg-blue-50 text-blue-600 rounded-2xl font-black text-[10px] uppercase tracking-widest flex items-center justify-center gap-2">
+              <Navigation2 class="w-4 h-4" /> Em Rota
+            </div>
+            <div v-else class="flex-1 py-4 text-center bg-emerald-50 text-emerald-600 rounded-2xl font-black text-[10px] uppercase tracking-widest flex items-center justify-center gap-2">
+              <CheckCircle2 class="w-4 h-4" /> Disponível
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
