@@ -222,7 +222,7 @@ export const useDeliveryStore = defineStore('delivery', {
       await this.fetchVeiculos();
     },
 
-    async calcularRota(veiculoId: string, enderecosIds: string[]) {
+    async calcularRota(enderecosIds: string[], veiculoId: string) {
       this.loading = true;
       try {
         const selectedEnderecos = this.enderecos.filter(e => e.id && enderecosIds.includes(e.id));
@@ -247,7 +247,7 @@ export const useDeliveryStore = defineStore('delivery', {
 
         const vehicle = this.veiculos.find(v => String(v.id) === veiculoId);
         
-        // 🎯 CORREÇÃO CIRÚRGICA: Monta o contrato idêntico ao index do Rails
+        
         const routeWithContext = {
           id: responseBanco.data.id, 
           veiculo_id: String(veiculoId), // 🔥 Essencial! Garante que o botão leia o ID imediato como string
@@ -271,7 +271,9 @@ export const useDeliveryStore = defineStore('delivery', {
         this.addToast('Nova rota calculada e persistida no banco!', 'success');
         
         // 🎯 DISPARA O FETCH ASSÍNCRONO: Atualiza o estado da store com o banco de forma limpa
-        await this.fetchEnderecos();
+        setTimeout(async () => {
+          await this.fetchEnderecos(); // Sincroniza em background sem dar "piscada" de status na tela
+        }, 300);
         await this.fetchVeiculos(); 
         await this.fetchRotas(); // 🔥 Ative essa linha! Ela vai sincronizar tudo em background com o Rails de forma segura.
 

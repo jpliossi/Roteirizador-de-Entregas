@@ -12,9 +12,9 @@ const availableVehicles = computed(() =>
   deliveryStore.veiculos.filter(v => v.status === 'disponivel')
 );
 
-// Traz apenas os pendentes para a lista de seleção
+// 🎯 AJUSTE 1: Agora trazemos os pendentes E os que estão em rota para a lista
 const pendingAddresses = computed(() => 
-  deliveryStore.enderecos.filter(addr => addr.status === 'pendente')
+  deliveryStore.enderecos.filter(addr => addr.status === 'pendente' || addr.status === 'em rota' || addr.status === 'em_rota')
 );
 
 // Lógica de seleção múltipla de endereços
@@ -40,8 +40,7 @@ const handleCalcular = async () => {
 
   isCalculating.value = true;
   try {
-    // Agora enviamos apenas os IDs que o usuário marcou manualmente
-    await deliveryStore.calcularRota(selectedVehicleId.value, selectedAddressIds.value);
+    await deliveryStore.calcularRota(selectedAddressIds.value, selectedVehicleId.value);
     
     // Limpa a seleção após o sucesso
     selectedVehicleId.value = '';
@@ -111,7 +110,7 @@ const getIniciais = (nome: string) => {
       <div class="space-y-6 border-t border-slate-100 pt-10">
         <div class="flex items-center justify-between">
           <h3 class="text-sm font-black text-slate-400 uppercase tracking-[0.2em]">2. Selecione os Destinos</h3>
-          <span class="px-3 py-1 bg-slate-100 text-slate-600 rounded-full text-[10px] font-black uppercase">{{ pendingAddresses.length }} pendentes</span>
+          <span class="px-3 py-1 bg-slate-100 text-slate-600 rounded-full text-[10px] font-black uppercase">{{ pendingAddresses.length }} destinos</span>
         </div>
 
         <div v-if="pendingAddresses.length === 0" class="p-8 text-center bg-slate-50 rounded-3xl border-2 border-dashed border-slate-200">
@@ -124,18 +123,41 @@ const getIniciais = (nome: string) => {
             v-for="addr in pendingAddresses" 
             :key="addr.id"
             @click="toggleAddress(addr.id!)"
-            class="text-left p-4 rounded-2xl border-2 transition-all flex items-start gap-4"
+            class="text-left p-4 rounded-2xl border-2 transition-all flex items-start justify-between gap-4"
             :class="selectedAddressIds.includes(addr.id!)
               ? 'border-slate-900 bg-slate-50' 
               : 'border-slate-100 bg-white hover:border-slate-200'"
           >
-            <div class="mt-0.5 w-5 h-5 rounded-md border-2 flex items-center justify-center transition-colors"
-                 :class="selectedAddressIds.includes(addr.id!) ? 'bg-slate-900 border-slate-900' : 'border-slate-300'">
-              <CheckCircle2 v-if="selectedAddressIds.includes(addr.id!)" class="w-3 h-3 text-white" stroke-width="4" />
+            <div class="flex items-start gap-4">
+              <div class="mt-0.5 w-5 h-5 rounded-md border-2 flex items-center justify-center transition-colors"
+                   :class="selectedAddressIds.includes(addr.id!) ? 'bg-slate-900 border-slate-900' : 'border-slate-300'">
+                <CheckCircle2 v-if="selectedAddressIds.includes(addr.id!)" class="w-3 h-3 text-white" stroke-width="4" />
+              </div>
+              <div>
+                <p class="font-bold text-sm text-slate-900 leading-tight">{{ addr.rua }}, {{ addr.numero }}</p>
+                <p class="text-[10px] font-bold text-slate-400 uppercase mt-1">{{ addr.bairro }} • {{ addr.cidade }}</p>
+              </div>
             </div>
-            <div>
-              <p class="font-bold text-sm text-slate-900 leading-tight">{{ addr.rua }}, {{ addr.numero }}</p>
-              <p class="text-[10px] font-bold text-slate-400 uppercase mt-1">{{ addr.bairro }} • {{ addr.cidade }}</p>
+
+            <div class="flex-shrink-0 self-center">
+              <span 
+                v-if="addr.status === 'pendente'" 
+                class="px-2.5 py-1 bg-amber-100 text-amber-700 rounded-full text-[9px] font-black uppercase tracking-wider"
+              >
+                Pendente
+              </span>
+              <span 
+                v-else-if="addr.status === 'em rota' || addr.status === 'em_rota' || !addr.status"
+                class="px-2.5 py-1 bg-blue-100 text-blue-700 rounded-full text-[9px] font-black uppercase tracking-wider"
+              >
+                Em Rota
+              </span>
+              <span 
+                v-else-if="addr.status === 'entregue'" 
+                class="px-2.5 py-1 bg-slate-100 text-slate-900 rounded-full text-[9px] font-black uppercase tracking-wider"
+              >
+                Entregue
+              </span>
             </div>
           </button>
         </div>

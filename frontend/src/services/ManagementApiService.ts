@@ -139,6 +139,10 @@ export const ManagementApiService = {
   },
 
   async calcularRota(enderecoIds: string[], veiculoId: string) {
+    console.log("XXXXXXXXXXX ENVIANDO PARA O RAILS NO PUT:", {
+    endereco_ids: enderecoIds,
+    veiculo_id: veiculoId
+    });
     return await api.put('/enderecos/atualizar_status', {
       endereco_ids: enderecoIds,
       veiculo_id: veiculoId
