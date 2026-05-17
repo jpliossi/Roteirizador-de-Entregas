@@ -15,13 +15,13 @@ A solução foi modularizada em três componentes independentes para garantir o 
 ```mermaid
 graph TD
     %% Componentes Principais
-    FRONTEND["💻 FRONTEND<br>Vue 3 + TypeScript"]
-    GESTAO["💎 MICROSERVIÇO DE GESTÃO<br>Ruby on Rails"]
-    ROTEIRO["⚙️ MICROSERVIÇO ROTEIRO<br>Node.js + Express"]
+    FRONTEND["FRONTEND<br>Vue 3 + TypeScript"]
+    GESTAO["MICROSERVIÇO DE GESTÃO<br>Ruby on Rails"]
+    ROTEIRO["MICROSERVIÇO ROTEIRO<br>Node.js + Express"]
     
     %% Bancos de Dados
-    DB_GESTAO[("🐘 POSTGRESQL<br>Gestão DB")]
-    DB_ROTEIRO[("🐘 POSTGRESQL<br>Roteador DB")]
+    DB_GESTAO[("POSTGRESQL<br>Gestão DB")]
+    DB_ROTEIRO[("POSTGRESQL<br>Roteador DB")]
 
     %% Fluxos de Comunicação
     FRONTEND -->|GET / POST Endereços| GESTAO
@@ -59,7 +59,7 @@ graph TD
 
 ---
 
-## 🚀 Instruções de Setup e Inicialização
+## Instruções de Setup e Inicialização
 
 Toda a infraestrutura é orquestrada de forma nativa. 
 
@@ -124,11 +124,11 @@ gitGraph
     commit id: "refactor: ajuste types"
     checkout develop
     merge feature/12/ajuste-status-endereco id: "PR #1"
-    branch bugfix/correcao-teste
-    checkout bugfix/correcao-teste
+    branch bugfix/34/correcao-teste
+    checkout bugfix/34/correcao-teste
     commit id: "fix: corrige params"
     checkout develop
-    merge bugfix/correcao-teste id: "PR #2"
+    merge bugfix/34/correcao-teste id: "PR #2"
     branch release
     checkout release
     commit id: "Homologação"
