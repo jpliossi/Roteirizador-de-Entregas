@@ -12,25 +12,33 @@ A solução foi modularizada em três componentes independentes para garantir o 
 2. **Microserviço de Gestão**: API RESTful desenvolvida em Ruby on Rails responsável pelas regras de negócio centrais, persistência de entidades e governança de transações via banco de dados relacional.
 3. **Microserviço de Roteirização**: Engine em Node.js com TypeScript focado no processamento assíncrono e ordenação inteligente das coordenadas geográficas enviadas.
 
-┌────────────────────────────────────────────────────────┐
-│                      FRONTEND                          │
-│                   (Vue 3 + TS)                         │
-└───────────────┬────────────────────────┬───────────────┘
-│                        │
-(GET / POST Endereços)       (POST /rotas/calcular)
-│                        │
-▼                        ▼
-┌────────────────────────┐      ┌────────────────────────┐
-│ MICROSERVIÇO DE GESTÃO │      │  MICROSERVIÇO ROTEIRO  │
-│    (Ruby on Rails)     │◄─────┤   (Node.js + Express)  │
-└───────────────┬────────┘ (PUT)└───────────────┬────────┘
-│                                │
-▼                                ▼
-┌────────────────┐               ┌────────────────┐
-│ POSTGRESQL (1) │               │ POSTGRESQL (2) │
-│  (Gestão DB)   │               │ (Roteador DB)  │
-└────────────────┘               └────────────────┘
+```mermaid
+graph TD
+    %% Componentes Principais
+    FRONTEND["💻 FRONTEND<br>Vue 3 + TypeScript"]
+    GESTAO["💎 MICROSERVIÇO DE GESTÃO<br>Ruby on Rails"]
+    ROTEIRO["⚙️ MICROSERVIÇO ROTEIRO<br>Node.js + Express"]
+    
+    %% Bancos de Dados
+    DB_GESTAO[("🐘 POSTGRESQL<br>Gestão DB")]
+    DB_ROTEIRO[("🐘 POSTGRESQL<br>Roteador DB")]
 
+    %% Fluxos de Comunicação
+    FRONTEND -->|GET / POST Endereços| GESTAO
+    FRONTEND -->|POST /rotas/calcular| ROTEIRO
+    ROTEIRO -->|PUT /enderecos/atualizar_status| GESTAO
+    
+    %% Conexões com Banco
+    GESTAO --> DB_GESTAO
+    ROTEIRO --> DB_ROTEIRO
+
+    %% Estilização Básica
+    style FRONTEND fill:#111827,stroke:#374151,stroke-width:2px,color:#fff
+    style GESTAO fill:#1f2937,stroke:#4b5563,stroke-width:1px,color:#fff
+    style ROTEIRO fill:#1f2937,stroke:#4b5563,stroke-width:1px,color:#fff
+    style DB_GESTAO fill:#111827,stroke:#374151,color:#fff
+    style DB_ROTEIRO fill:#111827,stroke:#374151,color:#fff
+```
 ---
 
 ## Tecnologias Utilizadas
@@ -104,22 +112,29 @@ Para garantir a estabilidade do código em produção e organizar o trabalho em 
 - `feature/*`: Criadas a partir da `develop` para o desenvolvimento de novas tarefas ou refatorações (ex: `feature/12/ajuste-status-endereco`). Após a conclusão, são integradas de volta à `develop` exclusivamente via **Pull Request (PR)** aprovado.
 - `bugfix/*`: Criadas apartir da `develop` para corrigir algum bug encontrado em meio a testes e validações de novas funcionalidades e mergeadas de volta a `develop` após solução do bug encontrado, exclusivamente via **Pull Request (PR)** aprovado.
 
-┌────────────────────────────────────────────────────────────────────────┐
-│                              FLUXO GITFLOW                             │
-└────────────────────────────────────────────────────────────────────────┘
-
-main      ───────────────────────────────────────────●────────────────► (Produção)
-▲
-│ (Merge)
-release   ─────────────────────────●─────────────────┴────────────────► (Homologação)
-▲
-│ (Merge de Release)
-develop   ────────●────────────────┴───────────────────●─────────────► (Integração)
-│                                   ▲
-├───(Criada a partir)               │ (Pull Request)
-▼                                   │
-feature/  ────────┴───────●──────────────●────────────┴─────────────► (Nova Feature)
-bugfix/   ────────┴───────●──────────────●────────────┴─────────────► (Correção de Teste)
+```mermaid
+gitGraph
+    commit id: "v0.1.0"
+    branch develop
+    checkout develop
+    commit id: "Setup Inicial"
+    branch feature/12/ajuste-status-endereco
+    checkout feature/12/ajuste-status-endereco
+    commit id: "feat: adiciona tag azul"
+    commit id: "refactor: ajuste types"
+    checkout develop
+    merge feature/12/ajuste-status-endereco id: "PR #1"
+    branch bugfix/correcao-teste
+    checkout bugfix/correcao-teste
+    commit id: "fix: corrige params"
+    checkout develop
+    merge bugfix/correcao-teste id: "PR #2"
+    branch release
+    checkout release
+    commit id: "Homologação"
+    checkout main
+    merge release id: "v1.0.0" tag: "v1.0.0"
+```
 
 ### Padrão de Commits (Conventional Commits)
 
