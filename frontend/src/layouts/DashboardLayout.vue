@@ -1,11 +1,9 @@
 <script setup lang="ts">
-import { useDeliveryStore } from '../stores/useDeliveryStore';
 import { LayoutDashboard, MapPin, Truck, Users, Map, PanelLeftClose, PanelLeftOpen } from 'lucide-vue-next';
 import { ref } from 'vue';
 import { useRoute } from 'vue-router';
 
 const isCollapsed = ref(false);
-const deliveryStore = useDeliveryStore();
 const route = useRoute();
 
 const menuItems = [

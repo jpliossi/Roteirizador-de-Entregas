@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { useDeliveryStore } from '../stores/useDeliveryStore';
-import { Users, X, UserCheck, Save, CreditCard } from 'lucide-vue-next';
+import { Users, X, UserCheck, CreditCard } from 'lucide-vue-next';
 import AppButton from './ui/AppButton.vue';
 import AppInput from './ui/AppInput.vue';
 import AppCard from './ui/AppCard.vue';

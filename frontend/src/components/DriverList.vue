@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useDeliveryStore } from '../stores/useDeliveryStore';
-import { User as UserIcon, RotateCcw, Trash2, ShieldCheck } from 'lucide-vue-next';
+import { User as UserIcon, RotateCcw, Trash2} from 'lucide-vue-next';
 import AppButton from './ui/AppButton.vue';
 
 const deliveryStore = useDeliveryStore();

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue';
 import { useDeliveryStore } from '../stores/useDeliveryStore';
-import { Truck, Navigation2, CheckCircle2, MapPin, Package, Route, Clock } from 'lucide-vue-next';
+import { Truck, CheckCircle2, MapPin, Package, Route, Clock } from 'lucide-vue-next';
 
 const deliveryStore = useDeliveryStore();
 const selectedVehicleId = ref('');
@@ -88,7 +88,7 @@ const getIniciais = (nome: string) => {
             v-for="veiculo in availableVehicles" 
             :key="veiculo.id"
             @click="selectedVehicleId = veiculo.id!"
-            class="group text-left p-6 rounded-[32px] border-2 transition-all duration-300 relative overflow-hidden"
+            class="group text-left p-6 rounded-4x1 border-2 transition-all duration-300 relative overflow-hidden"
             :class="selectedVehicleId === veiculo.id 
               ? 'border-slate-900 bg-slate-900 text-white shadow-xl -translate-y-1' 
               : 'border-slate-100 bg-white hover:border-slate-200 hover:shadow-md'"
@@ -118,7 +118,7 @@ const getIniciais = (nome: string) => {
           <p class="text-sm text-slate-500 font-bold uppercase tracking-wider">Nenhum destino pendente</p>
         </div>
 
-        <div v-else class="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-[300px] overflow-y-auto pr-2 scrollbar-thin">
+        <div v-else class="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-75 overflow-y-auto pr-2 scrollbar-thin">
           <button 
             v-for="addr in pendingAddresses" 
             :key="addr.id"
@@ -139,7 +139,7 @@ const getIniciais = (nome: string) => {
               </div>
             </div>
 
-            <div class="flex-shrink-0 self-center">
+            <div class="shrink-0 self-center">
               <span 
                 v-if="addr.status === 'pendente'" 
                 class="px-2.5 py-1 bg-amber-100 text-amber-700 rounded-full text-[9px] font-black uppercase tracking-wider"
@@ -163,7 +163,7 @@ const getIniciais = (nome: string) => {
         </div>
       </div>
 
-      <div v-if="selectedAddressIds.length > 0" class="bg-slate-50 rounded-[32px] p-8 border border-slate-100">
+      <div v-if="selectedAddressIds.length > 0" class="bg-slate-50 rounded-4x1 p-8 border border-slate-100">
         <div class="flex items-center justify-between mb-6">
           <h3 class="text-sm font-black text-slate-400 uppercase tracking-[0.2em]">Resumo da Rota</h3>
           <Package class="w-5 h-5 text-slate-400" />
@@ -187,7 +187,7 @@ const getIniciais = (nome: string) => {
       <button 
         @click="handleCalcular"
         :disabled="isCalculating || !selectedVehicleId || selectedAddressIds.length === 0"
-        class="w-full py-6 rounded-[32px] font-black text-sm uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-3 shadow-xl"
+        class="w-full py-6 rounded-4x1 font-black text-sm uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-3 shadow-xl"
         :class="isCalculating || !selectedVehicleId || selectedAddressIds.length === 0
           ? 'bg-slate-100 text-slate-300 cursor-not-allowed shadow-none' 
           : 'bg-slate-900 text-white hover:bg-black active:scale-[0.98]'"

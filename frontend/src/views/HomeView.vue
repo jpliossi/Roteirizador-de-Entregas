@@ -36,10 +36,6 @@ onMounted(async () => {
   await deliveryStore.fetchInitialData();
 });
 
-const finalizarRota = async (veiculoId: string) => {
-  await deliveryStore.concluirRota(String(veiculoId));
-};
-
 const formatRouteAddresses = (ids?: string[]) => {
   if (!ids || ids.length === 0) return 'Nenhuma parada atribuída';
 

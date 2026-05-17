@@ -1,16 +1,7 @@
 ﻿<script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { useDeliveryStore } from '../stores/useDeliveryStore';
-import { Trash2, User, Truck, CheckCircle2, Navigation2, LogIn } from 'lucide-vue-next';
-
-interface Veiculo {
-  id: string;
-  placa: string;
-  modelo: string;
-  capacidade: number;
-  motorista_id: string | number | null;
-  status: string;
-}
+import { Trash2,Truck, CheckCircle2, Navigation2, LogIn } from 'lucide-vue-next';
 
 const deliveryStore = useDeliveryStore();
 const selectMotoristaId = ref<{ [key: string]: string | number }>({});
@@ -39,14 +30,14 @@ const deletarVeiculo = async (id: string) => {
 
 <template>
   <div class="space-y-6">
-    <div v-if="deliveryStore.veiculos.length === 0" class="text-center py-20 bg-slate-50 rounded-[32px] border-2 border-dashed border-slate-200">
+    <div v-if="deliveryStore.veiculos.length === 0" class="text-center py-20 bg-slate-50 rounded-4x1 border-2 border-dashed border-slate-200">
       <Truck class="w-16 h-16 text-slate-300 mx-auto mb-4" />
       <p class="text-slate-500 font-bold uppercase tracking-widest text-xs">Nenhum veículo cadastrado na frota</p>
     </div>
 
     <div v-else class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
       <div v-for="veiculo in deliveryStore.veiculos" :key="veiculo.id" 
-           class="group bg-white border border-slate-100 rounded-[32px] p-6 shadow-sm hover:shadow-xl hover:shadow-slate-200/50 transition-all duration-500 flex flex-col justify-between">
+           class="group bg-white border border-slate-100 rounded-4x1 p-6 shadow-sm hover:shadow-xl hover:shadow-slate-200/50 transition-all duration-500 flex flex-col justify-between">
         
         <div class="space-y-4">
           <div class="flex items-start justify-between">
