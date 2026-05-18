@@ -1,8 +1,6 @@
-#!/bin/bash -e
-
-# If running the rails server then create or migrate existing database
-if [ "${@: -2:1}" == "./bin/rails" ] && [ "${@: -1:1}" == "server" ]; then
-  ./bin/rails db:prepare
+#!/bin/bash
+set -e
+if [ -f "/rails/tmp/pids/server.pid" ]; then
+  rm -f /rails/tmp/pids/server.pid
 fi
-
-exec "${@}"
+exec "$@"

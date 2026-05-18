@@ -6,5 +6,11 @@ Rails.application.routes.draw do
   end
   resources :motoristas
   resources :veiculos
+
+  get '/rotas', to: 'rotas#index'
+  post '/rotas', to: 'rotas#create'
+  
+  put '/enderecos/atualizar_status', to: 'enderecos#atualizar_status'
+
   get "up" => "rails/health#show", as: :rails_health_check
 end

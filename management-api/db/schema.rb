@@ -10,12 +10,13 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_12_142358) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_16_150406) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
 
   create_table "enderecos", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "bairro"
     t.string "cep"
     t.string "cidade"
     t.datetime "created_at", null: false
@@ -26,6 +27,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_12_142358) do
     t.string "rua"
     t.string "status"
     t.datetime "updated_at", null: false
+    t.uuid "veiculo_id"
+    t.index ["veiculo_id"], name: "index_enderecos_on_veiculo_id"
   end
 
   create_table "motoristas", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -36,12 +39,24 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_12_142358) do
     t.index ["cpf"], name: "index_motoristas_on_cpf", unique: true
   end
 
+  create_table "rota", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.text "endereco_ids"
+    t.float "km_total"
+    t.string "status"
+    t.integer "tempo_previsto"
+    t.datetime "updated_at", null: false
+    t.string "veiculo_id"
+  end
+
   create_table "veiculos", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.integer "capacidade"
     t.datetime "created_at", null: false
     t.string "modelo"
+    t.uuid "motorista_id"
     t.string "placa"
     t.string "status"
     t.datetime "updated_at", null: false
+    t.index ["status"], name: "index_veiculos_on_status"
   end
 end
