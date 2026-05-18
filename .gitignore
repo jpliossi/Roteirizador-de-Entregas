@@ -1,0 +1,87 @@
+# Dependências Node.js / Logs
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Variáveis de Ambiente e Segredos
+.env
+.env.local
+.env.*.local
+
+# IDEs e Editores de Código
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Arquivos de Sistema Operacional
+.DS_Store
+Thumbs.db
+
+# Rails específicos
+/management-api/tmp/pids/*.pid
+/management-api/log/*.log
+/management-api/tmp/cache/
+/management-api/public/assets
+.ruby-lsp/
+.byebug_history
+/management-api/db/*.sqlite3
+/management-api/db/*.sqlite3-journal
+/management-api/storage/
+/management-api/public/packs
+/management-api/public/vite
+/management-api/node_modules/
+/management-api/coverage/
+/management-api/public/system
+/management-api/vendor/bundle
+
+# Frontend
+/frontend/node_modules/
+/frontend/dist/
+
+# Docker específicos
+.docker-data/
+*.log
+docker-compose.override.yml
+
+# Compiled files / OS
+*.class
+*.exe
+*.dll
+*.so
+*.dylib
+obj/
+out/
+build/
+.cache/
+.parcel-cache/
+.eslintcache
+.stylelintcache
+
+# Ruby/Rails (additional)
+/management-api/.ruby-version
+/management-api/.ruby-lsp/
+/management-api/.bundle/
+/management-api/db/*.sqlite3
+/management-api/db/*.sqlite3-journal
+/management-api/log/*.log
+/management-api/tmp/
+/management-api/public/assets
+/management-api/public/packs
+/management-api/public/vite
+/management-api/node_modules/
+/management-api/vendor/bundle
+
+# Mac/Windows
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Desktop.ini
+

@@ -1,0 +1,63 @@
+
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: roteirizador_db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+
+  management-api:
+    build: ./management-api
+    container_name: roteirizador_management_api
+    command: ["sh", "-c", "rm -f tmp/pids/server.pid && bundle install && bundle exec rails s -b 0.0.0.0"]
+    volumes:
+      - ./management-api:/rails
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+    environment:
+      POSTGRES_HOST: db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      RAILS_ENV: development
+      CHOKIDAR_USEPOLLING: "true"
+      RAILS_MAX_THREADS: 5
+      WATCHPACK_POLLING: "true"
+      WATCHPACKER_POLL: "true"
+
+
+
+  routing-api:
+    build: ./routing-api
+    container_name: roteirizador_routing_api
+    # Removido o command fixo para usar o do Dockerfile que agora está mais limpo
+    volumes:
+      - ./routing-api:/app
+      - /app/node_modules # Evita sobrescrever node_modules do container com o local
+    ports:
+      - "3001:3001"
+      - "5555:5555"
+    depends_on:
+      - db
+    environment:
+      DATABASE_URL: "postgresql://postgres:postgres@db:5432/routing_db?schema=public"
+
+  frontend:
+    build: ./frontend
+    container_name: roteirizador_frontend
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules # Protege os pacotes do container
+    ports:
+      - "5174:5174"
+    environment:
+      - CHOKIDAR_USEPOLLING=true # Faz o Vite atualizar sozinho no Windows
+
+volumes:
+  pg_data:
