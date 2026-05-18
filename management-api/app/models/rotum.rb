@@ -3,4 +3,5 @@ class Rotum < ApplicationRecord
   serialize :endereco_ids, coder: JSON
 
   validates :veiculo_id, :endereco_ids, :km_total, :tempo_previsto, presence: true
+  validates :km_total, numericality: { greater_than_or_equal_to: 0 }
 end

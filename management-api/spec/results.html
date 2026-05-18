@@ -281,54 +281,70 @@ a {
 <div class="results">
 <div id="div_group_1" class="example_group passed">
   <dl style="margin-left: 0px;">
-  <dt id="example_group_1" class="passed">Enderecos</dt>
+  <dt id="example_group_1" class="passed">Rotum</dt>
   </dl>
 </div>
 <div id="div_group_2" class="example_group passed">
   <dl style="margin-left: 15px;">
-  <dt id="example_group_2" class="passed">POST /enderecos</dt>
+  <dt id="example_group_2" class="passed">Validações</dt>
+    <script type="text/javascript">moveProgressBar('14.2');</script>
+    <dd class="example passed"><span class="passed_spec_name">é válido com atributos obrigatórios</span><span class='duration'>0.24854s</span></dd>
+    <script type="text/javascript">moveProgressBar('28.5');</script>
+    <dd class="example passed"><span class="passed_spec_name">é inválido sem veiculo_id</span><span class='duration'>0.00890s</span></dd>
+    <script type="text/javascript">moveProgressBar('42.8');</script>
+    <dd class="example passed"><span class="passed_spec_name">é inválido com km_total negativo</span><span class='duration'>0.00741s</span></dd>
   </dl>
 </div>
 <div id="div_group_3" class="example_group passed">
-  <dl style="margin-left: 30px;">
-  <dt id="example_group_3" class="passed">com dados inválidos</dt>
-    <script type="text/javascript">moveProgressBar('25.0');</script>
-    <dd class="example passed"><span class="passed_spec_name">não cria um endereço e retorna status 422</span><span class='duration'>2.99405s</span></dd>
+  <dl style="margin-left: 0px;">
+  <dt id="example_group_3" class="passed">Enderecos</dt>
   </dl>
 </div>
 <div id="div_group_4" class="example_group passed">
-  <dl style="margin-left: 30px;">
-  <dt id="example_group_4" class="passed">com dados válidos</dt>
-    <script type="text/javascript">moveProgressBar('50.0');</script>
-    <dd class="example passed"><span class="passed_spec_name">cria um endereço e retorna status 201</span><span class='duration'>0.05358s</span></dd>
+  <dl style="margin-left: 15px;">
+  <dt id="example_group_4" class="passed">POST /enderecos</dt>
   </dl>
 </div>
 <div id="div_group_5" class="example_group passed">
-  <dl style="margin-left: 15px;">
-  <dt id="example_group_5" class="passed">GET /enderecos</dt>
-    <script type="text/javascript">moveProgressBar('75.0');</script>
-    <dd class="example passed"><span class="passed_spec_name">retorna uma lista de endereços</span><span class='duration'>0.03222s</span></dd>
+  <dl style="margin-left: 30px;">
+  <dt id="example_group_5" class="passed">com dados inválidos</dt>
+    <script type="text/javascript">moveProgressBar('57.1');</script>
+    <dd class="example passed"><span class="passed_spec_name">não cria um endereço e retorna status 422</span><span class='duration'>3.46425s</span></dd>
   </dl>
 </div>
 <div id="div_group_6" class="example_group passed">
-  <dl style="margin-left: 0px;">
-  <dt id="example_group_6" class="passed">Veiculos</dt>
+  <dl style="margin-left: 30px;">
+  <dt id="example_group_6" class="passed">com dados válidos</dt>
+    <script type="text/javascript">moveProgressBar('71.4');</script>
+    <dd class="example passed"><span class="passed_spec_name">cria um endereço e retorna status 201</span><span class='duration'>0.24790s</span></dd>
   </dl>
 </div>
 <div id="div_group_7" class="example_group passed">
   <dl style="margin-left: 15px;">
-  <dt id="example_group_7" class="passed">GET /veiculos/:id</dt>
+  <dt id="example_group_7" class="passed">GET /enderecos</dt>
+    <script type="text/javascript">moveProgressBar('85.7');</script>
+    <dd class="example passed"><span class="passed_spec_name">retorna uma lista de endereços</span><span class='duration'>0.19793s</span></dd>
   </dl>
 </div>
 <div id="div_group_8" class="example_group passed">
-  <dl style="margin-left: 30px;">
-  <dt id="example_group_8" class="passed">quando o veículo não existe</dt>
-    <script type="text/javascript">moveProgressBar('100.0');</script>
-    <dd class="example passed"><span class="passed_spec_name">retorna status 404 Not Found</span><span class='duration'>0.05821s</span></dd>
+  <dl style="margin-left: 0px;">
+  <dt id="example_group_8" class="passed">Veiculos</dt>
   </dl>
 </div>
-<script type="text/javascript">document.getElementById('duration').innerHTML = "Finished in <strong>3.36429 seconds</strong>";</script>
-<script type="text/javascript">document.getElementById('totals').innerHTML = "4 examples, 0 failures";</script>
+<div id="div_group_9" class="example_group passed">
+  <dl style="margin-left: 15px;">
+  <dt id="example_group_9" class="passed">GET /veiculos/:id</dt>
+  </dl>
+</div>
+<div id="div_group_10" class="example_group passed">
+  <dl style="margin-left: 30px;">
+  <dt id="example_group_10" class="passed">quando o veículo não existe</dt>
+    <script type="text/javascript">moveProgressBar('100.0');</script>
+    <dd class="example passed"><span class="passed_spec_name">retorna status 404 Not Found</span><span class='duration'>0.13309s</span></dd>
+  </dl>
+</div>
+<script type="text/javascript">document.getElementById('duration').innerHTML = "Finished in <strong>4.35563 seconds</strong>";</script>
+<script type="text/javascript">document.getElementById('totals').innerHTML = "7 examples, 0 failures";</script>
 </div>
 </div>
 </body>

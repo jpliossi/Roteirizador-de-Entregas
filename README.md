@@ -143,3 +143,34 @@ Visando a clareza do histórico do Git e a automação do changelog, as mensagen
 - `feat`: Uma nova funcionalidade sendo introduzida (ex: `feat(vue): adiciona tag azul de em rota na listagem`).
 - `fix`: A correção de um bug (ex: `fix(rails): impede nulo convertendo array de ids para string`).
 - `docs`: Alterações exclusivas na documentação (ex: `docs: atualiza instruções de setup do docker no readme`).
+
+## Testes Realizados no projeto 
+
+### Testes na API de Gestão
+
+Teste de modelo, validação de campos obrigatórios, restrições numéricas (ex: quilometragem nunca negativa) e persistência de dados complexos, como o histórico de rotas.
+Teste de requisição, fluxo de endereços, integridade de listagem (retorno da API de forma correta) e tratamento de erros.
+
+#### Para Rodar o Teste:
+
+```bash
+docker-compose exec management-api bundle exec rspec spec --format html --out spec/results.html
+```
+
+#### Para Visualizar Retorno do Teste:
+
+management-api/spec/results.html
+
+### Testes na API de Rotas
+
+Algoritmo de roteirização, lógica para ordenação, resiliência do payload (garantir que não quebre com listas vazias), integração mockada fazendo simulação da comunicação com a API de gestão via Axios para atualização independente de rede externa.
+
+#### Para Rodar o Teste:
+
+```bash
+docker-compose exec routing-api npm test -- --reporters=default --reporters=jest-html-reporter
+```
+
+#### Para Visualizar Retorno do Teste:
+
+routing-api/test-report.html

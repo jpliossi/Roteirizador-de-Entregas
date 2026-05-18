@@ -1,4 +1,4 @@
-import { jest } from '@jest/globals';
+import { beforeEach, describe, expect, it, jest } from '@jest/globals';
 
 // Mock do Axios
 jest.unstable_mockModule('axios', () => ({
@@ -44,9 +44,9 @@ describe('RouteService', () => {
 
   describe('calculateDistance', () => {
     it('deve calcular a distância euclidiana corretamente entre dois pontos', () => {
-      const p1 = { latitude: 0, longitude: 0 };
-      const p2 = { latitude: 3, longitude: 4 };
-      // Distância de (0,0) a (3,4) é sqrt(3^2 + 4^2) = 5
+      const p1 = { id: 'test-1', latitude: 10, longitude: 10 };
+      const p2 = { id: 'test-2', latitude: 13, longitude: 14 };
+      // Distância de (10,10) a (13,14) é sqrt(3^2 + 4^2) = 5
       const dist = (service as any).calculateDistance(p1, p2);
       expect(dist).toBe(5);
     });
@@ -55,16 +55,16 @@ describe('RouteService', () => {
   describe('calculateRoute', () => {
     it('deve ordenar os endereços por proximidade (ponto a ponto)', async () => {
       const enderecos = [
-        { id: '1', latitude: 0, longitude: 0 },
-        { id: '3', latitude: 10, longitude: 10 },
-        { id: '2', latitude: 1, longitude: 1 },
+        { id: '1', latitude: 5, longitude: 5 },
+        { id: '3', latitude: 15, longitude: 15 },
+        { id: '2', latitude: 6, longitude: 6 },
       ];
 
       mockPrisma.rota.create.mockResolvedValue({
         id: 'r-calc-1',
         veiculo_id: 'veic-1',
         endereco_ids: ['1', '2', '3']
-      } as any);
+      } as never);
 
       const result = await service.calculateRoute('veic-1', enderecos);
 
@@ -76,37 +76,41 @@ describe('RouteService', () => {
 
     it('deve retornar lista vazia se não houver endereços', async () => {
       const result = await service.calculateRoute('veic-1', []);
-      expect(result).toEqual([]);
+      expect(result).toEqual({ ordem_ids: [], distancia_total: 0, tempo_estimado: 0 });
     });
   });
 
   describe('efetivarRota', () => {
     it('deve salvar a rota e chamar o management-api com sucesso (200)', async () => {
       const veiculo_id = 'v1';
-      const endereco_ids = ['e1', 'e2'];
+      const ordem_ids = ['e1', 'e2'];
 
       mockPrisma.rota.create.mockResolvedValue({
         id: 'r1',
         veiculo_id,
-        endereco_ids
-      } as any);
+        ordem_ids
+      } as never);
 
       (axios.put as any).mockResolvedValue({ status: 200 });
 
-      const result = await service.efetivarRota(veiculo_id, endereco_ids);
+      const result = await service.efetivarRota(veiculo_id, ordem_ids);
 
       expect(mockPrisma.rota.create).toHaveBeenCalledWith({
-        data: { veiculo_id, endereco_ids }
+        data: { veiculo_id, ordem_ids }
       });
       expect(axios.put).toHaveBeenCalledWith(
         expect.stringContaining('/enderecos/atualizar_status'),
-        { endereco_ids }
+        {
+          endereco_ids: ordem_ids,
+          veiculo_id: veiculo_id,
+          status: 'em rota'
+        }
       );
       expect(result.rota_id).toBe('r1');
     });
 
     it('deve lançar erro se a chamada ao management-api falhar (500)', async () => {
-      mockPrisma.rota.create.mockResolvedValue({ id: 'r1' } as any);
+      mockPrisma.rota.create.mockResolvedValue({ id: 'r1' } as never);
       (axios.put as any).mockRejectedValue(new Error('Internal Server Error'));
 
       await expect(service.efetivarRota('v1', ['e1'])).rejects.toThrow('Internal Server Error');
