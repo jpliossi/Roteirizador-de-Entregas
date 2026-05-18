@@ -6,7 +6,7 @@ RSpec.describe "Enderecos", type: :request do
       it "não cria um endereço e retorna status 422" do
         post "/enderecos", params: { endereco: { rua: "" } }
         
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
         json_response = JSON.parse(response.body)
         expect(json_response).to have_key("rua")
       end
@@ -26,6 +26,7 @@ RSpec.describe "Enderecos", type: :request do
   end
 
   describe "GET /enderecos" do
+    before { Endereco.delete_all }
     it "retorna uma lista de endereços" do
       create_list(:endereco, 3)
       get "/enderecos"
